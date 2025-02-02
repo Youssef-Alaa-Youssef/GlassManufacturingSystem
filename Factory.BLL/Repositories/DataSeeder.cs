@@ -40,7 +40,7 @@ namespace Factory.DAL.Configurations
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(defaultUser, UserRole.SuperAdmin.ToString());
+                    await userManager.AddToRoleAsync(defaultUser, UserRole.Owner.ToString());
                     defaultUser.EmailConfirmed = true;
                     await userManager.UpdateAsync(defaultUser);
                 }
@@ -48,7 +48,7 @@ namespace Factory.DAL.Configurations
 
             var permissionRepository = unitOfWork.GetRepository<PermissionTyepe>();
             
-            var superAdminRole = await roleManager.FindByNameAsync(UserRole.SuperAdmin.ToString());
+            var superAdminRole = await roleManager.FindByNameAsync(UserRole.Owner.ToString());
             var managePermissions = permissionRepository.GetAllAsync().Result.FirstOrDefault(p => p.Name == "ManagePermissions");
 
             if (superAdminRole != null && managePermissions != null)

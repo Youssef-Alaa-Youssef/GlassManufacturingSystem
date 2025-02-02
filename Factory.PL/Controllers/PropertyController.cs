@@ -5,10 +5,11 @@ using Factory.BLL.InterFaces;
 using Microsoft.AspNetCore.Authorization;
 using Factory.DAL.Models.Home;
 using Factory.PL.Helper;
+using Factory.DAL.Enums;
 
 namespace Factory.PL.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,Administrator,Agency")]
+    [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
     public class PropertyController : Controller
     {
         private readonly string _imagePath;

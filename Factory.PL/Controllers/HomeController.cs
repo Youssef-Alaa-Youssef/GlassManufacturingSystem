@@ -6,6 +6,7 @@ using Factory.PL.ViewModels;
 using Factory.PL.ViewModels.Home;
 using System.Diagnostics;
 using Factory.BLL.InterFaces;
+using Factory.DAL.Enums;
 
 namespace Factory.Controllers
 {
@@ -21,42 +22,38 @@ namespace Factory.Controllers
         public async Task<IActionResult> Index()
         {
             var Partners = await _unitOfWork.GetRepository<Partner>().GetAllAsync();
-            //return View(Partners);
             return RedirectToAction("Login","Auth");
         }
 
         public async Task<IActionResult> FAQ()
         {
             var faqs = await _unitOfWork.GetRepository<FAQS>().GetAllAsync();
-            //return View(faqs);
             return RedirectToAction("Login", "Auth");
 
         }
 
         public IActionResult AboutUs()
         {
-            //return View();
             return RedirectToAction("Login", "Auth");
 
         }
 
         public IActionResult Contact()
         {
-            //return View();
             return RedirectToAction("Login", "Auth");
         }
         public IActionResult UnderConstruction()
         {
             return View();
         }
-        
-        [Authorize(Roles = "SuperAdmin,Administrator")]
+
+        [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
         [HttpGet]
         public IActionResult TeamMember()
         {
             return View();
         }
-        [Authorize(Roles = "SuperAdmin,Administrator")]
+        [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TeamMemberAction(TeamMemberViewModel model)
@@ -93,7 +90,7 @@ namespace Factory.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "SuperAdmin,Administrator")]
+        [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
         public async Task<IActionResult> TeamMemberRep()
         {
             var teamMembers = (await _unitOfWork.GetRepository<TeamMember>().GetAllAsync()).ToList();
@@ -141,7 +138,7 @@ namespace Factory.Controllers
                 return View("Contact", contact);
             }
         }
-        [Authorize(Roles = "SuperAdmin,Administrator")]
+        [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
 
         public async Task<IActionResult> ContactReport()
         {

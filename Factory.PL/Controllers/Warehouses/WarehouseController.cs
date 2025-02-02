@@ -4,11 +4,12 @@ using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Warehouses;
 using Factory.PL.ViewModels.Warehouses;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Factory.DAL.Enums;
 
 namespace Factory.PL.Controllers.Warehouses
 {
-        [Authorize(Roles = "SuperAdmin")]
-        public class WarehouseController : Controller
+    [Authorize(Roles = nameof(UserRole.Owner))]
+    public class WarehouseController : Controller
         {
             private readonly IUnitOfWork _unitOfWork;
 
