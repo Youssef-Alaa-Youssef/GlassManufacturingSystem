@@ -5,281 +5,79 @@
     Layout = "_LogedUser";
 }
 
-
-<style>
-    body {
-        background-color: white;
-    }
-
-    .container {
-        background-color: white; 
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    }
-
-    .module-permissions {
-        display: none;
-    }
-
-    .role-checkbox {
-        margin-bottom: 15px;
-    }
-
-        .role-checkbox .form-check-input {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-            border: 2px solid #2c3e50;
-            transition: all 0.3s ease;
-        }
-
-            .role-checkbox .form-check-input:checked {
-                border-color: #2c3e50;
-                animation: bounce 0.5s ease;
-            }
-
-            .role-checkbox .form-check-input:hover {
-                transform: scale(1.1);
-            }
-
-        .role-checkbox .form-check-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #495057;
-            cursor: pointer;
-        }
-
-    @@keyframes bounce {
-        0%, 100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.2);
-        }
-    }
-
-    .role-panel {
-        margin-bottom: 10px;
-    }
-
-        .role-panel .card-header {
-            cursor: pointer;
-            background-color: white; 
-            border: 1px solid #dee2e6; /* Light border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 10px 15px; /* Padding for better spacing */
-            transition: background-color 0.3s ease; /* Smooth transition */
-        }
-
-            .role-panel .card-header:hover {
-                background-color: #f8f9fa; /* Light gray on hover */
-            }
-
-        .role-panel .card-body {
-            padding: 15px;
-            background-color: white; /* White background */
-            border: 1px solid #dee2e6; /* Light border */
-            border-radius: 8px; /* Rounded corners */
-            margin-top: 10px; /* Spacing between header and body */
-        }
-
-    /* Card styling */
-    .card {
-        background-color: white; /* White background */
-        border: 1px solid #dee2e6; /* Light border */
-        border-radius: 8px; /* Rounded corners */
-        margin-bottom: 20px; /* Spacing between cards */
-        transition: box-shadow 0.3s ease; /* Smooth shadow transition */
-    }
-
-        .card:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
-        }
-
-    /* Header styling */
-    h2 {
-        background-color: white; /* White background */
-        color: #495057; /* Dark text color */
-        border: 1px solid #dee2e6; /* Light border */
-        border-radius: 8px; /* Rounded corners */
-        padding: 15px; /* Padding for better spacing */
-        text-align: center; /* Center align text */
-        margin-bottom: 20px; /* Spacing below header */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    }
-
-    /* Button styling */
-    .btn-outline-primary {
-        border-color: #2c3e50;
-        color: #2c3e50;
-        transition: all 0.3s ease; /* Smooth transition */
-    }
-
-        .btn-outline-primary:hover {
-            background-color: #2c3e50;
-            color: white;
-        }
-
-    .btn-outline-secondary {
-        border-color: #6c757d;
-        color: #6c757d;
-        transition: all 0.3s ease; /* Smooth transition */
-    }
-
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: white;
-        }
-
-    /* Select All Roles styling */
-    .select-all-roles {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-
-        .select-all-roles .form-check {
-            margin-bottom: 0;
-        }
-
-        .select-all-roles .form-check-label {
-            font-size: 14px;
-            color: #495057; /* Dark text color */
-        }
-</style>
-
 <div class="container mt-4">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Success"]
-        </div>
-    }
+    @await Html.PartialAsync("ErrorSummaryPartial")
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
-
-    <h2 class="text-center mb-4">
-        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
-    </h2>
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
 
     <form asp-action="AssignPermissions" method="post">
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Assign Permissions</h4>
-
-                <!-- Module Dropdown -->
-                <div class="mb-4">
-                    <label for="moduleDropdown" class="form-label">Select Module</label>
-                    <select id="moduleDropdown" class="form-select">
-                        <option value="">-- Select a Module --</option>
-                        @foreach (var module in Model.RolePermissions
-                        .SelectMany(rp => rp.Permissions)
-                        .SelectMany(p => p.Modules)
-                        .GroupBy(m => m.ModuleId)
-                        .Select(g => g.First()))
-                        {
-                            <option value="module-@module.ModuleId">@module.ModuleName</option>
-                        }
-                    </select>
-                </div>
-
-                <!-- Permissions Section -->
+        <div class="mb-4">
+            <label for="moduleDropdown" class="form-label">Select Module</label>
+            <select id="moduleDropdown" class="form-select">
+                <option value="">-- Select a Module --</option>
                 @foreach (var module in Model.RolePermissions
                 .SelectMany(rp => rp.Permissions)
                 .SelectMany(p => p.Modules)
                 .GroupBy(m => m.ModuleId)
                 .Select(g => g.First()))
                 {
-                    <div id="module-@module.ModuleId" class="module-permissions card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                Module: @module.ModuleName
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            @foreach (var rolePermission in Model.RolePermissions)
-                            {
-                                <div class="role-panel card mb-3">
-                                    <div class="card-header" data-bs-toggle="collapse" data-bs-target="#role-@rolePermission.RoleId-@module.ModuleId">
-                                        <i class="bi bi-chevron-down me-2"></i> Role: @rolePermission.RoleName
-                                    </div>
-                                    <div id="role-@rolePermission.RoleId-@module.ModuleId" class="collapse">
-                                        <div class="card-body">
-                                            @foreach (var permission in Model.RolePermissions
-                                           .SelectMany(rp => rp.Permissions)
-                                           .Where(p => p.Modules.Any(m => m.ModuleId == module.ModuleId))
-                                           .GroupBy(p => p.PermissionId)
-                                           .Select(g => g.First()))
-                                            {
-                                                var rolePermissionIndex = Model.RolePermissions.IndexOf(rolePermission);
-                                                var permissionIndex = rolePermission.Permissions.FindIndex(p => p.PermissionId == permission.PermissionId);
-                                                var moduleIndex = rolePermission.Permissions[permissionIndex].Modules.FindIndex(m => m.ModuleId == module.ModuleId);
-
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleId" />
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleName" />
-
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionId" />
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionName" />
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleId" />
-                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleName" />
-
-                                                <div class="form-check role-checkbox">
-                                                    <input type="checkbox" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].IsSelected" class="form-check-input permission-checkbox" data-module-id="@module.ModuleId" data-role-id="@rolePermission.RoleId" />
-                                                    <label class="form-check-label">@permission.PermissionName</label>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    <option value="module-@module.ModuleId">@module.ModuleName</option>
                 }
-            </div>
+            </select>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-md-12 d-flex justify-content-center">
-                <button type="submit" class="btn btn-outline-primary btn-lg me-2">
-                    <i class="bi bi-save me-2"></i> Save Permissions
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                    <i class="bi bi-arrow-left me-2"></i> Back to List
-                </a>
+        @foreach (var module in Model.RolePermissions
+        .SelectMany(rp => rp.Permissions)
+        .SelectMany(p => p.Modules)
+        .GroupBy(m => m.ModuleId)
+        .Select(g => g.First()))
+        {
+            <div id="module-@module.ModuleId" class="module-permissions card mb-4" style="display:none;">
+                <div class="card-header">Module: @module.ModuleName</div>
+                <div class="card-body">
+                    @foreach (var rolePermission in Model.RolePermissions)
+                    {
+                        <div class="role-panel card mb-3">
+                            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#role-@rolePermission.RoleId-@module.ModuleId">
+                                Role: @rolePermission.RoleName
+                            </div>
+                            <div id="role-@rolePermission.RoleId-@module.ModuleId" class="collapse">
+                                <div class="card-body">
+                                    @foreach (var permission in Model.RolePermissions
+                                   .SelectMany(rp => rp.Permissions)
+                                   .Where(p => p.Modules.Any(m => m.ModuleId == module.ModuleId))
+                                   .GroupBy(p => p.PermissionId)
+                                   .Select(g => g.First()))
+                                    {
+                                        var rolePermissionIndex = Model.RolePermissions.IndexOf(rolePermission);
+                                        var permissionIndex = rolePermission.Permissions.FindIndex(p => p.PermissionId == permission.PermissionId);
+                                        var moduleIndex = rolePermission.Permissions[permissionIndex].Modules.FindIndex(m => m.ModuleId == module.ModuleId);
+
+                                        <div class="form-check">
+                                            <input type="checkbox" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].IsSelected" class="form-check-input permission-checkbox" data-module-id="@module.ModuleId" data-role-id="@rolePermission.RoleId" />
+                                            <label class="form-check-label">@permission.PermissionName</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
+        }
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-outline-primary">Save Permissions</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
         </div>
     </form>
 </div>
 
 @section Scripts {
     <script>
-        // Show/Hide Permissions Based on Selected Module
         document.getElementById('moduleDropdown').addEventListener('change', function () {
-            const selectedModuleId = this.value;
             document.querySelectorAll('.module-permissions').forEach(module => {
-                module.style.display = module.id === selectedModuleId ? 'block' : 'none';
-            });
-        });
-
-        // Collapsible Role Panels
-        document.querySelectorAll('.role-panel .card-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const icon = header.querySelector('i');
-                if (icon.classList.contains('bi-chevron-down')) {
-                    icon.classList.remove('bi-chevron-down');
-                    icon.classList.add('bi-chevron-up');
-                } else {
-                    icon.classList.remove('bi-chevron-up');
-                    icon.classList.add('bi-chevron-down');
-                }
+                module.style.display = module.id === this.value ? 'block' : 'none';
             });
         });
     </script>

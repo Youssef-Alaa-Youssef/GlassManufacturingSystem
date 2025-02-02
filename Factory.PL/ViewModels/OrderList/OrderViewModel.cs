@@ -1,5 +1,4 @@
 ﻿using Factory.DAL.Enums;
-using Factory.PL.Views.OrderList;
 using System.ComponentModel.DataAnnotations;
 
 namespace Factory.PL.ViewModels.OrderList

@@ -5,8 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container shadow-lg mt-5 p-4 bg-light rounded">
-    <h1 class="text-center mb-4 bg-secondary  text-light py-3 px-4 rounded-3 border">
+<div class="container shadow-lg mt-5 p-4  rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    <h1 class="text-center mb-4 py-3 px-4 border">
         <i class="bi bi-people me-2"></i> Partners
     </h1>
 

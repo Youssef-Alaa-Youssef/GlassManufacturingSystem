@@ -6,7 +6,9 @@
 }
 
 <div class="container shadow-lg p-4">
-    <h1 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    <h1 class="text-center mb-4 py-3 px-4 rounded">
         <i class="bi bi-house-door"></i> Properties
     </h1>
 

@@ -5,7 +5,9 @@
     Layout = "_LogedUser";
 }
 <div class="container shadow-lg p-4">
-    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    <h2 class="text-center mb-4  py-3 px-4 rounded">
         <i class="bi bi-house-door"></i> Edit Property
     </h2>
 
@@ -13,8 +15,8 @@
         <input type="hidden" asp-for="Id" />
 
         <!-- General Information Section -->
-        <div class="border p-3 mb-4 rounded bg-light">
-            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+        <div class="border p-3 mb-4 rounded">
+            <h4 class="text-center py-2 px-3 rounded">
                 General Information
             </h4>
             <div class="mb-3">
@@ -40,8 +42,8 @@
         </div>
 
         <!-- Property Details Section -->
-        <div class="border p-3 mb-4 rounded bg-light">
-            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+        <div class="border p-3 mb-4 rounded ">
+            <h4 class="text-center py-2 px-3 rounded">
                 Property Details
             </h4>
             <div class="mb-3">
@@ -72,8 +74,8 @@
         </div>
 
         <!-- Additional Information Section -->
-        <div class="border p-3 mb-4 rounded bg-light">
-            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+        <div class="border p-3 mb-4 rounded">
+            <h4 class="text-center py-2 px-3 rounded">
                 Additional Information
             </h4>
             <div class="mb-3">
@@ -89,8 +91,8 @@
         </div>
 
         <!-- Features and Photos Section -->
-        <div class="border p-3 mb-4 rounded bg-light">
-            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+        <div class="border p-3 mb-4 rounded">
+            <h4 class="text-center py-2 px-3 rounded">
                 Features and Photos
             </h4>
             <div class="mb-3">

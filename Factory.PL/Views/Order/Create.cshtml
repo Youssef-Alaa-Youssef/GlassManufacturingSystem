@@ -11,24 +11,8 @@
             <h3 class="card-title text-center">Order Card</h3>
         </div>
         <div class="card-body">
-            <!-- Error and Success Messages -->
             @await Html.PartialAsync("ErrorSummaryPartial")
-            @if (TempData["Error"] != null)
-            {
-                <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["Success"] != null)
-            {
-                <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
 
-            <!-- Company Information -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="text-primary">شركة الزجاج العالمية</h2>
@@ -43,7 +27,6 @@
             <form asp-action="Create" method="post" class="needs-validation" novalidate>
                 @Html.AntiForgeryToken()
 
-                <!-- Customer Details -->
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label asp-for="CustomerName" class="form-label">Customer Name</label>

@@ -5,9 +5,9 @@
     Layout = "_LogedUser";
 }
 
-<div class="container mt-4 shadow-lg p-4 bg-white rounded">
-    <!-- Page Header -->
-    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+<div class="container mt-4 shadow-lg p-4 rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    <h2 class="text-center mb-4 py-3 px-4 ">
         <i class="bi bi-box me-2"></i> @ViewData["Title"]
     </h2>
 
@@ -15,7 +15,7 @@
     @if (Model.ShowDesign1)
     {
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header">
                 <h3 class="card-title mb-0">
                     <i class="bi bi-layout-wtf me-2"></i> Design 1
                 </h3>
@@ -135,7 +135,7 @@
     @if (Model.ShowDesign2)
     {
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-success text-white">
+            <div class="card-header ">
                 <h3 class="card-title mb-0">
                     <i class="bi bi-layout-wtf me-2"></i> Design 2
                 </h3>
@@ -153,7 +153,7 @@
     @if (Model.ShowDesign3)
     {
         <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-warning text-dark">
+            <div class="card-header">
                 <h3 class="card-title mb-0">
                     <i class="bi bi-layout-wtf me-2"></i> Design 3
                 </h3>

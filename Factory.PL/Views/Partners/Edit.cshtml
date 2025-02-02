@@ -5,10 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container mt-4 shadow-lg p-3 bg-light rounded">
+<div class="container mt-4 shadow-lg p-3 rounded">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h2 class="text-center mb-4 bg-secondary text-light py-3 px-4 rounded">
+    <h2 class="text-center mb-4 py-3 px-4 rounded">
         <i class="bi bi-pencil me-2"></i> @ViewData["Title"]
     </h2>
 
@@ -33,7 +33,7 @@
                     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content shadow-lg border-0">
-                                <div class="modal-header bg-secondary text-white">
+                                <div class="modal-header">
                                     <h5 class="modal-title text-light" id="previewModalLabel">Logo Preview</h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>

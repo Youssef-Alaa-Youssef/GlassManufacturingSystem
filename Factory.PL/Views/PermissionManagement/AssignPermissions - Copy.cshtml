@@ -15,19 +15,8 @@
 </style>
 
 <div class="container mt-4 shadow-lg p-3 rounded">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Success"]
-        </div>
-    }
+    @await Html.PartialAsync("ErrorSummaryPartial")
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
 
     <h2 class="text-center mb-4  text-white py-3 px-4 rounded" style="background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);color:white">
         <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
@@ -45,7 +34,7 @@
                 .Select(g => g.First()))
                 {
                     <div class="card mb-4">
-                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div class="card-header  d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <button type="button" class="btn btn-link text-white text-decoration-none" data-bs-toggle="collapse" data-bs-target="#module-@module.ModuleId" aria-expanded="false" aria-controls="module-@module.ModuleId">
                                     <i class="bi bi-chevron-down"></i> Module: @module.ModuleName

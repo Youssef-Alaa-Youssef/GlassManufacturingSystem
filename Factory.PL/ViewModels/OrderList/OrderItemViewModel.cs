@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Factory.PL.Views.OrderList
+namespace Factory.PL.ViewModels.OrderList
 {
     public class OrderItemViewModel
     {

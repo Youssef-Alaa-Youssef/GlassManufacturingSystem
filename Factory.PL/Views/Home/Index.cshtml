@@ -8,21 +8,8 @@
 <section class="banner__one p_relative d-flex justify-content-center align-items-center vh-100">
     <div class="image-layer-01" style="background-image:url(assets/images/shape/shape-01.png)"></div>
     <div class="image-layer-02" style="background-image:url(assets/images/shape/shape-02.png)"></div>
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
+    @await Html.PartialAsync("ErrorSummaryPartial")
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
     <div class="banner__one__content">
         <div class="banner__one__left">
             <div class="sub__title">

@@ -8,7 +8,7 @@ using Factory.PL.ViewModels.Auth;
 
 namespace Factory.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = "Owner,GM")]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
