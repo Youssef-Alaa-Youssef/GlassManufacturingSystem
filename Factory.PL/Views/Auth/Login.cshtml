@@ -1,0 +1,102 @@
+﻿@model LogInViewModel
+@{
+    ViewData["Title"] = "Login Now";
+    Layout = "_Auth";
+}
+
+
+<div class="container-fluid d-flex align-items-center justify-content-center overflow-hidden shadow-layer">
+    <div class="row w-100 m-0">
+        <!-- Left Section: Image -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center p-0">
+            <img src="~/assets/images/Login.png" alt="Real Estate Image" class="img-fluid img-container">
+        </div>
+        <!-- Right Section: Form -->
+        <div class="col-md-6 d-flex align-items-center justify-content-center p-0">
+            <div class="w-75">
+                <h2 class="text-center mb-4">Login Now</h2>
+                <div asp-validation-summary="ModelOnly" id="error-alert" class="alert alert-danger alert-dismissible fade show alert-theme" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div id="error-alert" class="alert alert-danger alert-dismissible fade show alert-theme" role="alert">
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div id="success-alert" class="alert alert-success alert-dismissible fade show alert-theme" role="alert">
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form asp-controller="Auth" asp-action="LogIn" method="POST">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="passwordInput" class="form-control" />
+                            <button type="button" id="togglePassword" class="btn btn-outline-secondary" tabindex="-1">
+                                <svg id="passwordIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 4C7 4 2.73 7.11 1 12C2.73 16.89 7 20 12 20C17 20 21.27 16.89 23 12C21.27 7.11 17 4 12 4ZM12 17C9.79 17 8 15.21 8 13C8 10.79 9.79 9 12 9C14.21 9 16 10.79 16 13C16 15.21 14.21 17 12 17ZM12 11C10.9 11 10 11.9 10 13C10 14.1 10.9 15 12 15C13.1 15 14 14.1 14 13C14 11.9 13.1 11 12 11Z" fill="currentColor" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+
+
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label class="form-check-label" asp-for="RememberMe"></label>
+                    </div>
+
+                    <a asp-controller="Auth" asp-action="ForgotPassword" class="d-block text-primary mb-3">Forgot Password?</a>
+
+                    <button type="submit" class="w-100 btn-theme">Login</button>
+                </form>
+
+                @*
+                <a asp-controller="Home" asp-action="Index" class="d-block mt-2 text-center py-2 text-primary">Back to Home</a>
+                <a asp-controller="Auth" asp-action="SignUp" class="d-block mt-3 text-primary text-center">Don't have an account?</a>
+                *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordIcon = document.getElementById('passwordIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+
+                passwordIcon.innerHTML = `
+                    <path d="M12 4C7 4 2.73 7.11 1 12C2.73 16.89 7 20 12 20C17 20 21.27 16.89 23 12C21.27 7.11 17 4 12 4ZM12 17C9.79 17 8 15.21 8 13C8 10.79 9.79 9 12 9C14.21 9 16 10.79 16 13C16 15.21 14.21 17 12 17ZM3.53 12C4.88 8.86 8.2 6.5 12 6.5C15.8 6.5 19.12 8.86 20.47 12C19.12 15.14 15.8 17.5 12 17.5C8.2 17.5 4.88 15.14 3.53 12Z" fill="currentColor"/>
+                `;
+            } else {
+                passwordInput.type = 'password';
+
+                passwordIcon.innerHTML = `
+                    <path d="M12 4C7 4 2.73 7.11 1 12C2.73 16.89 7 20 12 20C17 20 21.27 16.89 23 12C21.27 7.11 17 4 12 4ZM12 17C9.79 17 8 15.21 8 13C8 10.79 9.79 9 12 9C14.21 9 16 10.79 16 13C16 15.21 14.21 17 12 17ZM12 11C10.9 11 10 11.9 10 13C10 14.1 10.9 15 12 15C13.1 15 14 14.1 14 13C14 11.9 13.1 11 12 11Z" fill="currentColor"/>
+                `;
+            }
+        });
+    </script>
+}

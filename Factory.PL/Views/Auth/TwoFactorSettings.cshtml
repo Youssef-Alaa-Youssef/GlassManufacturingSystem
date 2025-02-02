@@ -1,0 +1,35 @@
+﻿@model Factory.PL.ViewModels.Auth.TwoFactorSettingsViewModel
+
+<div class="container">
+<h2>Two-Factor Authentication Settings</h2>
+
+<div>
+    @if (Model.IsTwoFactorEnabled)
+    {
+        <strong>Your 2FA is enabled.</strong><br />
+        @if (Model.IsAuthenticatorAppEnabled)
+        {
+            <p>You have enabled the Authenticator App (TOTP).</p>
+        }
+        else if (!string.IsNullOrEmpty(Model.PhoneNumber))
+        {
+            <p>You are using SMS for 2FA. Your phone number is: @Model.PhoneNumber</p>
+        }
+    }
+    else
+    {
+        <strong>Your 2FA is disabled.</strong><br />
+        <p>Enable 2FA for added security.</p>
+    }
+    </div>
+
+
+@if (!Model.IsTwoFactorEnabled)
+{
+    <a href="/Account/Enable2FA">Enable Two-Factor Authentication</a>
+}
+else
+{
+    <a href="/Account/Disable2FA">Disable Two-Factor Authentication</a>
+}
+</div>

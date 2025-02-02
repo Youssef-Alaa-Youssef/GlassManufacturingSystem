@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Factory.DAL.Models.Warehouses.MainWarehouse>
+
+@{
+    ViewData["Title"] = "Main Warehouses";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container mt-4 shadow-lg  p-4 bg-light rounded">
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>   
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="mb-3">
+        <a href="@Url.Action("Create")" class="btn btn-outline-primary">Create New MainWarehouse</a>
+        <a href="@Url.Action("CreateSubWarehouse", "Warehouse")" class="btn btn-outline-info">Create New Sub Warehouse</a>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name (EN)</th>
+                <th>Name (AR)</th>
+                <th>Address (EN)</th>
+                <th>Address (AR)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var warehouse in Model)
+            {
+                <tr>
+                    <td>@warehouse.NameEn</td>
+                    <td>@warehouse.NameAr</td>
+                    <td>@warehouse.AddressEn</td>
+                    <td>@warehouse.AddressAr</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = warehouse.Id })" class="btn btn-outline-info btn-sm">Details</a>
+                        <a href="@Url.Action("Edit", new { id = warehouse.Id })" class="btn btn-outline-warning btn-sm">Edit</a>
+                        <a href="@Url.Action("Delete", new { id = warehouse.Id })" class="btn btn-outline-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

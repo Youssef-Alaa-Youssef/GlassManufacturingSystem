@@ -1,0 +1,361 @@
+﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
+@using Factory.DAL.Enums
+@{
+    ViewData["Title"] = "Job Card";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header">
+            <h3 class="card-title text-center">Order Card</h3>
+        </div>
+        <div class="card-body">
+            <!-- Error and Success Messages -->
+            @await Html.PartialAsync("ErrorSummaryPartial")
+            @if (TempData["Error"] != null)
+            {
+                <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Company Information -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-primary">شركة الزجاج العالمية</h2>
+                    <h2 class="text-secondary">Global Glass Factory</h2>
+                </div>
+                <div>
+                    <img src="https://static.vecteezy.com/system/resources/previews/021/663/787/non_2x/glass-icon-with-transparent-blue-sheets-vector.jpg" alt="Company Logo" width="120">
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <!-- Customer Details -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="CustomerName" class="form-label">Customer Name</label>
+                        <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required>
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CustomerReference" class="form-label">Customer Reference</label>
+                        <input asp-for="CustomerReference" class="form-control" placeholder="Enter reference" required>
+                        <span asp-validation-for="CustomerReference" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ProjectName" class="form-label">Project Name</label>
+                        <input asp-for="ProjectName" class="form-control" placeholder="Enter project name" required>
+                        <span asp-validation-for="ProjectName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Job Details -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Date" class="form-label">Date</label>
+                        <input asp-for="Date" type="date" class="form-control" required>
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="JobNo" class="form-label">Job No</label>
+                        <input asp-for="JobNo" class="form-control" placeholder="Enter job number" required>
+                        <span asp-validation-for="JobNo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <input asp-for="Address" class="form-control" placeholder="Enter address" required>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Priority and Machine Selection -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Priority" class="form-label">Priority</label>
+                        <select asp-for="Priority" class="form-control" required>
+                            <option value="">--Select Priority--</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Machines</label>
+                        <div class="d-flex flex-wrap">
+                            @foreach (var machine in Enum.GetValues(typeof(MachineType)))
+                            {
+                                <div class="form-check me-3">
+                                    <input type="checkbox" class="form-check-input machine-checkbox" name="SelectedMachines" value="@machine" id="machine-@machine">
+                                    <label class="form-check-label" for="machine-@machine">@machine</label>
+                                </div>
+                            }
+                        </div>
+                        <span class="text-danger" id="machineValidationError" style="display: none;">Please select at least one machine.</span>
+                    </div>
+                </div>
+
+                <!-- Step Radio Button Section (Hidden by Default) -->
+                <div id="stepRadioSection" style="display: none;" class="mb-3">
+                    <label class="form-label">Step Radio Button</label>
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="stepRadio" id="stepYes" value="Yes">
+                            <label class="form-check-label" for="stepYes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="stepRadio" id="stepNo" value="No">
+                            <label class="form-check-label" for="stepNo">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <h4 class="mt-4 mb-3">Items</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Width (mm)</th>
+                                <th>Height (mm)</th>
+                                <th id="stepWidthHeader" style="display: none;">Step Width (mm)</th>
+                                <th id="stepHeightHeader" style="display: none;">Step Height (mm)</th>
+                                <th>Qty</th>
+                                <th>SQM (m²)</th>
+                                <th>Total SQM (m²)</th>
+                                <th>Total LM (m)</th>
+                                <th>Customer Ref</th>
+                                <th>
+                                    <button type="button" class="btn btn-success btn-sm" id="addRowBtn">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <select name="Items[0].ItemName" class="form-control" required>
+                                        <option value="">--Select Item--</option>
+                                        @foreach (var item in Model.Items)
+                                        {
+                                            <option value="@item.ItemId">@item.ItemName</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><input name="Items[0].Width" class="form-control width" type="number" min="0" step="1" required></td>
+                                <td><input name="Items[0].Height" class="form-control height" type="number" min="0" step="1" required></td>
+                                <td class="stepWidthInput" style="display: none;"><input name="Items[0].StepWidth" class="form-control step-width" type="number" min="0" step="1"></td>
+                                <td class="stepHeightInput" style="display: none;"><input name="Items[0].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
+                                <td><input name="Items[0].Quantity" class="form-control quantity" type="number" min="1" required></td>
+                                <td><input name="Items[0].SQM" class="form-control sqm" readonly></td>
+                                <td><input name="Items[0].TotalSQM" class="form-control totalSQM" readonly></td>
+                                <td><input name="Items[0].TotalLM" class="form-control totalLM" readonly></td>
+                                <td><input name="Items[0].CustomerReference" class="form-control" required></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm removeRowBtn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Finished Date, Signature, and IsAccepted -->
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="FinishDate" class="form-label">Finished Date</label>
+                        <input asp-for="FinishDate" type="date" class="form-control" id="finishDateInput" value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd")">
+                        <span asp-validation-for="FinishDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Signature" class="form-label">Signature</label>
+                        <input asp-for="Signature" class="form-control" placeholder="Enter signature">
+                        <span asp-validation-for="Signature" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="IsAccepted" class="form-label">Is Accepted</label>
+                        <select asp-for="IsAccepted" class="form-control">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                        <span asp-validation-for="IsAccepted" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-outline-primary btn-lg">Create Order Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const addRowBtn = document.getElementById("addRowBtn");
+            const tableBody = document.querySelector("#itemsTable tbody");
+            const machineCheckboxes = document.querySelectorAll('.machine-checkbox');
+            const machineValidationError = document.getElementById('machineValidationError');
+            const stepRadioSection = document.getElementById('stepRadioSection');
+            const stepWidthHeader = document.getElementById('stepWidthHeader');
+            const stepHeightHeader = document.getElementById('stepHeightHeader');
+            const stepWidthInputs = document.querySelectorAll('.stepWidthInput');
+            const stepHeightInputs = document.querySelectorAll('.stepHeightInput');
+
+            // Show/Hide Step Radio Section based on Machine Selection
+            machineCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.value === 'DG' && this.checked) {
+                        stepRadioSection.style.display = 'block';
+                    } else if (this.value === 'DG' && !this.checked) {
+                        stepRadioSection.style.display = 'none';
+                        document.querySelectorAll('input[name="stepRadio"]').forEach(radio => radio.checked = false);
+                        stepWidthHeader.style.display = 'none';
+                        stepHeightHeader.style.display = 'none';
+                        stepWidthInputs.forEach(input => input.style.display = 'none');
+                        stepHeightInputs.forEach(input => input.style.display = 'none');
+                    }
+                });
+            });
+
+            // Show/Hide Step Width and Height Columns based on Step Radio Selection
+            document.querySelectorAll('input[name="stepRadio"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === 'Yes' && this.checked) {
+                        stepWidthHeader.style.display = 'table-cell';
+                        stepHeightHeader.style.display = 'table-cell';
+                        stepWidthInputs.forEach(input => input.style.display = 'table-cell');
+                        stepHeightInputs.forEach(input => input.style.display = 'table-cell');
+                    } else {
+                        stepWidthHeader.style.display = 'none';
+                        stepHeightHeader.style.display = 'none';
+                        stepWidthInputs.forEach(input => input.style.display = 'none');
+                        stepHeightInputs.forEach(input => input.style.display = 'none');
+                    }
+                });
+            });
+
+            // Function to recalculate SQM, Total SQM, and Total LM
+            function recalculate() {
+                const width = parseFloat(this.closest('tr').querySelector('.width').value) || 0;
+                const height = parseFloat(this.closest('tr').querySelector('.height').value) || 0;
+                const qty = parseInt(this.closest('tr').querySelector('.quantity').value) || 0;
+
+                // Convert mm to meters for calculations
+                const widthMeters = width / 1000;
+                const heightMeters = height / 1000;
+
+                const sqm = (widthMeters * heightMeters).toFixed(2);
+                const totalSQM = (sqm * qty).toFixed(2);
+                const totalLM = (widthMeters * qty).toFixed(2);
+
+                this.closest('tr').querySelector('.sqm').value = parseFloat(sqm);
+                this.closest('tr').querySelector('.totalSQM').value = parseFloat(totalSQM);
+                this.closest('tr').querySelector('.totalLM').value = parseFloat(totalLM);
+            }
+
+            // Attach event listeners to the first row's inputs
+            const firstRow = tableBody.querySelector('tr');
+            if (firstRow) {
+                firstRow.querySelector('.width').addEventListener('input', recalculate);
+                firstRow.querySelector('.height').addEventListener('input', recalculate);
+                firstRow.querySelector('.quantity').addEventListener('input', recalculate);
+            }
+
+            // Add new row
+            addRowBtn.addEventListener("click", function () {
+                const rowCount = tableBody.children.length;
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${rowCount + 1}</td>
+                    <td>
+                        <select name="Items[${rowCount}].ItemName" class="form-control" required>
+        @foreach (var item in Model.Items)
+        {
+                                            <option value="@item.ItemId">@item.ItemName</option>
+        }
+                        </select>
+                    </td>
+                    <td><input name="Items[${rowCount}].Width" class="form-control width" type="number" min="0" step="1" required></td>
+                    <td><input name="Items[${rowCount}].Height" class="form-control height" type="number" min="0" step="1" required></td>
+                    <td class="stepWidthInput" style="display: none;"><input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1"></td>
+                    <td class="stepHeightInput" style="display: none;"><input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
+                    <td><input name="Items[${rowCount}].Quantity" class="form-control quantity" type="number" min="1" required></td>
+                    <td><input name="Items[${rowCount}].SQM" class="form-control sqm" readonly></td>
+                    <td><input name="Items[${rowCount}].TotalSQM" class="form-control totalSQM" readonly></td>
+                    <td><input name="Items[${rowCount}].TotalLM" class="form-control totalLM" readonly></td>
+                    <td><input name="Items[${rowCount}].CustomerReference" class="form-control" required></td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm removeRowBtn">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(newRow);
+
+                // Attach event listeners to new inputs
+                newRow.querySelector('.width').addEventListener('input', recalculate);
+                newRow.querySelector('.height').addEventListener('input', recalculate);
+                newRow.querySelector('.quantity').addEventListener('input', recalculate);
+            });
+
+            // Remove row
+            tableBody.addEventListener("click", function (e) {
+                if (e.target.closest(".removeRowBtn")) {
+                    e.target.closest("tr").remove();
+                }
+            });
+
+            // Form validation
+            (function () {
+                'use strict';
+                var forms = document.querySelectorAll('.needs-validation');
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        let isMachineSelected = false;
+                        machineCheckboxes.forEach(checkbox => {
+                            if (checkbox.checked) {
+                                isMachineSelected = true;
+                            }
+                        });
+
+                        if (!isMachineSelected) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            machineValidationError.style.display = 'inline';
+                        } else {
+                            machineValidationError.style.display = 'none';
+                        }
+
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            })();
+        });
+    </script>
+}

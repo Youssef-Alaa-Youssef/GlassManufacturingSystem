@@ -1,0 +1,87 @@
+﻿@model Factory.PL.ViewModels.Permission.SubModulesViewModel
+
+@{
+    ViewData["Title"] = "Create SubModule";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-3 bg-white rounded">
+    <div class="mt-5">
+        <div asp-validation-summary="ModelOnly" id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div id="error-alert" class="mt-5 alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div id="success-alert" class="mt-5 alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <form asp-action="Create" method="post">
+        <!-- Two Inputs in One Line -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Controller" class="control-label"></label>
+                    <input asp-for="Controller" class="form-control" />
+                    <span asp-validation-for="Controller" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Single Input -->
+        <div class="form-group">
+            <label asp-for="Action" class="control-label"></label>
+            <input asp-for="Action" class="form-control" />
+            <span asp-validation-for="Action" class="text-danger"></span>
+        </div>
+
+        <!-- Single Input -->
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <!-- Empty Select Dropdown -->
+        <div class="form-group">
+            <label asp-for="ModuleId" class="control-label"></label>
+            <select asp-for="ModuleId" class="form-control" asp-items="Model.Modules">
+                <option value="">-- Select Module --</option>
+            </select>
+            <span asp-validation-for="ModuleId" class="text-danger"></span>
+        </div>
+
+        <!-- Submit and Back Buttons -->
+        <div class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+            <input type="submit" value="Create" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

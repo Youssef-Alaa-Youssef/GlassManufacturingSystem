@@ -1,0 +1,36 @@
+﻿@model Factory.PL.ViewModels.Home.FAQSViewModel
+
+@{
+    ViewData["Title"] = "Edit FAQ";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container shadow-lg mt-5 p-4 bg-light rounded">
+    <h1 class="text-center mb-4 bg-primary text-white py-3 px-4 rounded">
+        Edit FAQ
+    </h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Question" class="form-label"></label>
+            <input asp-for="Question" class="form-control" />
+            <span asp-validation-for="Question" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Answer" class="form-label"></label>
+            <textarea asp-for="Answer" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Answer" class="text-danger"></span>
+        </div>
+
+        <div class="form-group text-center mb-4">
+            <input type="submit" value="Save" class="btn btn-outline-primary" />
+            <a href="@Url.Action("Index", "FAQs")" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,56 @@
+﻿@model Factory.PL.ViewModels.Warehouses.MainWarehouseViewModel
+
+@{
+    ViewData["Title"] = "Edit Main Warehouse";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container mt-4 shadow-lg  p-4 bg-light rounded">
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <form method="post">
+        <div class="mb-3">
+            <label asp-for="NameEn" class="form-label"></label>
+            <input class="form-control" asp-for="NameEn">
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NameAr" class="form-label"></label>
+            <input class="form-control" asp-for="NameAr">
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AddressEn" class="form-label"></label>
+            <input class="form-control" asp-for="AddressEn">
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AddressAr" class="form-label"></label>
+            <input  class="form-control"  asp-for="AddressAr">
+        </div>
+        <div class="text-center mt-4">
+
+        <button type="submit" class="btn btn-outline-primary">Update Warehouse</button>
+         </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

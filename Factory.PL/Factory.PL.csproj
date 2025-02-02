@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="AspNetCoreRateLimit" />
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
+    <PackageReference Include="MimeKit" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Factory.BLL\Factory.BLL.csproj" />
+    <ProjectReference Include="..\Factory.DAL\Factory.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\OrderList\" />
+    <Folder Include="Services\NavbarSettings\" />
+    <Folder Include="Services\WhatsApp\" />
+    <Folder Include="Services\SMS\" />
+    <Folder Include="wwwroot\AurcOpDB\" />
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
+</Project>

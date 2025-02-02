@@ -1,0 +1,60 @@
+﻿@model ActualRestPasswordViewModel
+@{
+    ViewData["Title"] = "Reset Your Password";
+    Layout = "_Auth";
+}
+
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center overflow-hidden shadow-layer">
+    <div class="row w-100 mx-0">
+        <div class="col-md-6 d-flex align-items-center justify-content-center p-0">
+            <img src="~/assets/images/Login.png" alt="Reset Password Image" class="img-fluid img-container" style="max-height: 100%; max-width: 100%; object-fit: cover;">
+        </div>
+
+        <div class="col-md-6 d-flex align-items-center justify-content-center p-3">
+            <div class="w-75">
+                <h2 class="text-center mb-4">Reset Your Password</h2>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div id="error-alert" class="alert alert-danger alert-dismissible fade show alert-theme" role="alert">
+                        <strong>Oops!</strong> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div id="success-alert" class="alert alert-success alert-dismissible fade show alert-theme" role="alert">
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form asp-controller="Auth" asp-action="ChangePassword" method="POST">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group mb-3">
+                        <label asp-for="NewPassword" for="new-password">New Password:</label>
+                        <input asp-for="NewPassword" type="password" id="new-password" class="form-control" />
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ConfirmPassword" for="confirm-password">Confirm Password:</label>
+                        <input asp-for="ConfirmPassword" type="password" id="confirm-password" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-theme w-100 mt-4">Change Password</button>
+                </form>
+
+                <a asp-controller="Home" asp-action="Index" class="d-block mt-3 text-primary">Back to Home</a>
+                <a asp-controller="Auth" asp-action="Login" class="d-block mt-3 text-primary">Remembered your password? Login here.</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

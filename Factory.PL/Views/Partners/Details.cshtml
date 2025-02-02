@@ -1,0 +1,48 @@
+﻿@model Factory.DAL.Models.Home.Partner
+
+@{
+    ViewData["Title"] = "Partner Details";
+    Layout = "_LogedUser";
+}
+
+<div class="container shadow-lg mt-5 p-4 bg-light rounded">
+    <h1 class="text-center mb-4 bg-secondary text-light py-3 px-4 rounded">
+        <i class="bi bi-info-circle me-2"></i> Partner Details
+    </h1>
+
+    <div class="mb-4">
+        <h3><i class="bi bi-person-circle me-2"></i> Name</h3>
+        <p>@Model.Name</p>
+    </div>
+    <div class="mb-4">
+        <h3><i class="bi bi-image me-2"></i> Logo</h3>
+        @if (!string.IsNullOrEmpty(Model.LogoUrl))
+        {
+            <img src="@Model.LogoUrl" alt="Logo" class="img-fluid" style="max-width: 200px; height: auto;" />
+        }
+        else
+        {
+            <span>No Logo</span>
+        }
+    </div>
+    <div class="mb-4">
+        <h3><i class="bi bi-info-square me-2"></i> Description</h3>
+        <p>@Model.Description</p>
+    </div>
+    <div class="mb-4">
+        <h3><i class="bi bi-calendar-check me-2"></i> Created At</h3>
+        <p>@Model.CreatedAt.ToString("g")</p>
+    </div>
+
+    <div class="text-center border p-2">
+        <a href="@Url.Action("Edit", "Partners", new { id = Model.Id })" class="btn btn-outline-warning me-2" title="Edit Partner">
+            <i class="bi bi-pencil me-2"></i> Edit
+        </a>
+        <a href="@Url.Action("Delete", "Partners", new { id = Model.Id })" class="btn btn-outline-danger me-2" title="Delete Partner">
+            <i class="bi bi-trash me-2"></i> Delete
+        </a>
+        <a href="@Url.Action("Index", "Partners")" class="btn btn-outline-secondary" title="Back to List">
+            <i class="bi bi-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+﻿@model Factory.DAL.Models.Customers.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+<div class="container">
+
+<h1>Order Details</h1>
+
+<div>
+    <strong>Customer:</strong> @Model.CustomerId
+</div>
+<div>
+    <strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")
+</div>
+<div>
+    <strong>Glass Type:</strong> @Model.GlassType
+</div>
+<div>
+    <strong>Height:</strong> @Model.Height
+</div>
+<div>
+    <strong>Width:</strong> @Model.Width
+</div>
+<div>
+    <strong>Quantity:</strong> @Model.Quantity
+</div>
+<div>
+    <strong>Total Cost:</strong> @Model.TotalCost
+</div>
+<div>
+    <strong>Delivery Method:</strong> @Model.DeliveryMethod
+</div>
+<div>
+    <strong>Delivery Address:</strong> @Model.DeliveryAddress
+</div>
+
+<a href="@Url.Action("Edit", "Orders", new { id = Model.Id })" class="btn btn-warning">Edit</a>
+<a href="@Url.Action("Index", "Orders")" class="btn btn-secondary">Back to List</a>
+</div>

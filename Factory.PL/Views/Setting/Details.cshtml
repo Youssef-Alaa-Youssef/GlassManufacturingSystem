@@ -1,0 +1,66 @@
+﻿@model Factory.PL.ViewModels.Settings.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-4 bg-white rounded">
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-info-circle me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Factory Name (Arabic)</dt>
+                <dd class="col-sm-8">@Model.FactoryNameAr</dd>
+
+                <dt class="col-sm-4">Factory Name (English)</dt>
+                <dd class="col-sm-8">@Model.FactoryNameEn</dd>
+
+                <dt class="col-sm-4">Tax Number</dt>
+                <dd class="col-sm-8">@Model.TaxNumber</dd>
+
+                <dt class="col-sm-4">Address</dt>
+                <dd class="col-sm-8">@Model.Address</dd>
+
+                <dt class="col-sm-4">Contact Number</dt>
+                <dd class="col-sm-8">@Model.ContactNumber</dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+
+                <dt class="col-sm-4">Website</dt>
+                <dd class="col-sm-8">@Model.Website</dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Theme</dt>
+                <dd class="col-sm-8">@Model.Theme</dd>
+
+                <dt class="col-sm-4">Language</dt>
+                <dd class="col-sm-8">@Model.Language</dd>
+
+                <dt class="col-sm-4">Items Per Page</dt>
+                <dd class="col-sm-8">@Model.ItemsPerPage</dd>
+
+                <dt class="col-sm-4">Enable Notifications</dt>
+                <dd class="col-sm-8">@Model.EnableNotifications</dd>
+
+                <dt class="col-sm-4">Notification Preferences</dt>
+                <dd class="col-sm-8">@Model.NotificationPreferences</dd>
+
+                <dt class="col-sm-4">Default Design</dt>
+                <dd class="col-sm-8">@Model.DefaultDesign</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+</div>

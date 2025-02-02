@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Factory.PL.ViewModels.Warehouses.ItemDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Items";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-3 bg-white rounded">
+    @if (TempData["Error"] != null)
+    {
+        <div id="error-alert" class="mt-5 alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div id="success-alert" class="mt-5 alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-box me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <p>
+        <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Color</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Value</th>
+                <th>Warehouse</th>
+                <th>Sub-Warehouse</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Type</td>
+                    <td>@item.Color</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("C")</td>
+                    <td>@item.TotalValue.ToString("C")</td>
+                    <td>@item.WarehouseName</td>
+                    <td>@item.SubWarehouseName</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,35 @@
+﻿@model Factory.PL.ViewModels.Settings.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-4 bg-white rounded">
+    <div asp-validation-summary="All" id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <form asp-action="Create">
+        <input type="hidden" asp-for="UserId" /> <!-- Hidden field for UserId -->
+
+        <partial name="_SettingsForm" model="Model" />
+
+        <div class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-save me-2"></i> Save
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Back to List
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

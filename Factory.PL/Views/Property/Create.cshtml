@@ -1,0 +1,168 @@
+﻿@model Factory.PL.ViewModels.Property.PropertyViewModel
+
+@{
+    ViewData["Title"] = "Create Property";
+    Layout = "_LogedUser";
+}
+
+<div class="container shadow-lg p-4 bg-white rounded">
+    <!-- Display all validation errors -->
+    <div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <strong>There were some errors with your form submission:</strong>
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+    <h2 class="text-center mb-4 bg-primary text-white py-3 px-4 rounded">
+        <i class="bi bi-house-door"></i> Create Property
+    </h2>
+
+    <form asp-action="Create" enctype="multipart/form-data" method="post">
+        <!-- General Information -->
+        <div class="border p-3 mb-4 rounded bg-light shadow-sm">
+            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+                <i class="bi bi-info-circle"></i> General Information
+            </h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" placeholder="Enter the address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" class="form-control" placeholder="Enter the city" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="State" class="form-label"></label>
+                    <input asp-for="State" class="form-control" placeholder="Enter the state" />
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+
+            <div class="col-md-4 mb-3">
+                <label asp-for="ZipCode" class="form-label"></label>
+                <input asp-for="ZipCode" class="form-control" placeholder="Enter the zip code" />
+                <span asp-validation-for="ZipCode" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Status" class="form-label"></label>
+                <select asp-for="Status" class="form-control" asp-items="Model.StatusOptions"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            </div>
+        </div>
+        <!-- Property Details -->
+        <div class="border p-3 mb-4 rounded bg-light shadow-sm">
+            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+                <i class="bi bi-person"></i> Agent Details
+            </h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="AgentName" class="form-label"></label>
+                    <input asp-for="AgentName" class="form-control" placeholder="Enter the agent name" />
+                    <span asp-validation-for="AgentName" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="AgentEmail" class="form-label"></label>
+                    <input asp-for="AgentEmail" class="form-control" placeholder="Enter the agent email" />
+                    <span asp-validation-for="AgentEmail" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="AgentPhone" class="form-label"></label>
+                    <input asp-for="AgentPhone" class="form-control" placeholder="Enter the agent phone" />
+                    <span asp-validation-for="AgentPhone" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Property Details -->
+        <div class="border p-3 mb-4 rounded bg-light shadow-sm">
+            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+                <i class="bi bi-house"></i> Property Details
+            </h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" step="0.01" placeholder="Enter the price" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="SquareFootage" class="form-label"></label>
+                    <input asp-for="SquareFootage" class="form-control" placeholder="Enter square footage" />
+                    <span asp-validation-for="SquareFootage" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Bedrooms" class="form-label"></label>
+                    <input asp-for="Bedrooms" class="form-control" placeholder="Enter number of bedrooms" />
+                    <span asp-validation-for="Bedrooms" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Bathrooms" class="form-label"></label>
+                <input asp-for="Bathrooms" class="form-control" placeholder="Enter number of bathrooms" />
+                <span asp-validation-for="Bathrooms" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PropertyType" class="form-label"></label>
+                <input asp-for="PropertyType" class="form-control" placeholder="Enter property type" />
+                <span asp-validation-for="PropertyType" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="border p-3 mb-4 rounded bg-light shadow-sm">
+            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+                <i class="bi bi-calendar-date"></i> Additional Information
+            </h4>
+            <div class="mb-3">
+                <label asp-for="ListedDate" class="form-label"></label>
+                <input asp-for="ListedDate" class="form-control" />
+                <span asp-validation-for="ListedDate" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter a description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Features and Photos -->
+        <div class="border p-3 mb-4 rounded bg-light shadow-sm">
+            <h4 class="text-center bg-secondary text-white py-2 px-3 rounded">
+                <i class="bi bi-tags"></i> Features and Photos
+            </h4>
+            <div class="mb-3">
+                <label asp-for="Features" class="form-label"></label>
+                <input asp-for="Features" class="form-control" placeholder="Enter features separated by commas" />
+                <span asp-validation-for="Features" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Photos">Upload Photos</label>
+                <input type="file" asp-for="Photos" multiple="multiple" class="form-control" />
+                <span asp-validation-for="Photos" class="text-danger"></span>
+            </div>
+
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-check-circle"></i> Save
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

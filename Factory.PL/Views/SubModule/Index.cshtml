@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Factory.DAL.Models.Permission.SubModule>
+
+@{
+    ViewData["Title"] = "SubModules";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container mt-4 shadow-lg p-3 bg-white rounded">
+    <div class="mt-5">
+        <div asp-validation-summary="ModelOnly" id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div id="error-alert" class="mt-5 alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div id="success-alert" class="mt-5 alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Controller</th>
+                <th>Action</th>
+                <th>Title</th>
+                <th>Module</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Controller</td>
+                    <td>@item.Action</td>
+                    <td>@item.Title</td>
+                    <td>@item.Module?.Name</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

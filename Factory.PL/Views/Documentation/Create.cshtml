@@ -1,0 +1,131 @@
+﻿@model Factory.PL.ViewModels.Documentation.DocumentationViewModel
+
+@{
+    ViewData["Title"] = "Create Documentation";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-3 bg-white rounded">
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
+    </h2>
+    <!-- Form for Creating Documentation -->
+    <form asp-action="Create" method="post" id="createDocumentationForm" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <!-- Title Field -->
+            <div class="col-md-6 mb-3">
+                <label asp-for="Title" class="form-label">
+                    <i class="bi bi-card-heading me-2"></i> Title
+                </label>
+                <input asp-for="Title" class="form-control" placeholder="Enter title" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <!-- Description Field -->
+            <div class="col-md-6 mb-3">
+                <label asp-for="Description" class="form-label">
+                    <i class="bi bi-text-paragraph me-2"></i> Description
+                </label>
+                <input asp-for="Description" class="form-control" placeholder="Enter description" required />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Content Field -->
+        <div class="mb-3">
+            <label asp-for="Content" class="form-label">
+                <i class="bi bi-file-text me-2"></i> Content
+            </label>
+            <textarea asp-for="Content" class="form-control" rows="5" placeholder="Enter content" required></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <!-- Video URL Field -->
+        <div class="mb-3">
+            <label asp-for="VideoUrl" class="form-label">
+                <i class="bi bi-youtube me-2"></i> YouTube Video URL
+            </label>
+            <input asp-for="VideoUrl" id="VideoUrl" class="form-control" placeholder="Enter YouTube video URL" />
+            <div class="invalid-feedback" id="videoUrlFeedback">
+                Please enter a valid YouTube video URL.
+            </div>
+            <span asp-validation-for="VideoUrl" class="text-danger"></span>
+        </div>
+
+        <!-- Video Preview (if URL is provided during form submission) -->
+        <div class="mb-3" id="videoPreviewContainer" style="display: none;">
+            <label class="form-label">
+                <i class="bi bi-play-circle me-2"></i> Video Preview
+            </label>
+            <div class="ratio ratio-16x9" id="videoPreview">
+                <!-- The iframe will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-outline-primary me-2">
+                <i class="bi bi-save me-2"></i> Save
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-2"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Client-side validation for YouTube URL and dynamic video preview
+        document.getElementById('createDocumentationForm').addEventListener('submit', function (event) {
+            var videoUrlInput = document.getElementById("VideoUrl");
+            var videoUrlFeedback = document.getElementById("videoUrlFeedback");
+            var youtubePattern = /^(https?\:\/\/)?(www\.youtube\.com|youtube\.com|m\.youtube\.com)\/(watch\?v=[\w\-]+|v\/[\w\-]+|e\/[\w\-]+|embed\/[\w\-]+)$/;
+
+            // Reset the validation feedback
+            videoUrlInput.classList.remove('is-invalid');
+            videoUrlFeedback.style.display = 'none';
+
+            // Check if the video URL matches the YouTube pattern
+            if (videoUrlInput.value && !youtubePattern.test(videoUrlInput.value)) {
+                videoUrlInput.classList.add('is-invalid');
+                videoUrlFeedback.style.display = 'block';
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+
+        // Dynamically handle YouTube video preview based on the URL
+        document.getElementById("VideoUrl").addEventListener('input', function () {
+            var videoUrl = document.getElementById("VideoUrl").value;
+            var videoPreviewContainer = document.getElementById("videoPreviewContainer");
+            var videoPreview = document.getElementById("videoPreview");
+
+            // Reset preview
+            videoPreviewContainer.style.display = 'none';
+            videoPreview.innerHTML = '';
+
+            // If a valid YouTube URL is provided, show the preview
+            var youtubePattern = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/]+\/\S+\/|(?:v|e(?:mbed)?)\/|(?:v|e(?:mbed)?)\?v=))([^&]+)/;
+            var match = videoUrl.match(youtubePattern);
+
+            if (match) {
+                var videoId = match[1]; // Extract the YouTube video ID
+                var iframe = document.createElement('iframe');
+                iframe.src = 'https://www.youtube.com/embed/' + videoId;
+                iframe.frameBorder = '0';
+                iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+
+                // Add the iframe to the video preview container and make it visible
+                videoPreview.appendChild(iframe);
+                videoPreviewContainer.style.display = 'block';
+            }
+        });
+    </script>
+}

@@ -1,0 +1,56 @@
+﻿@model Factory.PL.ViewModels.Documentation.DocumentationViewModel
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Documentation" : "Edit Documentation";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-3 bg-white rounded">
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <form asp-action="@(Model.Id == 0 ? "Create" : "Edit")">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <!-- Title Field -->
+        <div class="form-group mb-3">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" placeholder="Enter title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <!-- Description Field -->
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <input asp-for="Description" class="form-control" placeholder="Enter description" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Content Field -->
+        <div class="form-group mb-3">
+            <label asp-for="Content" class="form-label"></label>
+            <textarea asp-for="Content" class="form-control" rows="5" placeholder="Enter content"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+
+        <!-- Video URL Field -->
+        <div class="form-group mb-3">
+            <label asp-for="VideoUrl" class="form-label"></label>
+            <input asp-for="VideoUrl" class="form-control" placeholder="Enter YouTube video URL" />
+            <span asp-validation-for="VideoUrl" class="text-danger"></span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

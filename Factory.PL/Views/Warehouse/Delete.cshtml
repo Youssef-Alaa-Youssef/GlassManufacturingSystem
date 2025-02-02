@@ -1,0 +1,25 @@
+﻿@model Factory.DAL.Models.Warehouses.MainWarehouse
+
+@{
+    ViewData["Title"] = "Delete Main Warehouse";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container mt-4 shadow-lg  p-4 bg-light rounded">
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    <div class="alert alert-warning">
+        <strong>Warning!</strong> Are you sure you want to delete the warehouse <b>@Model.NameEn</b>?
+    </div>
+
+    <form method="post">
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-outline-danger">Delete</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

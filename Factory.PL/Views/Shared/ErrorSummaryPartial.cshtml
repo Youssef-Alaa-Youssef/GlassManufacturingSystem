@@ -1,0 +1,16 @@
+﻿@{
+    var modelState = ViewData.ModelState;
+}
+
+@if (modelState != null && !modelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>There were some errors with your form submission:</strong>
+        <ul>
+            @foreach (var error in modelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}

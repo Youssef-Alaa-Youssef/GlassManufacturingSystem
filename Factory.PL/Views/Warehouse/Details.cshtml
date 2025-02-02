@@ -1,0 +1,45 @@
+﻿@model Factory.DAL.Models.Warehouses.MainWarehouse
+
+@{
+    ViewData["Title"] = "Warehouse Details";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container mt-4 shadow-lg  p-4 bg-light rounded">
+
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    <div class="mb-3">
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <dl class="row">
+        <dt class="col-sm-3">Name (EN)</dt>
+        <dd class="col-sm-9">@Model.NameEn</dd>
+
+        <dt class="col-sm-3">Name (AR)</dt>
+        <dd class="col-sm-9">@Model.NameAr</dd>
+
+        <dt class="col-sm-3">Address (EN)</dt>
+        <dd class="col-sm-9">@Model.AddressEn</dd>
+
+        <dt class="col-sm-3">Address (AR)</dt>
+        <dd class="col-sm-9">@Model.AddressAr</dd>
+    </dl>
+
+    <h3>Sub-Warehouses</h3>
+    @foreach (var subWarehouse in Model.SubWarehouses)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@subWarehouse.NameEn</h5>
+                <p class="card-text">@subWarehouse.AddressEn</p>
+                <a href="@Url.Action("EditSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-warning btn-sm">Edit</a>
+                <a href="@Url.Action("DeleteSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-danger btn-sm">Delete</a>
+            </div>
+        </div>
+    }
+</div>

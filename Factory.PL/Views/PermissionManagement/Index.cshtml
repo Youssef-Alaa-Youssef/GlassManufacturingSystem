@@ -1,0 +1,98 @@
+﻿@model Factory.PL.ViewModels.Permissions.PermissionManagementViewModel
+
+@{
+    ViewData["Title"] = "Permission Management";
+    Layout = "_LogedUser";
+}
+
+
+<div class="container mt-4 shadow-lg p-3 bg-light rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    <!-- Page Title -->
+    <h2 class="text-center mb-4 bg-secondary text-light py-3 px-4 rounded">
+        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <!-- Overview Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">System Overview</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Users -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">Users</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var user in Model.Users)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@user.UserName</strong>
+                                        <ul class="list-unstyled ml-3">
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <li><span class="badge badge-secondary">@role</span></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modules -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">Modules</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var module in Model.Modules)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@module.ModuleName</strong>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h6 class="mb-0">Permissions</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var permission in Model.Permissions)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@permission.PermissionName</strong>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Permissions Button -->
+    <div class="row mt-4">
+        <div class="col-md-12 text-center">
+            <a asp-action="AssignPermissions" class="btn btn-primary btn-lg">
+                <i class="fas fa-shield-alt"></i> Assign Permissions
+            </a>
+        </div>
+    </div>
+</div>

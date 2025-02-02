@@ -1,0 +1,41 @@
+﻿@model Factory.PL.ViewModels.Settings.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-4 bg-white rounded">
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-trash me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <h3 class="text-center text-danger">Are you sure you want to delete this setting?</h3>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Factory Name (Arabic)</dt>
+                <dd class="col-sm-8">@Model.FactoryNameAr</dd>
+
+                <dt class="col-sm-4">Factory Name (English)</dt>
+                <dd class="col-sm-8">@Model.FactoryNameEn</dd>
+
+                <dt class="col-sm-4">Tax Number</dt>
+                <dd class="col-sm-8">@Model.TaxNumber</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i> Delete
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Back to List
+            </a>
+        </div>
+    </form>
+</div>

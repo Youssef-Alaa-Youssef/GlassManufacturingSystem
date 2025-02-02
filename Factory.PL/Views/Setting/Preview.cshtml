@@ -1,0 +1,176 @@
+﻿@model Factory.PL.ViewModels.Settings.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "_LogedUser";
+}
+
+<div class="container mt-4 shadow-lg p-4 bg-white rounded">
+    <!-- Page Header -->
+    <h2 class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <i class="bi bi-box me-2"></i> @ViewData["Title"]
+    </h2>
+
+    <!-- Design 1 -->
+    @if (Model.ShowDesign1)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-layout-wtf me-2"></i> Design 1
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Date</th>
+                                <th>Customer Ref</th>
+                                <th>JO No</th>
+                                <th>Project Name</th>
+                                <th>DEL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>APYAT CO</td>
+                                <td>22-08-2019</td>
+                                <td>450038856244004541</td>
+                                <td>25899</td>
+                                <td>Naser Abdullah</td>
+                                <td>24/09/2019</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>SIT</th>
+                                <th>Particulars</th>
+                                <th>Width</th>
+                                <th>Length</th>
+                                <th>Per SQM</th>
+                                <th>Total SQM</th>
+                                <th>Total Cost Ref</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>KAROTE AKETEMP : 1200A/8 + 6AM</td>
+                                <td>805</td>
+                                <td>7,467</td>
+                                <td>1 / 1.96</td>
+                                <td>6,544</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>805</td>
+                                <td>7,467</td>
+                                <td>1 / 1.96</td>
+                                <td>6,544</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>805</td>
+                                <td>7,467</td>
+                                <td>1 / 1.96</td>
+                                <td>6,544</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>805</td>
+                                <td>7,467</td>
+                                <td>1 / 1.96</td>
+                                <td>6,544</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>815</td>
+                                <td>7,467</td>
+                                <td>1 / 2.07</td>
+                                <td>6,554</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>815</td>
+                                <td>7,467</td>
+                                <td>1 / 2.07</td>
+                                <td>6,554</td>
+                                <td>000.5</td>
+                            </tr>
+                            <tr>
+                                <td>KARA TEDR : 1200A/8 + 6AM</td>
+                                <td>815</td>
+                                <td>7,467</td>
+                                <td>1 / 2.07</td>
+                                <td>6,554</td>
+                                <td>000.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <p><strong>Date:</strong> 22-08-2019</p>
+                    <p><strong>Finish Date:</strong> 11:58:59:28</p>
+                </div>
+                <div class="mt-3">
+                    <p><strong>Signatory</strong></p>
+                    <p><strong>Location:</strong> 10:00:06</p>
+                    <p><strong>Accepted</strong></p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Design 2 -->
+    @if (Model.ShowDesign2)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-layout-wtf me-2"></i> Design 2
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">This is a preview of <strong>Design 2</strong>.</p>
+                <div class="text-center">
+                    <img src="https://via.placeholder.com/600x300.png?text=Design+2" class="img-fluid rounded" alt="Design 2" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Design 3 -->
+    @if (Model.ShowDesign3)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-layout-wtf me-2"></i> Design 3
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">This is a preview of <strong>Design 3</strong>.</p>
+                <div class="text-center">
+                    <img src="https://via.placeholder.com/600x300.png?text=Design+3" class="img-fluid rounded" alt="Design 3" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back to Settings
+        </a>
+    </div>
+</div>

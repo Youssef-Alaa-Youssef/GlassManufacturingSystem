@@ -1,0 +1,445 @@
+﻿@using System.Security.Claims
+@inject Factory.PL.Services.Permssions.IModuleService ModuleService
+@{
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var modules = await ModuleService.GetModulesForUserAsync(userId);
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+ <!-- Default theme is light -->
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Dashboard - @ViewData["Title"]</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <link rel="icon" href="~/assets/images/icons/map-marker-2.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/assets/css/Dashboard.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff; /* Light mode background */
+            color: #000000; /* Light mode text color */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+            body[data-bs-theme="dark"] {
+                background-color: #1a1a1a; /* Dark mode background */
+                color: #ffffff; /* Dark mode text color */
+            }
+
+        /* Navbar Styles */
+        .navbar-custom {
+            background-color: #343a40; /* Navbar background color (important, does not change) */
+            color: #ffffff; /* Navbar text color */
+        }
+
+        .sidebar {
+            width: 250px;
+            height: calc(100vh - 56px); /* Subtract navbar height */
+            position: fixed;
+            top: 56px; /* Position directly under the top navbar */
+            left: -250px; /* Hide sidebar by default on mobile */
+            background-color: #f8f9fa; /* Light mode sidebar background */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out; /* Smooth transition */
+        }
+
+        body[data-bs-theme="dark"] .sidebar {
+            background-color: #000000; /* Dark mode sidebar background */
+            color: #ffffff; /* Dark mode sidebar text color */
+        }
+
+        .sidebar.active {
+            left: 0; /* Show sidebar when active */
+        }
+
+        /* Module Styles */
+        .sidebar .module {
+            padding: 10px 15px;
+            color: #ffffff; /* Light mode text color */
+            font-weight: bold;
+            border-bottom: 1px solid #dee2e6; /* Light mode separator */
+        }
+
+        body[data-bs-theme="dark"] .sidebar .module {
+            color: #ffffff; /* Dark mode text color */
+            border-bottom: 1px solid #ffffff; /* Dark mode separator */
+        }
+
+        .sidebar .module:hover {
+            background-color: #e9ecef; /* Light mode hover background */
+            color: #000000; /* Light mode hover text color */
+        }
+
+        body[data-bs-theme="dark"] .sidebar .module:hover {
+            background-color: #000000; /* Dark mode hover background */
+            color: #ffffff; /* Dark mode hover text color */
+        }
+
+        /* Submodule Styles */
+        .sidebar .submodule {
+            padding: 8px 20px; /* Indent submodules */
+            color: #ffffff; /* Light mode text color */
+        }
+
+        body[data-bs-theme="dark"] .sidebar .submodule {
+            color: #ffffff; /* Dark mode text color */
+            background-color: #000000; /* Dark mode submodule background */
+        }
+
+        .sidebar .submodule:hover {
+            background-color: #dee2e6; /* Light mode hover background */
+            color: #000000; /* Light mode hover text color */
+        }
+
+        body[data-bs-theme="dark"] .sidebar .submodule:hover {
+            background-color: #000000; /* Dark mode hover background */
+            color: #ffffff; /* Dark mode hover text color */
+        }
+
+        .main-content {
+            margin-left: 0; /* No margin by default */
+            padding: 20px;
+            margin-top: 56px; /* Height of the navbar */
+            transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+        }
+
+            .main-content.sidebar-active {
+                margin-left: 250px; /* Offset for sidebar */
+            }
+
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 56px); 
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999; 
+            transition: opacity 0.3s ease-in-out; 
+        }
+
+            .overlay.active {
+                display: block; 
+            }
+        ::-webkit-scrollbar {
+            width: 10px; 
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        body[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+            background: #2c2c2c; 
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 5px; 
+        }
+
+        body[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+            background: #555;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        body[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+            background: #777; 
+        }
+
+        @@media (min-width: 768px) {
+            .sidebar {
+                left: 0; /* Always show sidebar on larger screens */
+            }
+
+            .main-content {
+                margin-left: 250px; /* Offset for sidebar */
+            }
+
+            .overlay {
+                display: none !important; /* Hide overlay on larger screens */
+            }
+        }
+    </style>
+</head>
+
+<body data-bs-theme="light">
+    <!-- Default theme is light -->
+    <!-- Loader -->
+    <div id="loader" class="spinner-container">
+        @await Html.PartialAsync("_Loader")
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+        <div class="container-fluid">
+            <!-- Brand Logo -->
+            <a class="navbar-brand" asp-action="Index" asp-controller="Home">
+                <i class="bi bi-house-door-fill fs-3 me-2"></i>
+                <span class="font-weight-bold">X Narrative Pioneer</span>
+            </a>
+
+            <!-- Navbar Toggler -->
+            <button class="navbar-toggler" type="button" id="sidebarToggler">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Dashboard" id="dashboardLink">
+                            <i class="bi bi-file-earmark-text fs-4"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Documentation" asp-action="Index" id="documentationLink">
+                            <i class="bi bi-file-text fs-4"></i> Documentations
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Dropdowns -->
+                <div class="dropdown-container d-flex align-items-center">
+                    <!-- Logout Dropdown -->
+                    <div class="dropdown me-2">
+                        <a href="#" id="logoutDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="logoutIcon" class="bi bi-box-arrow-right me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Auth" asp-action="LogOut">
+                                    <i class="bi bi-box-arrow-right fs-4 me-2"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Theme Dropdown -->
+                    <div class="dropdown me-2">
+                        <a href="#" id="themeDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="themeIcon" class="bi bi-sun me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li id="themeOption">
+                                <a class="dropdown-item d-flex align-items-center" href="#" onclick="toggleDarkMode()">
+                                    <i id="themeOptionIcon" class="bi bi-moon me-2"></i>
+                                    <span id="themeOptionText">Dark Mode</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Language Dropdown -->
+                    <div class="dropdown me-2">
+                        <a href="#" id="languageDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-translate me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="changeLanguage('en')">English (En)</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="changeLanguage('ar')">العربية (Ar)</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Settings Dropdown -->
+                    <div class="dropdown me-2">
+                        <a href="#" id="settingsDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="settingsIcon" class="bi bi-gear me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Settings" asp-action="index">
+                                    <i class="bi bi-gear fs-4 me-2"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Roles Dropdown -->
+                    <div class="dropdown me-2">
+                        <a href="#" id="RolesDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="settingsIcon" class="bi bi-shield me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @{
+                                var currentRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                            }
+                            @foreach (var role in User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))
+                            {
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="selectRole('@role')">
+                                        <span>@role</span>
+                                        @if (role == currentRole)
+                                        {
+                                            <i class="bi bi-check2 ms-2 text-success"></i>
+                                        }
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="dropdown">
+                        <a href="#" id="profileDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2 bg-light fs-5 text-secondary p-2 rounded"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item">@User.Identity?.Name</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Auth" asp-action="Profile">
+                                    <i class="bi bi-person-circle fs-4 me-2"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Auth" asp-action="ChangePassword">
+                                    <i class="bi bi-lock fs-4 me-2"></i> Change Password
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar bg-light border-end mt-2" id="sidebar">
+        <ul class="nav flex-column p-3">
+            @foreach (var module in modules)
+            {
+                <li class="nav-item mb-2">
+                    <div class="module d-flex justify-content-between align-items-center p-2 rounded cursor-pointer" data-bs-toggle="collapse" href="#@($"menu{module.Id}")" aria-expanded="false" aria-controls="@($"menu{module.Id}")">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-stack fs-5 me-2"></i> <!-- Modern stack icon -->
+                            <span class="fw-medium">@module.Name</span>
+                        </div>
+                        <i class="bi bi-chevron-down fs-6 transition-rotate"></i> <!-- Animated chevron -->
+                    </div>
+                    <ul class="collapse nav flex-column mt-2" id="@($"menu{module.Id}")">
+                        @foreach (var subModule in module.SubModules)
+                        {
+                            <li class="nav-item d-flex align-items-center mb-1">
+                                <i class="bi bi-dash  fs-5 me-1"></i>
+                                <a asp-controller="@subModule.Controller" asp-action="@subModule.Action" class="nav-link submodule text-decoration-none py-1" title="@subModule.Title">
+                                    @subModule.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        @RenderBody()
+    </main>
+
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const mainContent = document.getElementById("mainContent");
+        const sidebarToggler = document.getElementById("sidebarToggler");
+
+        // Toggle sidebar on navbar toggler click
+        if (sidebarToggler) {
+            sidebarToggler.addEventListener("click", function (e) {
+                e.preventDefault(); // Prevent default navbar collapse behavior
+                sidebar.classList.toggle("active");
+                overlay.classList.toggle("active");
+                mainContent.classList.toggle("sidebar-active");
+            });
+        }
+
+        // Close sidebar when clicking outside (on overlay)
+        if (overlay) {
+            overlay.addEventListener("click", function () {
+                sidebar.classList.remove("active");
+                overlay.classList.remove("active");
+                mainContent.classList.remove("sidebar-active");
+            });
+        }
+
+        // Dark/Light Mode Toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const themeIcon = document.getElementById("themeIcon");
+            const themeOptionIcon = document.getElementById("themeOptionIcon");
+            const themeOptionText = document.getElementById("themeOptionText");
+
+            console.log("Current theme:", body.getAttribute("data-bs-theme")); // Debugging
+
+            if (body.getAttribute("data-bs-theme") === "light") {
+                body.setAttribute("data-bs-theme", "dark");
+                themeIcon.classList.remove("bi-sun");
+                themeIcon.classList.add("bi-moon");
+                themeOptionIcon.classList.remove("bi-moon");
+                themeOptionIcon.classList.add("bi-sun");
+                themeOptionText.textContent = "Light Mode";
+                localStorage.setItem("theme", "dark"); // Save theme preference
+                console.log("Switched to dark mode"); // Debugging
+            } else {
+                body.setAttribute("data-bs-theme", "light");
+                themeIcon.classList.remove("bi-moon");
+                themeIcon.classList.add("bi-sun");
+                themeOptionIcon.classList.remove("bi-sun");
+                themeOptionIcon.classList.add("bi-moon");
+                themeOptionText.textContent = "Dark Mode";
+                localStorage.setItem("theme", "light"); // Save theme preference
+                console.log("Switched to light mode"); // Debugging
+            }
+        }
+
+        // Initialize theme based on saved preference or system preference
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            if (savedTheme === "dark" || (!savedTheme && prefersDarkMode)) {
+                document.body.setAttribute("data-bs-theme", "dark");
+                document.getElementById("themeIcon").classList.remove("bi-sun");
+                document.getElementById("themeIcon").classList.add("bi-moon");
+                document.getElementById("themeOptionIcon").classList.remove("bi-sun");
+                document.getElementById("themeOptionIcon").classList.add("bi-moon");
+                document.getElementById("themeOptionText").textContent = "Light Mode";
+            } else {
+                document.body.setAttribute("data-bs-theme", "light");
+                document.getElementById("themeIcon").classList.remove("bi-moon");
+                document.getElementById("themeIcon").classList.add("bi-sun");
+                document.getElementById("themeOptionIcon").classList.remove("bi-moon");
+                document.getElementById("themeOptionIcon").classList.add("bi-sun");
+                document.getElementById("themeOptionText").textContent = "Dark Mode";
+            }
+        }
+
+        // Call initializeTheme on page load
+        initializeTheme();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
