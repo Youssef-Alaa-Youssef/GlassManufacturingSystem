@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.OrderList;
 using Factory.BLL.InterFaces;
 using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.OrderList;
+using Factory.DAL.Models.Warehouses;
+using Factory.DAL.Models.OrderList;
 
 namespace Factory.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -15,190 +17,85 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize]
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
-            var orderViewModels = orders.Select(o => new OrderViewModel
-            {
-                Id = o.Id,
-                CustomerName = o.CustomerName,
-                CustomerReference = o.CustomerReference,
-                ProjectName = o.ProjectName,
-                Date = o.Date,
-                JobNo = o.JobNo,
-                Address = o.Address,
-                Priority = o.Priority,
-                FinishDate = o.FinishDate,
-                IsAccepted = o.IsAccepted,
-                Items = o.Items.Select(i => new OrderItemViewModel
-                {
-                    Id = i.Id,
-                    ItemName = i.ItemName,
-                    Width = i.Width,
-                    Height = i.Height,
-                    Quantity = i.Quantity,
-                    SQM = i.SQM,
-                    TotalSQM = i.TotalSQM,
-                    TotalLM = i.TotalLM,
-                    CustomerReference = i.CustomerReference,
-                    OrderId = i.OrderId
-                }).ToList()
-            }).ToList();
-
+            var orderViewModels = orders.Select(MapToViewModel).ToList();
             return View(orderViewModels);
         }
 
-        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
-
-            var orderViewModel = new OrderViewModel
-            {
-                Id = order.Id,
-                CustomerName = order.CustomerName,
-                CustomerReference = order.CustomerReference,
-                ProjectName = order.ProjectName,
-                Date = order.Date,
-                JobNo = order.JobNo,
-                Address = order.Address,
-                Priority = order.Priority,
-                FinishDate = order.FinishDate,
-                IsAccepted = order.IsAccepted,
-                Items = order.Items.Select(i => new OrderItemViewModel
-                {
-                    Id = i.Id,
-                    ItemName = i.ItemName,
-                    Width = i.Width,
-                    Height = i.Height,
-                    Quantity = i.Quantity,
-                    SQM = i.SQM,
-                    TotalSQM = i.TotalSQM,
-                    TotalLM = i.TotalLM,
-                    CustomerReference = i.CustomerReference,
-                    OrderId = i.OrderId
-                }).ToList()
-            };
-
-            return View(orderViewModel);
+            return View(MapToViewModel(order));
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+            var model = new OrderViewModel
+            {
+                Items = items.Select(i => new OrderItemViewModel { Id = i.Id, ItemName = i.Name }).ToList()
+            };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel orderViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(orderViewModel);
+
+            try
             {
-                var order = new Order
-                {
-                    CustomerName = orderViewModel.CustomerName,
-                    CustomerReference = orderViewModel.CustomerReference,
-                    ProjectName = orderViewModel.ProjectName,
-                    Date = orderViewModel.Date,
-                    JobNo = orderViewModel.JobNo,
-                    Address = orderViewModel.Address,
-                    Priority = orderViewModel.Priority,
-                    FinishDate = orderViewModel.FinishDate,
-                    IsAccepted = orderViewModel.IsAccepted,
-                    Items = orderViewModel.Items.Select(i => new OrderItem
-                    {
-                        ItemName = i.ItemName,
-                        Width = i.Width,
-                        Height = i.Height,
-                        Quantity = i.Quantity,
-                        SQM = i.SQM,
-                        TotalSQM = i.TotalSQM,
-                        TotalLM = i.TotalLM,
-                        CustomerReference = i.CustomerReference
-                    }).ToList()
-                };
-
-                try
-                {
-                    await _unitOfWork.GetRepository<Order>().AddAsync(order);
-                    TempData["Success"] = "Order created successfully!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while creating the order: {ex.Message}";
-                }
+                var order = MapToModel(orderViewModel);
+                await _unitOfWork.GetRepository<Order>().AddAsync(order);
+                TempData["Success"] = "Order created successfully!";
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(orderViewModel);
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"An error occurred: {ex.InnerException?.Message ?? ex.Message}";
+                return View(orderViewModel);
+            }
         }
 
         public async Task<IActionResult> Edit(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
-
-            var orderViewModel = new OrderViewModel
-            {
-                Id = order.Id,
-                CustomerName = order.CustomerName,
-                CustomerReference = order.CustomerReference,
-                ProjectName = order.ProjectName,
-                Date = order.Date,
-                JobNo = order.JobNo,
-                Address = order.Address,
-                Priority = order.Priority,
-                FinishDate = order.FinishDate,
-                IsAccepted = order.IsAccepted
-            };
-
-            return View(orderViewModel);
+            return View(MapToViewModel(order));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrderViewModel orderViewModel)
         {
-            if (id != orderViewModel.Id) return NotFound();
+            if (id != orderViewModel.Id || !ModelState.IsValid) return View(orderViewModel);
 
-            if (ModelState.IsValid)
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+
+            try
             {
-                var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
-                if (order == null) return NotFound();
-
-                order.CustomerName = orderViewModel.CustomerName;
-                order.CustomerReference = orderViewModel.CustomerReference;
-                order.ProjectName = orderViewModel.ProjectName;
-                order.Date = orderViewModel.Date;
-                order.JobNo = orderViewModel.JobNo;
-                order.Address = orderViewModel.Address;
-                order.Priority = orderViewModel.Priority;
-                order.FinishDate = orderViewModel.FinishDate;
-                order.IsAccepted = orderViewModel.IsAccepted;
-
-                try
-                {
-                    await _unitOfWork.GetRepository<Order>().UpdateAsync(order);
-                    TempData["Success"] = "Order updated successfully!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while updating the order: {ex.Message}";
-                }
+                MapToModel(orderViewModel, order);
+                await _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+                TempData["Success"] = "Order updated successfully!";
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(orderViewModel);
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"An error occurred: {ex.Message}";
+                return View(orderViewModel);
+            }
         }
 
         [Authorize(Policy = "Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
-            if (order == null) return NotFound();
-            return View(order);
+            return order == null ? NotFound() : View(order);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -215,39 +112,61 @@ namespace Factory.Controllers
             {
                 TempData["Error"] = "Order not found.";
             }
-
             return RedirectToAction(nameof(Index));
         }
-        [Authorize]
+
         public async Task<IActionResult> Optimization(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
-
-            var orderViewModel = new OrderViewModel
-            {
-                Id = order.Id,
-                CustomerName = order.CustomerName,
-                CustomerReference = order.CustomerReference,
-                ProjectName = order.ProjectName,
-                Date = order.Date,
-                JobNo = order.JobNo,
-                Address = order.Address,
-                Priority = order.Priority,
-                FinishDate = order.FinishDate,
-                IsAccepted = order.IsAccepted,
-                Items = order.Items.Select(i => new OrderItemViewModel
-                {
-                    Id = i.Id,
-                    ItemName = i.ItemName,
-                    Width = i.Width,
-                    Height = i.Height,
-                    Quantity = i.Quantity
-                }).ToList()
-            };
-
-            return View(orderViewModel);
+            return View(MapToViewModel(order));
         }
 
+        private static OrderViewModel MapToViewModel(Order order) => new()
+        {
+            Id = order.Id,
+            CustomerName = order.CustomerName,
+            CustomerReference = order.CustomerReference,
+            ProjectName = order.ProjectName,
+            Date = order.Date,
+            JobNo = order.JobNo,
+            Address = order.Address,
+            Priority = order.Priority,
+            FinishDate = order.FinishDate,
+            IsAccepted = order.IsAccepted,
+            SelectedMachines = order.SelectedMachines,
+            Items = order.Items.Select(i => new OrderItemViewModel
+            {
+                Id = i.Id,
+                ItemName = i.ItemName,
+                Width = i.Width,
+                Height = i.Height,
+                Quantity = i.Quantity
+            }).ToList()
+        };
+
+        private static Order MapToModel(OrderViewModel viewModel, Order? order = null)
+        {
+            order ??= new Order();
+            order.CustomerName = viewModel.CustomerName;
+            order.CustomerReference = viewModel.CustomerReference;
+            order.ProjectName = viewModel.ProjectName;
+            order.Date = viewModel.Date;
+            order.JobNo = viewModel.JobNo;
+            order.Address = viewModel.Address;
+            order.Priority = viewModel.Priority;
+            order.FinishDate = viewModel.FinishDate;
+            order.IsAccepted = viewModel.IsAccepted;
+            order.SelectedMachines = viewModel.SelectedMachines;
+            order.Items = viewModel.Items.Select(i => new OrderItem
+            {
+                Id = i.Id,
+                ItemName = i.ItemName,
+                Width = i.Width,
+                Height = i.Height,
+                Quantity = i.Quantity
+            }).ToList();
+            return order;
+        }
     }
 }

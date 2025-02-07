@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.OrderList;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.OrderList;
 
 namespace Factory.DAL.Configurations.OrderList
 {
@@ -8,8 +8,6 @@ namespace Factory.DAL.Configurations.OrderList
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.ToTable("Orders");
-
             builder.HasKey(o => o.Id);
 
             builder.Property(o => o.CustomerName)
@@ -24,29 +22,32 @@ namespace Factory.DAL.Configurations.OrderList
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(o => o.Date)
-                .IsRequired();
-
             builder.Property(o => o.JobNo)
                 .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(o => o.Address)
                 .IsRequired()
-                .HasMaxLength(250);
+                .HasMaxLength(200);
 
             builder.Property(o => o.Priority)
-                .HasMaxLength(50);
+                .IsRequired()
+                .HasMaxLength(20);
 
-            builder.Property(o => o.FinishDate)
+            builder.Property(o => o.SelectedMachines)
                 .IsRequired();
 
-            builder.Property(o => o.Signature)
-                .HasMaxLength(250);
-
-            builder.Property(o => o.IsAccepted)
+            builder.Property(o => o.TotalSQM)
                 .IsRequired()
-                .HasDefaultValue(false);
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(o => o.TotalLM)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(o => o.Signature)
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.HasMany(o => o.Items)
                 .WithOne(i => i.Order)

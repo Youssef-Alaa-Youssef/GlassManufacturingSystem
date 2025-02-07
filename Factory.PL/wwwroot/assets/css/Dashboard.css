@@ -1,159 +1,184 @@
-﻿body {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa;
+﻿
+body {
+    background-color: #ffffff;
+    color: #000000;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
 }
 
-.navbar {
+    body[data-bs-theme="dark"] {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+
+.navbar-custom {
+    color: #000;
+    z-index: 1050;
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    z-index: 1000;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    transition: background-color 0.3s ease-in-out;
 }
+
+body[data-bs-theme="dark"] .navbar-custom {
+    color: #fff;
+    background-color: #1a1a1a;
+}
+
+
+i {
+    color: #000;
+    transition: color 0.3s ease-in-out;
+}
+
+
+body[data-bs-theme="dark"] i {
+    color: #ffffff;
+}
+
 
 .sidebar {
+    width: 250px;
+    height: calc(100vh - 56px);
     position: fixed;
-    top: 58px;
-    bottom: 0;
-    width: 270px;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    color: white;
+    top: 56px;
+    left: -250px;
+    background-color: #f8f9fa;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
-    transition: transform 0.3s ease;
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease-in-out;
 }
+
+
+body[data-bs-theme="dark"] .sidebar {
+    background-color: #111;
+    color: #ffffff;
+}
+
+
+.sidebar.active {
+    left: 0;
+}
+
+
+.sidebar .module,
+.sidebar .submodule {
+    padding: 12px 20px;
+    font-weight: bold;
+    border-bottom: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+
+body[data-bs-theme="dark"] .sidebar .module,
+body[data-bs-theme="dark"] .sidebar .submodule {
+    border-bottom: 1px solid #333;
+    color: #ffffff;
+}
+
+.sidebar .module:hover,
+.sidebar .submodule:hover {
+    background-color: #e9ecef;
+    color: #000000;
+}
+
+
+body[data-bs-theme="dark"] .sidebar .module:hover,
+body[data-bs-theme="dark"] .sidebar .submodule:hover {
+    background-color: #222;
+    color: #ffffff;
+}
+
+
+.sidebar .submodule {
+    padding: 10px 30px;
+    font-size: 14px;
+}
+
+
+.navbar-custom {
+    color: #000;
+}
+
+
+    .navbar-custom[data-bs-theme="dark"] {
+        color: #fff;
+    }
+
 
 .main-content {
-    margin-top: 56px;
-    margin-left: 250px;
+    margin-left: 0;
     padding: 20px;
-    transition: margin 0.3s ease;
+    margin-top: 56px;
+    transition: margin-left 0.3s ease-in-out;
 }
 
-.dropdown-container {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    justify-content: flex-end;
-}
 
-.dropdown-menu {
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem;
+    .main-content.sidebar-active {
+        margin-left: 250px;
+    }
+
+
+.overlay {
     display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    min-width: 160px;
-    z-index: 1000;
-    animation: slideInRight 0.3s ease-in-out;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 56px);
+    z-index: 999;
+    transition: opacity 0.3s ease-in-out;
 }
 
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
+    .overlay.active {
+        display: block;
     }
 
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+
+::-webkit-scrollbar {
+    width: 10px;
 }
 
-.dropdown-item {
-    color: #fff !important;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-    .dropdown-item:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-.dropdown-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #fff;
-    transition: background-color 0.3s ease;
+body[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+    background: #2c2c2c;
 }
 
-    .dropdown-toggle:hover {
-        background-color: #f8f9fa;
-    }
-
-.sidebar .nav-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    color: white;
-    transition: all 0.3s ease;
-    border-radius: 0.5rem;
-    margin: 4px 0;
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
 }
 
-    .sidebar .nav-link:hover {
-        background-color: #007bff !important;
-        color: white !important;
-        transform: translateX(5px);
-    }
-
-    .sidebar .nav-link.active {
-        background-color: #007bff !important;
-        color: white !important;
-        font-weight: bold;
-    }
-
-    .sidebar .nav-link i {
-        margin-right: 12px;
-        font-size: 1.2rem;
-    }
-
-.sidebar .collapse {
-    margin-left: 20px;
+body[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #555;
 }
 
-    .sidebar .collapse .nav-link {
-        padding: 8px 20px;
-        background-color: transparent;
-    }
+::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
 
-        .sidebar .collapse .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-        }
 
-        .sidebar .collapse .nav-link .bi-chevron-down {
-            display: none;
-        }
+body[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
 
-@media (max-width: 768px) {
+
+@media (min-width: 768px) {
     .sidebar {
-        width: 100%;
-        transform: translateX(-100%);
+        left: 0;
     }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
 
     .main-content {
-        margin-left: 0;
+        margin-left: 250px;
     }
-}
-.dropdown-item.disabled {
-    opacity: 0.6;
-    pointer-events: none;
-    cursor: not-allowed;
+
+    .overlay {
+        display: none !important;
+    }
 }

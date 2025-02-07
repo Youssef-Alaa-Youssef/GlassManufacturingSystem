@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.OrderList;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.OrderList;
 
 namespace Factory.DAL.Configurations.OrderList
 {
@@ -8,40 +8,39 @@ namespace Factory.DAL.Configurations.OrderList
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
-            builder.ToTable("OrderItems");
+            builder.HasKey(oi => oi.Id);
 
-            builder.HasKey(i => i.Id);
+            builder.Property(oi => oi.ItemName)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            builder.Property(i => i.ItemName)
+            builder.Property(oi => oi.CustomerReference)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(i => i.Width)
+            builder.Property(oi => oi.Width)
                 .IsRequired()
-                .HasColumnType("decimal(18, 2)");
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.Height)
+            builder.Property(oi => oi.Height)
                 .IsRequired()
-                .HasColumnType("decimal(18, 2)");
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.Quantity)
-                .IsRequired();
+            builder.Property(oi => oi.SQM)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.SQM)
-                .HasColumnType("decimal(18, 2)");
+            builder.Property(oi => oi.TotalSQM)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.TotalSQM)
-                .HasColumnType("decimal(18, 2)");
+            builder.Property(oi => oi.TotalLM)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.TotalLM)
-                .HasColumnType("decimal(18, 2)");
-
-            builder.Property(i => i.CustomerReference)
-                .HasMaxLength(50);
-
-            builder.HasOne(i => i.Order)
+            builder.HasOne(oi => oi.Order)
                 .WithMany(o => o.Items)
-                .HasForeignKey(i => i.OrderId)
+                .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
