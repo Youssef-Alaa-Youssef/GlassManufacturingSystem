@@ -218,5 +218,36 @@ namespace Factory.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [Authorize]
+        public async Task<IActionResult> Optimization(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+
+            var orderViewModel = new OrderViewModel
+            {
+                Id = order.Id,
+                CustomerName = order.CustomerName,
+                CustomerReference = order.CustomerReference,
+                ProjectName = order.ProjectName,
+                Date = order.Date,
+                JobNo = order.JobNo,
+                Address = order.Address,
+                Priority = order.Priority,
+                FinishDate = order.FinishDate,
+                IsAccepted = order.IsAccepted,
+                Items = order.Items.Select(i => new OrderItemViewModel
+                {
+                    Id = i.Id,
+                    ItemName = i.ItemName,
+                    Width = i.Width,
+                    Height = i.Height,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
+
+            return View(orderViewModel);
+        }
+
     }
 }

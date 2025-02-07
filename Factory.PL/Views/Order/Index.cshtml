@@ -1,54 +1,98 @@
-﻿@model IEnumerable<Factory.DAL.Models.Customers.Order>
+﻿@model List<Factory.PL.ViewModels.OrderList.OrderViewModel>
 
 @{
-    ViewData["Title"] = "Orders List";
+    ViewData["Title"] = "Orders";
+    Layout = "_LogedUser";
 }
-<div class="container">
-<h1>Orders</h1>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+<div class="container-fluid shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <h2 class="text-primary">Orders</h2>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-action="Create" class="btn btn-outline-success">+ Create Order</a>
+            <button id="exportExcelBtn" class="btn btn-outline-primary">📥 Export to Excel</button>
+        </div>
     </div>
-}
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search by Customer Name...">
     </div>
-}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Customer</th>
-            <th>Order Date</th>
-            <th>Glass Type</th>
-            <th>Quantity</th>
-            <th>Total Cost</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.CustomerId</td>
-                <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                <td>@order.GlassType</td>
-                <td>@order.Quantity</td>
-                <td>@order.TotalCost</td>
-                <td>
-                    <a href="@Url.Action("Details", "Orders", new { id = order.Id })">View</a> |
-                    <a href="@Url.Action("Edit", "Orders", new { id = order.Id })">Edit</a> |
-                    <a href="@Url.Action("Delete", "Orders", new { id = order.Id })">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a href="@Url.Action("Create", "Orders")" class="btn btn-primary">Create New Order</a>
+    <div class="table-responsive">
+        <table class="table table-striped text-center align-middle" id="orderTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Customer Name</th>
+                    <th>Customer Ref</th>
+                    <th>Project Name</th>
+                    <th>Date</th>
+                    <th>Job No</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.Id</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.CustomerReference</td>
+                            <td>@order.ProjectName</td>
+                            <td>@order.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@order.JobNo</td>
+                            <td>
+                                <span class="badge @(order.Priority == "High" ? "bg-danger" : "bg-warning")">
+                                    @order.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(order.IsAccepted ? "bg-success" : "bg-secondary")">
+                                    @(order.IsAccepted ? "Accepted" : "Pending")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-info btn-sm">🔍 View</a>
+                                    <a asp-action="Optimization" asp-route-id="@order.Id" class="btn btn-outline-warning btn-sm">✏ Optimized</a>
+                                    @* <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?');">🗑 Delete</a> *@
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#tableBody tr");
+
+        rows.forEach(row => {
+            let text = row.children[1].textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+
+    document.getElementById("exportExcelBtn").addEventListener("click", function () {
+        let table = document.getElementById("orderTable");
+        let workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
+        XLSX.writeFile(workbook, "Orders.xlsx");
+    });
+</script>

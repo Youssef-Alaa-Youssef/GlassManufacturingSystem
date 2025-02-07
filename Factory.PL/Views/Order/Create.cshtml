@@ -19,7 +19,7 @@
                     <h2 class="text-secondary">Global Glass Factory</h2>
                 </div>
                 <div>
-                    <img src="https://static.vecteezy.com/system/resources/previews/021/663/787/non_2x/glass-icon-with-transparent-blue-sheets-vector.jpg" alt="Company Logo" width="120">
+                    <img src="~/assets/images/Login.png" alt="Company Logo" width="120">
                 </div>
             </div>
 
@@ -136,9 +136,12 @@
                                 <td>
                                     <select name="Items[0].ItemName" class="form-control" required>
                                         <option value="">--Select Item--</option>
-                                        @foreach (var item in Model.Items)
+                                        @if (Model?.Items != null && Model.Items.Any())
                                         {
-                                            <option value="@item.Id">@item.ItemName</option>
+                                            @foreach (var item in Model.Items)
+                                            {
+                                                <option value="@item.Id">@item.ItemName</option>
+                                            }
                                         }
                                     </select>
                                 </td>
@@ -274,9 +277,12 @@
                     <td>${rowCount + 1}</td>
                     <td>
                         <select name="Items[${rowCount}].ItemName" class="form-control" required>
+        @if (Model?.Items != null && Model.Items.Any())
+        {
         @foreach (var item in Model.Items)
         {
                                                 <option value="@item.Id">@item.ItemName</option>
+        }
         }
                         </select>
                     </td>

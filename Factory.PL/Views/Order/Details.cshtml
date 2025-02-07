@@ -1,40 +1,90 @@
-﻿@model Factory.DAL.Models.Customers.Order
-
+﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
 @{
     ViewData["Title"] = "Order Details";
+    Layout = "_LogedUser";
 }
-<div class="container">
 
-<h1>Order Details</h1>
+<div class="container shadow-lg mt-4 p-4 rounded">
+    @await Html.PartialAsync("ErrorSummaryPartial")
 
-<div>
-    <strong>Customer:</strong> @Model.CustomerId
-</div>
-<div>
-    <strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")
-</div>
-<div>
-    <strong>Glass Type:</strong> @Model.GlassType
-</div>
-<div>
-    <strong>Height:</strong> @Model.Height
-</div>
-<div>
-    <strong>Width:</strong> @Model.Width
-</div>
-<div>
-    <strong>Quantity:</strong> @Model.Quantity
-</div>
-<div>
-    <strong>Total Cost:</strong> @Model.TotalCost
-</div>
-<div>
-    <strong>Delivery Method:</strong> @Model.DeliveryMethod
-</div>
-<div>
-    <strong>Delivery Address:</strong> @Model.DeliveryAddress
-</div>
+    <h2 class="mb-4 text-center fw-bold">Order Details</h2>
 
-<a href="@Url.Action("Edit", "Orders", new { id = Model.Id })" class="btn btn-warning">Edit</a>
-<a href="@Url.Action("Index", "Orders")" class="btn btn-secondary">Back to List</a>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-3">
+                <h5 class="text-secondary fw-bold mb-3">Customer Information</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr><td><strong>Customer Name:</strong></td><td>@Model.CustomerName</td></tr>
+                            <tr><td><strong>Customer Reference:</strong></td><td>@Model.CustomerReference</td></tr>
+                            <tr><td><strong>Project Name:</strong></td><td>@Model.ProjectName</td></tr>
+                            <tr><td><strong>Address:</strong></td><td>@Model.Address</td></tr>
+                            <tr><td><strong>Priority:</strong></td><td>@Model.Priority</td></tr>
+                            <tr><td><strong>Finish Date:</strong></td><td>@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</td></tr>
+                            <tr><td><strong>Accepted:</strong></td><td>@(Model.IsAccepted ? "Yes" : "No")</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-3">
+                <h5 class="text-secondary fw-bold mb-3">Additional Info</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr><td><strong>Date:</strong></td><td>@Model.Date.ToString("yyyy-MM-dd")</td></tr>
+                            <tr><td><strong>Job No:</strong></td><td>@Model.JobNo</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5 text-center text-primary fw-bold">Order Items</h3>
+
+    @if (Model.Items?.Any() == true)
+    {
+        <div class="table-responsive mt-2">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Width</th>
+                        <th>Height</th>
+                        <th>Qty</th>
+                        <th>SQM</th>
+                        <th>Total SQM</th>
+                        <th>Customer Reference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.ItemName</td>
+                            <td>@item.Width</td>
+                            <td>@item.Height</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.SQM</td>
+                            <td>@item.TotalSQM</td>
+                            <td>@item.CustomerReference</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted text-center mt-3">No items available for this order.</p>
+    }
+
+    <div class="text-center my-4">
+        <a asp-action="Index" class="btn btn-outline-primary px-4">Back to List</a>
+        <a onclick="window.print()" class="btn btn-outline-success px-4">Print</a>
+    </div>
 </div>
