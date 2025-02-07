@@ -1,105 +1,222 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using Factory.PL.ViewModels.OrderList;
-//using Factory.DAL.Models.OrderList;
-//using Factory.BLL.InterFaces;
-//using Factory.DAL.Models.Warehouses; // Assuming IUnitOfWork and repositories are set up
+﻿using Microsoft.AspNetCore.Mvc;
+using Factory.DAL.Models.OrderList;
+using Factory.BLL.InterFaces;
+using Microsoft.AspNetCore.Authorization;
+using Factory.PL.ViewModels.OrderList;
 
-//namespace Factory.PL.Controllers
-//{
-//    public class OrderController : Controller
-//    {
-//        private readonly IUnitOfWork _unitOfWork;
+namespace Factory.Controllers
+{
+    public class OrderController : Controller
+    {
+        private readonly IUnitOfWork _unitOfWork;
 
-//        public OrderController(IUnitOfWork unitOfWork)
-//        {
-//            _unitOfWork = unitOfWork;
-//        }
+        public OrderController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-//        // GET: Order/Create
-//        public async Task<IActionResult> Create()
-//        {
-//            var model = new OrderViewModel
-//            {
-//                Items = await _unitOfWork.GetRepository<Item>().GetAllAsync() // Get available items
-//            };
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
+            var orderViewModels = orders.Select(o => new OrderViewModel
+            {
+                Id = o.Id,
+                CustomerName = o.CustomerName,
+                CustomerReference = o.CustomerReference,
+                ProjectName = o.ProjectName,
+                Date = o.Date,
+                JobNo = o.JobNo,
+                Address = o.Address,
+                Priority = o.Priority,
+                FinishDate = o.FinishDate,
+                IsAccepted = o.IsAccepted,
+                Items = o.Items.Select(i => new OrderItemViewModel
+                {
+                    Id = i.Id,
+                    ItemName = i.ItemName,
+                    Width = i.Width,
+                    Height = i.Height,
+                    Quantity = i.Quantity,
+                    SQM = i.SQM,
+                    TotalSQM = i.TotalSQM,
+                    TotalLM = i.TotalLM,
+                    CustomerReference = i.CustomerReference,
+                    OrderId = i.OrderId
+                }).ToList()
+            }).ToList();
 
-//            return View(model);
-//        }
+            return View(orderViewModels);
+        }
 
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> Create(OrderViewModel model)
-//        {
-//            if (ModelState.IsValid)
-//            {
-//                // Process selected machines
-//                var selectedMachines = model.SelectedMachines.Where(x => !string.IsNullOrEmpty(x)).ToList();
+        [Authorize]
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
 
-//                // Fix: Check for the count of selected machines
-//                if (selectedMachines == 0)
-//                {
-//                    ModelState.AddModelError("SelectedMachines", "Please select at least one machine.");
-//                    return View(model);
-//                }
+            var orderViewModel = new OrderViewModel
+            {
+                Id = order.Id,
+                CustomerName = order.CustomerName,
+                CustomerReference = order.CustomerReference,
+                ProjectName = order.ProjectName,
+                Date = order.Date,
+                JobNo = order.JobNo,
+                Address = order.Address,
+                Priority = order.Priority,
+                FinishDate = order.FinishDate,
+                IsAccepted = order.IsAccepted,
+                Items = order.Items.Select(i => new OrderItemViewModel
+                {
+                    Id = i.Id,
+                    ItemName = i.ItemName,
+                    Width = i.Width,
+                    Height = i.Height,
+                    Quantity = i.Quantity,
+                    SQM = i.SQM,
+                    TotalSQM = i.TotalSQM,
+                    TotalLM = i.TotalLM,
+                    CustomerReference = i.CustomerReference,
+                    OrderId = i.OrderId
+                }).ToList()
+            };
 
-//                // Process items and calculate
-//                foreach (var item in model.Items)
-//                {
-//                    item.SQM = CalculateSQM(item.Width, item.Height);
-//                    item.TotalSQM = item.SQM * item.Quantity;
-//                    item.TotalLM = CalculateLM(item.Width, item.Quantity);
-//                }
+            return View(orderViewModel);
+        }
 
-//                var order = new Order
-//                {
-//                    CustomerName = model.CustomerName,
-//                    CustomerReference = model.CustomerReference,
-//                    ProjectName = model.ProjectName,
-//                    Date = model.Date,
-//                    JobNo = model.JobNo,
-//                    Address = model.Address,
-//                    Priority = model.Priority,
-//                    FinishDate = model.FinishDate,
-//                    Signature = model.Signature,
-//                    IsAccepted = model.IsAccepted,
-//                    Items = model.Items.Select(i => new OrderItem
-//                    {
-//                        ItemName = i.ItemName,
-//                        Width = i.Width,
-//                        Height = i.Height,
-//                        Quantity = i.Quantity,
-//                        SQM = i.SQM,
-//                        TotalSQM = i.TotalSQM,
-//                        TotalLM = i.TotalLM,
-//                        CustomerReference = i.CustomerReference
-//                    }).ToList()
-//                };
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-//                try
-//                {
-//                    // Save the order
-//                    await _unitOfWork.GetRepository<Order>().AddAsync(order);
-//                    return RedirectToAction("Index", "Home"); // Redirect after successful creation
-//                }
-//                catch (Exception ex)
-//                {
-//                    // Add error message if something goes wrong
-//                    ModelState.AddModelError("", $"There was an error while creating the order: {ex.Message}");
-//                    return View(model);
-//                }
-//            }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(OrderViewModel orderViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var order = new Order
+                {
+                    CustomerName = orderViewModel.CustomerName,
+                    CustomerReference = orderViewModel.CustomerReference,
+                    ProjectName = orderViewModel.ProjectName,
+                    Date = orderViewModel.Date,
+                    JobNo = orderViewModel.JobNo,
+                    Address = orderViewModel.Address,
+                    Priority = orderViewModel.Priority,
+                    FinishDate = orderViewModel.FinishDate,
+                    IsAccepted = orderViewModel.IsAccepted,
+                    Items = orderViewModel.Items.Select(i => new OrderItem
+                    {
+                        ItemName = i.ItemName,
+                        Width = i.Width,
+                        Height = i.Height,
+                        Quantity = i.Quantity,
+                        SQM = i.SQM,
+                        TotalSQM = i.TotalSQM,
+                        TotalLM = i.TotalLM,
+                        CustomerReference = i.CustomerReference
+                    }).ToList()
+                };
 
-//            return View(model); // Return the model with validation errors
-//        }
+                try
+                {
+                    await _unitOfWork.GetRepository<Order>().AddAsync(order);
+                    TempData["Success"] = "Order created successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = $"An error occurred while creating the order: {ex.Message}";
+                }
+            }
 
-//        private decimal CalculateSQM(decimal width, decimal height)
-//        {
-//            return (width / 1000) * (height / 1000);
-//        }
+            return View(orderViewModel);
+        }
 
-//        private decimal CalculateLM(decimal width, int quantity)
-//        {
-//            return (width / 1000) * quantity;
-//        }
-//    }
-//}
+        public async Task<IActionResult> Edit(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+
+            var orderViewModel = new OrderViewModel
+            {
+                Id = order.Id,
+                CustomerName = order.CustomerName,
+                CustomerReference = order.CustomerReference,
+                ProjectName = order.ProjectName,
+                Date = order.Date,
+                JobNo = order.JobNo,
+                Address = order.Address,
+                Priority = order.Priority,
+                FinishDate = order.FinishDate,
+                IsAccepted = order.IsAccepted
+            };
+
+            return View(orderViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, OrderViewModel orderViewModel)
+        {
+            if (id != orderViewModel.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+                if (order == null) return NotFound();
+
+                order.CustomerName = orderViewModel.CustomerName;
+                order.CustomerReference = orderViewModel.CustomerReference;
+                order.ProjectName = orderViewModel.ProjectName;
+                order.Date = orderViewModel.Date;
+                order.JobNo = orderViewModel.JobNo;
+                order.Address = orderViewModel.Address;
+                order.Priority = orderViewModel.Priority;
+                order.FinishDate = orderViewModel.FinishDate;
+                order.IsAccepted = orderViewModel.IsAccepted;
+
+                try
+                {
+                    await _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+                    TempData["Success"] = "Order updated successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = $"An error occurred while updating the order: {ex.Message}";
+                }
+            }
+
+            return View(orderViewModel);
+        }
+
+        [Authorize(Policy = "Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+            return View(order);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order != null)
+            {
+                await _unitOfWork.GetRepository<Order>().RemoveAsync(order);
+                TempData["Success"] = "Order deleted successfully!";
+            }
+            else
+            {
+                TempData["Error"] = "Order not found.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}
