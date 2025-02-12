@@ -145,7 +145,8 @@ namespace Factory.Controllers
                 ItemName = i.ItemName,
                 Width = i.Width,
                 Height = i.Height,
-                Quantity = i.Quantity
+                Quantity = i.Quantity,
+                CustomerReference = i.CustomerReference
             }).ToList()
         };
 
@@ -171,8 +172,9 @@ namespace Factory.Controllers
                 ItemName = i.ItemName,
                 Width = i.Width,
                 Height = i.Height,
-                Quantity = i.Quantity
-                
+                Quantity = i.Quantity,
+                CustomerReference = i.CustomerReference
+
             }).ToList();
             return order;
         }

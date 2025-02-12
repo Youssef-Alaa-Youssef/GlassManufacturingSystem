@@ -14,6 +14,7 @@ namespace Factory.PL.ViewModels.OrderList
         [StringLength(50, ErrorMessage = "Customer Reference cannot exceed 50 characters.")]
         public string CustomerReference { get; set; } = string.Empty;
 
+
         [Required(ErrorMessage = "Project Name is required.")]
         [StringLength(100, ErrorMessage = "Project Name cannot exceed 100 characters.")]
         public string ProjectName { get; set; } = string.Empty;
