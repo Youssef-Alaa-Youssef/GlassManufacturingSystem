@@ -17,6 +17,7 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = "Permission Management_Create")]
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
@@ -30,6 +31,7 @@ namespace Factory.Controllers
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
+        [Authorize(Policy = "Orders_Create")]
 
         public async Task<IActionResult> Create()
         {
@@ -135,6 +137,8 @@ namespace Factory.Controllers
             FinishDate = order.FinishDate,
             IsAccepted = order.IsAccepted,
             SelectedMachines = order.SelectedMachines,
+            TotalSQM = order.TotalSQM,
+            TotalLM = order.TotalLM,
             Items = order.Items.Select(i => new OrderItemViewModel
             {
                 Id = i.Id,
@@ -158,6 +162,9 @@ namespace Factory.Controllers
             order.FinishDate = viewModel.FinishDate;
             order.IsAccepted = viewModel.IsAccepted;
             order.SelectedMachines = viewModel.SelectedMachines;
+            order.TotalSQM = viewModel.TotalSQM;
+            order.TotalLM = viewModel.TotalLM;
+
             order.Items = viewModel.Items.Select(i => new OrderItem
             {
                 Id = i.Id,
@@ -165,6 +172,7 @@ namespace Factory.Controllers
                 Width = i.Width,
                 Height = i.Height,
                 Quantity = i.Quantity
+                
             }).ToList();
             return order;
         }

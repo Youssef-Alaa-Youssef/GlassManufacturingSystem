@@ -36,12 +36,8 @@ namespace Factory.PL.ViewModels.OrderList
         [Required(ErrorMessage = "Selected Machines are required.")]
         public string SelectedMachines { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Total SQM is required.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Total SQM must be greater than 0.")]
         public decimal TotalSQM { get; set; }
 
-        [Required(ErrorMessage = "Total LM is required.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Total LM must be greater than 0.")]
         public decimal TotalLM { get; set; }
 
         [Required(ErrorMessage = "Finish Date is required.")]

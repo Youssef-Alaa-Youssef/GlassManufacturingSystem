@@ -8,6 +8,9 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Factory.PL.Helper;
 using Factory.PL.Services.Email;
 using Factory.PL.ViewModels.Auth;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 namespace Factory.Controllers
 {
     public class AuthController : Controller
@@ -78,23 +81,41 @@ namespace Factory.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                TempData["Success"] = "Congratulations Login Successfully";
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id) 
+                };
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+                foreach (var role in userRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role)); 
+                }
+
+                var identity = new ClaimsIdentity(claims, "login");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(principal);
+
+                TempData["Success"] = "Congratulations, Login Successful!";
                 return RedirectToAction("DashBoard", "Home");
             }
+
             if (!user.EmailConfirmed)
             {
                 ModelState.AddModelError(string.Empty, "Your account needs to be activated.");
                 ModelState.AddModelError(string.Empty, "Please check your email for the activation link.");
                 return View(model);
             }
+
             TempData["Error"] = "Invalid Email Or Password.";
             return View(model);
         }
-
-
         public IActionResult SignUp()
         {
             return View();

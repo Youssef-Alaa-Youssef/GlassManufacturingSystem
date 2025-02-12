@@ -27,14 +27,12 @@ namespace Factory.PL.Controllers.Permission
 
         public async Task<IActionResult> Index()
         {
-            // Fetch all users, roles, modules, and permissions
             var users = await _unitOfWork.GetRepository<IdentityUser>().GetAllAsync();
             var roles = await _roleManager.Roles.ToListAsync();
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
             var permissions = await _unitOfWork.GetRepository<PermissionTyepe>().GetAllAsync();
             var rolePermissions = await _unitOfWork.GetRepository<RolePermission>().GetAllAsync();
 
-            // Map users to UserViewModel
             var userViewModels = new List<UserViewModel>();
             foreach (var user in users)
             {
@@ -47,15 +45,13 @@ namespace Factory.PL.Controllers.Permission
                 });
             }
 
-            // Map modules to ModuleViewModel
             var moduleViewModels = modules.Select(module => new ModuleViewModel
             {
                 ModuleId = module.Id,
                 ModuleName = module.Name,
-                IsSelected = false // Default value
+                IsSelected = false 
             }).ToList();
 
-            // Map permissions to PermissionViewModel
             var permissionViewModels = permissions.Select(permission => new PermissionViewModel
             {
                 PermissionId = permission.Id,
@@ -70,7 +66,6 @@ namespace Factory.PL.Controllers.Permission
                 }).ToList()
             }).ToList();
 
-            // Map roles to RolePermissionViewModel
             var rolePermissionViewModels = roles.Select(role => new RolePermissionViewModel
             {
                 RoleId = role.Id,
@@ -91,7 +86,6 @@ namespace Factory.PL.Controllers.Permission
                 }).ToList()
             }).ToList();
 
-            // Create the view model
             var viewModel = new PermissionManagementViewModel
             {
                 Users = userViewModels,
@@ -179,11 +173,10 @@ namespace Factory.PL.Controllers.Permission
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignPermissions(PermissionManagementViewModel model)
+        public async Task<IActionResult> AssignPermissionsTest(PermissionManagementViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                // Log or inspect ModelState errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
                 TempData["Error"] = "Invalid data submitted. Errors: " + string.Join(", ", errors);
                 return RedirectToAction(nameof(Index));
@@ -191,11 +184,9 @@ namespace Factory.PL.Controllers.Permission
 
             try
             {
-                // Remove existing role permissions
                 var existingRolePermissions = await _unitOfWork.GetRepository<RolePermission>().GetAllAsync();
                 await _unitOfWork.GetRepository<RolePermission>().RemoveRangeAsync(existingRolePermissions);
 
-                // Add new role permissions based on the submitted model
                 foreach (var rolePermissionViewModel in model.RolePermissions)
                 {
                     foreach (var permissionViewModel in rolePermissionViewModel.Permissions)
@@ -204,7 +195,6 @@ namespace Factory.PL.Controllers.Permission
                         {
                             if (moduleViewModel.IsSelected)
                             {
-                                // Add the new role permission to the database
                                 await _unitOfWork.GetRepository<RolePermission>().AddAsync(new RolePermission
                                 {
                                     RoleId = rolePermissionViewModel.RoleId,
@@ -216,18 +206,17 @@ namespace Factory.PL.Controllers.Permission
                     }
                 }
 
-                // Save changes to the database
                 await _unitOfWork.SaveChangesAsync();
 
                 TempData["Success"] = "Permissions updated successfully!";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Handle the exception and provide user feedback
                 TempData["Error"] = "An error occurred while updating permissions. Please try again.";
             }
 
             return RedirectToAction(nameof(Index));
         }
+    
     }
 }

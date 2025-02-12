@@ -1,56 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
 
 namespace Factory.PL.Helper
 {
-    public class CustomAuthorizationPolicyProvider : IAuthorizationPolicyProvider
+    public class CustomAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {
-        private readonly ConcurrentDictionary<string, AuthorizationPolicy> _policies = new();
-        private readonly DefaultAuthorizationPolicyProvider _defaultProvider;
+        private readonly Dictionary<string, AuthorizationPolicy> _policies = new Dictionary<string, AuthorizationPolicy>();
 
-        public CustomAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        public CustomAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) : base(options)
         {
-            _defaultProvider = new DefaultAuthorizationPolicyProvider(options);
         }
 
-        /// <summary>
-        /// Gets the default authorization policy.
-        /// </summary>
-        public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
+        public void AddPolicy(string name, AuthorizationPolicy policy)
         {
-            return _defaultProvider.GetDefaultPolicyAsync();
+            _policies[name] = policy;
         }
 
-        /// <summary>
-        /// Gets the fallback authorization policy.
-        /// </summary>
-        public Task<AuthorizationPolicy?> GetFallbackPolicyAsync()
+        public override Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
-            return _defaultProvider.GetFallbackPolicyAsync();
-        }
-
-        /// <summary>
-        /// Gets the authorization policy for the specified policy name.
-        /// </summary>
-        public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
-        {
-            // Check if the policy exists in the custom dictionary
             if (_policies.TryGetValue(policyName, out var policy))
             {
-                return Task.FromResult<AuthorizationPolicy?>(policy);
+                return Task.FromResult(policy);
             }
 
-            // Fall back to the default provider if the policy is not found
-            return _defaultProvider.GetPolicyAsync(policyName);
-        }
-
-        /// <summary>
-        /// Adds a custom authorization policy to the provider.
-        /// </summary>
-        public void AddPolicy(string policyName, AuthorizationPolicy policy)
-        {
-            _policies[policyName] = policy;
+            return base.GetPolicyAsync(policyName);
         }
     }
 }

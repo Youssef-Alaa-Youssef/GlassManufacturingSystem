@@ -45,88 +45,160 @@
                 <button class="btn btn-lg btn-outline-secondary shadow-sm px-4 ms-3" onclick="clearCanvas()">
                     <i class="fas fa-eraser"></i> Clear
                 </button>
+                <button class="btn btn-lg btn-outline-info shadow-sm px-4 ms-3" data-bs-toggle="modal" data-bs-target="#optimizationModal">
+                    <i class="fas fa-cog"></i> Optimization Options
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Optimization Modal -->
+<div class="modal fade" id="optimizationModal" tabindex="-1" aria-labelledby="optimizationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="optimizationModalLabel">Optimization Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="optimizationOptions">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="applyOptimization()">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        adjustCanvasSize();
-        optimizeGlassCutting();
-        window.addEventListener("resize", adjustCanvasSize);
-    });
-
-    function adjustCanvasSize() {
-        const canvas = document.getElementById("glassCanvas");
-        const parentDiv = canvas.parentElement;
-        canvas.width = parentDiv.clientWidth - 10;
-        canvas.height = canvas.width / 2;
-    }
-
-    function optimizeGlassCutting() {
-        const canvas = document.getElementById("glassCanvas");
-        const ctx = canvas.getContext("2d");
-        const sheetWidth = canvas.width;
-        const sheetHeight = canvas.height;
-        const glassPieces = @Html.Raw(Json.Serialize(Model.Items));
-
-        if (!glassPieces || glassPieces.length === 0) {
-            alert("No glass pieces found!");
-            return;
-        }
-
-        ctx.clearRect(0, 0, sheetWidth, sheetHeight);
-
-        // Draw Background Grid
-        ctx.fillStyle = "#f8f9fa";
-        ctx.fillRect(0, 0, sheetWidth, sheetHeight);
-        ctx.strokeStyle = "#d3d3d3";
-        ctx.lineWidth = 0.5;
-
-        for (let i = 0; i <= sheetWidth; i += sheetWidth / 10) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, sheetHeight);
-            ctx.stroke();
-        }
-
-        for (let j = 0; j <= sheetHeight; j += sheetHeight / 10) {
-            ctx.beginPath();
-            ctx.moveTo(0, j);
-            ctx.lineTo(sheetWidth, j);
-            ctx.stroke();
-        }
-
-        let x = 10, y = 10, padding = 10;
-
-        // Draw Glass Pieces
-        glassPieces.forEach(piece => {
-            let width = (piece.width / 100) * sheetWidth;
-            let height = (piece.height / 100) * sheetHeight;
-
-            ctx.fillStyle = "rgba(0, 123, 255, 0.7)";
-            ctx.fillRect(x, y, width, height);
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, width, height);
-
-            ctx.fillStyle = "black";
-            ctx.font = "14px Arial";
-            ctx.fillText(`${piece.itemName} (${piece.width}mm x ${piece.height}mm)`, x + 5, y + 20);
-
-            x += width + padding;
-            if (x + width > sheetWidth) {
-                x = 10;
-                y += height + padding;
-            }
+        document.addEventListener("DOMContentLoaded", function () {
+            adjustCanvasSize();
+            optimizeGlassCutting();
+            window.addEventListener("resize", adjustCanvasSize);
         });
-    }
 
-    function clearCanvas() {
-        const canvas = document.getElementById("glassCanvas");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-</script>
+        function adjustCanvasSize() {
+            const canvas = document.getElementById("glassCanvas");
+            const parentDiv = canvas.parentElement;
+            canvas.width = parentDiv.clientWidth - 10;
+            canvas.height = canvas.width / 2;
+        }
+
+        function optimizeGlassCutting() {
+            const canvas = document.getElementById("glassCanvas");
+            const ctx = canvas.getContext("2d");
+            const sheetWidth = canvas.width;
+            const sheetHeight = canvas.height;
+            const glassPieces = @Html.Raw(Json.Serialize(Model.Items));
+
+            if (!glassPieces || glassPieces.length === 0) {
+                alert("No glass pieces found!");
+                return;
+            }
+
+            ctx.clearRect(0, 0, sheetWidth, sheetHeight);
+
+            // Draw Background Grid
+            ctx.fillStyle = "#f8f9fa";
+            ctx.fillRect(0, 0, sheetWidth, sheetHeight);
+            ctx.strokeStyle = "#d3d3d3";
+            ctx.lineWidth = 0.5;
+
+            for (let i = 0; i <= sheetWidth; i += sheetWidth / 10) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, sheetHeight);
+                ctx.stroke();
+            }
+
+            for (let j = 0; j <= sheetHeight; j += sheetHeight / 10) {
+                ctx.beginPath();
+                ctx.moveTo(0, j);
+                ctx.lineTo(sheetWidth, j);
+                ctx.stroke();
+            }
+
+            let x = 10, y = 10, padding = 10;
+
+            // Group items by dimensions
+            const groupedItems = groupItemsByDimensions(glassPieces);
+
+            // Draw Glass Pieces
+            groupedItems.forEach(group => {
+                group.items.forEach(piece => {
+                    let width = (piece.width / 100) * sheetWidth;
+                    let height = (piece.height / 100) * sheetHeight;
+
+                    ctx.fillStyle = group.color;
+                    ctx.fillRect(x, y, width, height);
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, width, height);
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "14px Arial";
+                    ctx.fillText(`${piece.itemName} (${piece.width}mm x ${piece.height}mm)`, x + 5, y + 20);
+
+                    x += width + padding;
+                    if (x + width > sheetWidth) {
+                        x = 10;
+                        y += height + padding;
+                    }
+                });
+            });
+
+            // Populate optimization options
+            populateOptimizationOptions(groupedItems);
+        }
+
+        function groupItemsByDimensions(items) {
+            const grouped = {};
+            const colors = ["rgba(0, 123, 255, 0.7)", "rgba(220, 53, 69, 0.7)", "rgba(40, 167, 69, 0.7)", "rgba(255, 193, 7, 0.7)"];
+
+            items.forEach(item => {
+                const key = `${item.width}x${item.height}`;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        items: [],
+                        color: colors[Object.keys(grouped).length % colors.length]
+                    };
+                }
+                grouped[key].items.push(item);
+            });
+
+            return Object.values(grouped);
+        }
+
+        function populateOptimizationOptions(groupedItems) {
+            const optionsContainer = document.getElementById("optimizationOptions");
+            optionsContainer.innerHTML = "";
+
+            groupedItems.forEach((group, index) => {
+                const groupDiv = document.createElement("div");
+                groupDiv.className = "mb-3";
+                groupDiv.innerHTML = `
+                    <h6>Group ${index + 1} (${group.items[0].width}mm x ${group.items[0].height}mm)</h6>
+                    <p>Number of items: ${group.items.length}</p>
+                    <div style="background-color: ${group.color}; width: 100%; height: 20px;"></div>
+                `;
+                optionsContainer.appendChild(groupDiv);
+            });
+        }
+
+        function applyOptimization() {
+            // Implement optimization logic here
+            alert("Optimization applied!");
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById("glassCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
 }

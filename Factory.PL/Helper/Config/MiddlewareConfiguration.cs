@@ -9,14 +9,13 @@ public static class MiddlewareConfiguration
 {
     public static void ConfigureMiddleware(WebApplication app, IWebHostEnvironment env)
     {
-        // Apply database migrations
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
             try
             {
                 var dbContext = services.GetRequiredService<FactDdContext>();
-                dbContext.Database.MigrateAsync().Wait(); // Wait for migration to complete
+                dbContext.Database.MigrateAsync().Wait();
             }
             catch (Exception ex)
             {
@@ -25,9 +24,10 @@ public static class MiddlewareConfiguration
             }
         }
 
-        // Configure error handling for production
         if (!env.IsDevelopment())
         {
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseStatusCodePagesWithReExecute("/Home/ErrorProd");
             app.UseHsts();
 
@@ -43,13 +43,11 @@ public static class MiddlewareConfiguration
             });
         }
 
-        // Middleware pipeline
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseSession();
 
-        // Localization
         var supportedCultures = new[] { "ar_EG", "en_US" };
         var localizationOptions = new RequestLocalizationOptions()
             .SetDefaultCulture(supportedCultures[0])
@@ -58,25 +56,16 @@ public static class MiddlewareConfiguration
 
         app.UseRequestLocalization(localizationOptions);
 
-        // Use custom permission policy middleware (Before authentication)
+
+        app.UseAuthentication();
         app.UseMiddleware<PermissionPolicyMiddleware>();
 
-        // Authentication & Authorization
-        app.UseAuthentication();
         app.UseAuthorization();
 
-        // Custom exception handling for production
-        if (!env.IsDevelopment())
-        {
-            app.UseMiddleware<ExceptionMiddleware>();
-        }
-
-        // Default route
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        // Seed initial data
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
