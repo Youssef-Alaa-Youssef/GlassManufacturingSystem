@@ -128,6 +128,8 @@ namespace Factory.Controllers
         public async Task<IActionResult> Optimization(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            var Items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+            ViewBag.Item = Items;
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }

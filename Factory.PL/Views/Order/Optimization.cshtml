@@ -4,96 +4,92 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow rounded my-5">
-    @await Html.PartialAsync("ErrorSummaryPartial")
-
-    <div class="card border-0">
-        <div class="card-header text-center py-3">
-            <h3 class="mb-0 fw-bold">Glass Cutting Optimization</h3>
+<div class="container my-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header text-center py-4">
+            <h3 class="fw-bold"><i class="fas fa-cut"></i> Glass Cutting Optimization</h3>
         </div>
         <div class="card-body">
-            <div class="row g-4">
-                <!-- Order Details -->
-                <div class="col-lg-6">
-                    <div class="p-3 border rounded">
-                        <h5 class="text-success"><i class="fas fa-user"></i> Customer: @Model.CustomerName</h5>
-                        <p><strong><i class="fas fa-project-diagram"></i> Project:</strong> @Model.ProjectName</p>
-                        <p><strong><i class="fas fa-calendar-alt"></i> Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</p>
-                        <p>
-                            <strong><i class="fas fa-flag"></i> Priority:</strong>
-                            <span class="badge @(Model.Priority == "High" ? "bg-danger" : "bg-warning text-dark")">
-                                @Model.Priority
-                            </span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Glass Cutting Canvas -->
-                <div class="col-lg-6 text-center">
-                    <h5 class="text-primary"><i class="fas fa-border-all"></i> Glass Sheet Layout</h5>
-                    <div class="border shadow-sm rounded p-2 ">
-                        <canvas id="glassCanvas" class="w-100"></canvas>
-                    </div>
+            <div class="text-center">
+                <h5 class="text-primary"><i class="fas fa-border-all"></i> Glass Sheet Layout</h5>
+                <div class="border shadow-sm rounded p-3 ">
+                    <canvas id="glassCanvas" class="w-100"></canvas>
                 </div>
             </div>
 
-            <!-- Buttons -->
+            <div id="optimizationResults" class="mt-4 p-3 border rounded">
+                <h5 class="fw-bold text-dark"><i class="fas fa-chart-line"></i> Optimization Report</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success"></i>
+                        Total Sheets Used: <strong id="totalSheetsUsed">0</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success"></i>
+                        Total Items Placed: <strong id="totalItemsPlaced">0</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        Total Glass Lost: <strong id="totalGlassLost">0 mm²</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-percentage text-info"></i>
+                        Utilization Efficiency: <strong id="utilizationEfficiency">0%</strong>
+                    </li>
+                </ul>
+            </div>
+
             <div class="text-center mt-4">
-                <button class="btn btn-lg btn-outline-primary shadow-sm px-4" onclick="optimizeGlassCutting()">
+                <button class="btn btn-lg btn-primary shadow-sm px-4" id="optimizeButton">
                     <i class="fas fa-cut"></i> Optimize & Draw
                 </button>
-                <button class="btn btn-lg btn-outline-secondary shadow-sm px-4 ms-3" onclick="clearCanvas()">
+                <button class="btn btn-lg btn-secondary shadow-sm px-4 ms-3" id="clearButton">
                     <i class="fas fa-eraser"></i> Clear
-                </button>
-                <button class="btn btn-lg btn-outline-info shadow-sm px-4 ms-3" data-bs-toggle="modal" data-bs-target="#optimizationModal">
-                    <i class="fas fa-cog"></i> Optimization Options
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Optimization Modal -->
-<div class="modal fade" id="optimizationModal" tabindex="-1" aria-labelledby="optimizationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="optimizationModalLabel">Optimization Options</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="optimizationOptions">
-                    <!-- Options will be dynamically inserted here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="applyOptimization()">Apply</button>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    canvas {
+        border: 2px solid #000;
+        background-color: #f8f9fa;
+    }
+
+    .list-group-item {
+        font-size: 1.1rem;
+    }
+
+    .btn-lg {
+        font-size: 1.2rem;
+    }
+</style>
 
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             adjustCanvasSize();
-            optimizeGlassCutting();
             window.addEventListener("resize", adjustCanvasSize);
+
+            document.getElementById("optimizeButton").addEventListener("click", optimizeGlassCutting);
+            document.getElementById("clearButton").addEventListener("click", clearCanvas);
         });
 
         function adjustCanvasSize() {
             const canvas = document.getElementById("glassCanvas");
             const parentDiv = canvas.parentElement;
             canvas.width = parentDiv.clientWidth - 10;
-            canvas.height = canvas.width / 2;
+            canvas.height = canvas.width * 0.5; 
         }
 
         function optimizeGlassCutting() {
             const canvas = document.getElementById("glassCanvas");
             const ctx = canvas.getContext("2d");
-            const sheetWidth = canvas.width;
-            const sheetHeight = canvas.height;
+            const sheetWidth = 2000; 
+            const sheetHeight = 3000; 
+            const scaleX = canvas.width / sheetWidth; 
+            const scaleY = canvas.height / sheetHeight; 
             const glassPieces = @Html.Raw(Json.Serialize(Model.Items));
 
             if (!glassPieces || glassPieces.length === 0) {
@@ -101,104 +97,69 @@
                 return;
             }
 
-            ctx.clearRect(0, 0, sheetWidth, sheetHeight);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Background Grid
-            ctx.fillStyle = "#f8f9fa";
-            ctx.fillRect(0, 0, sheetWidth, sheetHeight);
-            ctx.strokeStyle = "#d3d3d3";
-            ctx.lineWidth = 0.5;
+            let totalSheetsUsed = 1;
+            let totalItemsPlaced = 0;
+            let totalGlassLost = 0;
+            let x = 10, y = 10; 
 
-            for (let i = 0; i <= sheetWidth; i += sheetWidth / 10) {
-                ctx.beginPath();
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, sheetHeight);
-                ctx.stroke();
-            }
+            glassPieces.forEach((item) => {
+                const itemWidth = item.width * scaleX;
+                const itemHeight = item.height * scaleY;
+                const itemArea = item.width * item.height; 
 
-            for (let j = 0; j <= sheetHeight; j += sheetHeight / 10) {
-                ctx.beginPath();
-                ctx.moveTo(0, j);
-                ctx.lineTo(sheetWidth, j);
-                ctx.stroke();
-            }
+                for (let i = 0; i < item.quantity; i++) {
+                    if (x + itemWidth > canvas.width) {
+                        x = 10; 
+                        y += itemHeight + 10; 
+                    }
 
-            let x = 10, y = 10, padding = 10;
+                    if (y + itemHeight > canvas.height) {
+                        totalSheetsUsed++; 
+                        x = 10;
+                        y = 10;
+                    }
 
-            // Group items by dimensions
-            const groupedItems = groupItemsByDimensions(glassPieces);
-
-            // Draw Glass Pieces
-            groupedItems.forEach(group => {
-                group.items.forEach(piece => {
-                    let width = (piece.width / 100) * sheetWidth;
-                    let height = (piece.height / 100) * sheetHeight;
-
-                    ctx.fillStyle = group.color;
-                    ctx.fillRect(x, y, width, height);
+                    ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
+                    ctx.fillRect(x, y, itemWidth, itemHeight);
                     ctx.strokeStyle = "black";
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, width, height);
+                    ctx.strokeRect(x, y, itemWidth, itemHeight);
 
                     ctx.fillStyle = "black";
-                    ctx.font = "14px Arial";
-                    ctx.fillText(`${piece.itemName} (${piece.width}mm x ${piece.height}mm)`, x + 5, y + 20);
+                    ctx.font = "12px Arial";
+                    ctx.fillText(`${item.width} mm x ${item.height} mm`, x + 5, y + 15);
+                    ctx.fillText(`Qty: ${item.quantity}`, x + 5, y + 30);
 
-                    x += width + padding;
-                    if (x + width > sheetWidth) {
-                        x = 10;
-                        y += height + padding;
-                    }
-                });
-            });
-
-            // Populate optimization options
-            populateOptimizationOptions(groupedItems);
-        }
-
-        function groupItemsByDimensions(items) {
-            const grouped = {};
-            const colors = ["rgba(0, 123, 255, 0.7)", "rgba(220, 53, 69, 0.7)", "rgba(40, 167, 69, 0.7)", "rgba(255, 193, 7, 0.7)"];
-
-            items.forEach(item => {
-                const key = `${item.width}x${item.height}`;
-                if (!grouped[key]) {
-                    grouped[key] = {
-                        items: [],
-                        color: colors[Object.keys(grouped).length % colors.length]
-                    };
+                    x += itemWidth + 10; // Move to the next position
+                    totalItemsPlaced++;
                 }
-                grouped[key].items.push(item);
             });
 
-            return Object.values(grouped);
-        }
+            // Calculate optimization metrics
+            const sheetArea = sheetWidth * sheetHeight; // Total sheet area in mm²
+            const utilizedArea = glassPieces.reduce((sum, item) => sum + (item.width * item.height * item.quantity), 0); // Total utilized area in mm²
+            totalGlassLost = (totalSheetsUsed * sheetArea) - utilizedArea; // Total glass lost in mm²
+            const utilizationEfficiency = ((utilizedArea / (totalSheetsUsed * sheetArea)) * 100).toFixed(2); // Utilization efficiency in %
 
-        function populateOptimizationOptions(groupedItems) {
-            const optionsContainer = document.getElementById("optimizationOptions");
-            optionsContainer.innerHTML = "";
-
-            groupedItems.forEach((group, index) => {
-                const groupDiv = document.createElement("div");
-                groupDiv.className = "mb-3";
-                groupDiv.innerHTML = `
-                    <h6>Group ${index + 1} (${group.items[0].width}mm x ${group.items[0].height}mm)</h6>
-                    <p>Number of items: ${group.items.length}</p>
-                    <div style="background-color: ${group.color}; width: 100%; height: 20px;"></div>
-                `;
-                optionsContainer.appendChild(groupDiv);
-            });
-        }
-
-        function applyOptimization() {
-            // Implement optimization logic here
-            alert("Optimization applied!");
+            // Update optimization results
+            document.getElementById("totalSheetsUsed").innerText = totalSheetsUsed;
+            document.getElementById("totalItemsPlaced").innerText = totalItemsPlaced;
+            document.getElementById("totalGlassLost").innerText = `${totalGlassLost.toFixed(2)} mm²`;
+            document.getElementById("utilizationEfficiency").innerText = `${utilizationEfficiency}%`;
         }
 
         function clearCanvas() {
             const canvas = document.getElementById("glassCanvas");
             const ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Reset optimization results
+            document.getElementById("totalSheetsUsed").innerText = 0;
+            document.getElementById("totalItemsPlaced").innerText = 0;
+            document.getElementById("totalGlassLost").innerText = "0 mm²";
+            document.getElementById("utilizationEfficiency").innerText = "0%";
         }
     </script>
 }

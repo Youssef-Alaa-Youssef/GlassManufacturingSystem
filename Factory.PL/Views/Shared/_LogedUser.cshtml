@@ -1,8 +1,11 @@
 ﻿@using System.Security.Claims
+@using System.Globalization
+
 @inject Factory.PL.Services.Permssions.IModuleService ModuleService
 @{
     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     var modules = await ModuleService.GetModulesForUserAsync(userId);
+    var currentCulture = CultureInfo.CurrentCulture.Name;
 }
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
@@ -94,12 +97,22 @@
                             <i class="bi bi-translate me-2 fs-5 p-2 rounded"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="#" onclick="changeLanguage('en')">English (En)</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#" onclick="changeLanguage('ar')">العربية (Ar)</a>
-                            </li>
+                            @if (currentCulture == "ar_EG")
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Language" asp-action="ChangeLanguage" asp-route-culture="en" asp-route-returnUrl="@Context.Request.Path">
+                                        English (En)
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Language" asp-action="ChangeLanguage" asp-route-culture="ar" asp-route-returnUrl="@Context.Request.Path">
+                                        العربية (Ar)
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     </div>
 

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Factory.PL.Controllers.Permission
 {
-    [Authorize]
     public class PermissionManagementController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -152,9 +152,9 @@
                                 <td class="stepHeightInput" style="display: none;"><input name="Items[0].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
                                 <td><input name="Items[0].Quantity" class="form-control quantity" type="number" min="1" required></td>
                                 <td><input name="Items[0].SQM" class="form-control sqm" readonly></td>
-                                <td><input name="Items[0].TotalSQM" class="form-control totalSQM" readonly></td>
-                                <td><input name="Items[0].TotalLM" class="form-control totalLM" readonly></td>
-                                <td><input name="Items[0].CustomerReference" class="form-control" required></td>
+                                <td><input name="Items[0].TotalSQM" class="form-control totalSQM" step="0.01" readonly></td>
+                                <td><input name="Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly></td>
+                                <td><input name="Items[0].CustomerReference" class="form-control" step="0.01" required></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm removeRowBtn">
                                         <i class="fas fa-trash"></i>
@@ -292,9 +292,9 @@
                     <td class="stepWidthInput" style="display: none;"><input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1"></td>
                     <td class="stepHeightInput" style="display: none;"><input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
                     <td><input name="Items[${rowCount}].Quantity" class="form-control quantity" type="number" min="1" required></td>
-                    <td><input name="Items[${rowCount}].SQM" class="form-control sqm" readonly></td>
-                    <td><input name="Items[${rowCount}].TotalSQM" class="form-control totalSQM" readonly></td>
-                    <td><input name="Items[${rowCount}].TotalLM" class="form-control totalLM" readonly></td>
+                    <td><input name="Items[${rowCount}].SQM" step="0.01" class="form-control sqm" readonly></td>
+                    <td><input name="Items[${rowCount}].TotalSQM" step="0.01" class="form-control totalSQM" readonly></td>
+                    <td><input name="Items[${rowCount}].TotalLM" step="0.01" class="form-control totalLM" readonly></td>
                     <td><input name="Items[${rowCount}].CustomerReference" class="form-control" required></td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm removeRowBtn">

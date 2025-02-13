@@ -1,4 +1,8 @@
 ﻿@model List<Factory.PL.ViewModels.OrderList.OrderViewModel>
+@{
+    var authorizationResult = await AuthorizationService.AuthorizeAsync(User, "Orders_Delete");
+}
+
 
 @{
     ViewData["Title"] = "Orders";
@@ -58,10 +62,19 @@
                                 </span>
                             </td>
                             <td>
-                                <div class="d-flex flex-wrap gap-1 justify-content-center">
-                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-info btn-sm">🔍 View</a>
-                                    <a asp-action="Optimization" asp-route-id="@order.Id" class="btn btn-outline-warning btn-sm">✏ Optimized</a>
-                                    @* <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?');">🗑 Delete</a> *@
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-info btn-sm w-100 w-md-auto">
+                                        🔍 View
+                                    </a>
+                                    <a asp-action="Optimization" asp-route-id="@order.Id" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
+                                        ✏ Optimized
+                                    </a>
+                                    @if (authorizationResult.Succeeded)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
+                                            🗑 Delete
+                                        </a>
+                                    }
                                 </div>
                             </td>
                         </tr>

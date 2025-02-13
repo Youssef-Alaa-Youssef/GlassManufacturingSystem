@@ -26,16 +26,16 @@ namespace Factory.PL.ViewModels.OrderList
         public int Quantity { get; set; }
 
         [Required(ErrorMessage = "SQM is required.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "SQM must be greater than 0.")]
-        public decimal SQM { get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for SQM.")]
+        public double SQM { get; set; }
 
         [Required(ErrorMessage = "Total SQM is required.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Total SQM must be greater than 0.")]
-        public decimal TotalSQM { get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for TotalLM.")]
+        public double TotalLM { get; set; }
 
         [Required(ErrorMessage = "Total LM is required.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Total LM must be greater than 0.")]
-        public decimal TotalLM { get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for TotalSQM.")]
+        public double TotalSQM { get; set; }
 
         [Required(ErrorMessage = "Customer Reference is required.")]
         [StringLength(100, ErrorMessage = "Customer Reference cannot exceed 100 characters.")]
