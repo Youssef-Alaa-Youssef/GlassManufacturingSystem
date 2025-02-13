@@ -28,7 +28,9 @@ namespace Factory.DAL.Configurations.Permission
             builder.HasData(
                 new Module { Id = 1, Name = "Permission Management", Url = "/Users/Index" },
                 new Module { Id = 2, Name = "User Management", Url = "/Auth/Index" },
-                new Module { Id = 3, Name = "Role Management", Url = "/Role/Index" }
+                new Module { Id = 3, Name = "Role Management", Url = "/Role/Index" },
+                new Module { Id = 4, Name = "Warehouse Management", Url = "/Warehouse/Index" },
+                new Module { Id = 5, Name = "Order Management", Url = "/Order/Index" }
             );
         }
     }

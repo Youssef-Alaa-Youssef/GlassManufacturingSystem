@@ -6,7 +6,7 @@
 
 }
 
-<div class="container mt-4 shadow-lg p-3  rounded">
+<div class="container-fluid mt-4 shadow-lg p-3  rounded">
     <div class="mt-5">
         @await Html.PartialAsync("ErrorSummaryPartial")
 
@@ -29,7 +29,7 @@
         </dl>
     </div>
 
-    <div class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+    <div class="text-center mb-4  py-3 px-4 rounded">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>

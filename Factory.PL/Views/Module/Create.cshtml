@@ -5,10 +5,9 @@
     Layout = "_LogedUser";
 
 }
-<div class="container mt-4 shadow p-3 rounded">
+<div class="container-fluid mt-4 shadow p-3 rounded">
     <div class="mt-5">
         @await Html.PartialAsync("ErrorSummaryPartial")
-
     </div>
 
     <h2 class="text-center mb-4 py-3 px-4 rounded">
@@ -34,9 +33,12 @@
             <span asp-validation-for="IconClass" class="text-danger"></span>
         </div>
 
-        <div class="text-center mb-4 bg-light text-dark py-3 px-4 rounded">
+        <div class="text-center mb-4  py-3 px-4 rounded">
             <input type="submit" value="Create" class="btn btn-primary" />
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -54,6 +54,14 @@
                                         var moduleIndex = rolePermission.Permissions[permissionIndex].Modules.FindIndex(m => m.ModuleId == module.ModuleId);
 
                                         <div class="form-check">
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleId" />
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleName" />
+
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionId" />
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionName" />
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleId" />
+                                            <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleName" />
+
                                             <input type="checkbox" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].IsSelected" class="form-check-input permission-checkbox" data-module-id="@module.ModuleId" data-role-id="@rolePermission.RoleId" />
                                             <label class="form-check-label">@permission.PermissionName</label>
                                         </div>

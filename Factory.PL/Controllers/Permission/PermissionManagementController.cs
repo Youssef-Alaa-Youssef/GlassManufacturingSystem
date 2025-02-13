@@ -173,7 +173,7 @@ namespace Factory.PL.Controllers.Permission
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignPermissionsTest(PermissionManagementViewModel model)
+        public async Task<IActionResult> AssignPermissions(PermissionManagementViewModel model)
         {
             if (!ModelState.IsValid)
             {

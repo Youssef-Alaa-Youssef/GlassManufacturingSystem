@@ -6,7 +6,7 @@
 
 }
 
-<div class="container mt-4 shadow-lg p-3 rounded">
+<div class="container-fluid mt-4 shadow-lg p-3 rounded">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
     <h2 class="text-center mb-4 py-3 px-4 rounded">
@@ -15,6 +15,7 @@
 
     <p>
         <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+        <a asp-controller="SubModule" asp-action="Create" class="btn btn-outline-info">Create Sub Warehouse</a>
     </p>
 
     <table class="table table-bordered table-striped">

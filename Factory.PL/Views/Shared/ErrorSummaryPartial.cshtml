@@ -4,7 +4,7 @@
 
 @if (modelState != null && !modelState.IsValid)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger fade show" role="alert" data-bs-theme="auto">
         <strong>There were some errors with your form submission:</strong>
         <ul>
             @foreach (var error in modelState.Values.SelectMany(v => v.Errors))
@@ -14,9 +14,10 @@
         </ul>
     </div>
 }
+
 @if (TempData["Error"] != null)
 {
-    <div id="error-alert" class="mt-5 alert alert-danger alert-dismissible fade show" role="alert">
+    <div id="error-alert" class="mt-5 alert alert-danger alert-dismissible fade show" role="alert" data-bs-theme="auto">
         @TempData["Error"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -24,9 +25,22 @@
 
 @if (TempData["Success"] != null)
 {
-    <div id="success-alert" class="mt-5 alert alert-success alert-dismissible fade show" role="alert">
+    <div id="success-alert" class="mt-5 alert alert-success alert-dismissible fade show" role="alert" data-bs-theme="auto">
         @TempData["Success"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                let alerts = document.querySelectorAll(".alert");
+                alerts.forEach(alert => {
+                    alert.classList.remove("show"); 
+                    alert.classList.add("fade"); 
+                    setTimeout(() => alert.remove(), 500); 
+                });
+            }, 5000);
+        });
+    </script>
+}

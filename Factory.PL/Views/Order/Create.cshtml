@@ -49,7 +49,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label asp-for="Date" class="form-label">Date</label>
-                        <input asp-for="Date" type="date" class="form-control" required>
+                        <input asp-for="Date" type="date" disabled value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" required>
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
@@ -154,7 +154,7 @@
                                 <td><input name="Items[0].SQM" class="form-control sqm" readonly></td>
                                 <td><input name="Items[0].TotalSQM" class="form-control totalSQM" readonly></td>
                                 <td><input name="Items[0].TotalLM" class="form-control totalLM" readonly></td>
-                                <td><input name="Items[0].ItemReference" class="form-control" required></td>
+                                <td><input name="Items[0].CustomerReference" class="form-control" required></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm removeRowBtn">
                                         <i class="fas fa-trash"></i>
@@ -253,10 +253,10 @@
                 const widthMeters = width / 1000;
                 const heightMeters = height / 1000;
 
-                const sqm = (widthMeters * heightMeters).toFixed(2);
-                const totalSQM = (sqm * qty).toFixed(2);
-                const totalLM = (widthMeters * qty).toFixed(2);
-
+                const sqm = parseFloat((widthMeters * heightMeters).toFixed(2));
+                const totalSQM = parseFloat((sqm * qty).toFixed(2));
+                const totalLM = parseFloat((widthMeters * qty).toFixed(2));
+        
                 this.closest('tr').querySelector('.sqm').value = parseFloat(sqm);
                 this.closest('tr').querySelector('.totalSQM').value = parseFloat(totalSQM);
                 this.closest('tr').querySelector('.totalLM').value = parseFloat(totalLM);
@@ -278,13 +278,13 @@
                     <td>${rowCount + 1}</td>
                     <td>
                         <select name="Items[${rowCount}].ItemName" class="form-control" required>
-        @if (Model?.Items != null && Model.Items.Any())
-        {
-        @foreach (var item in Model.Items)
-        {
-                                                <option value="@item.Id">@item.ItemName</option>
-        }
-        }
+                            @if (Model?.Items != null && Model.Items.Any())
+                            {
+                                @foreach (var item in Model.Items)
+                                {
+                                    <option value="@item.Id">@item.ItemName</option>
+                                }
+                            }
                         </select>
                     </td>
                     <td><input name="Items[${rowCount}].Width" class="form-control width" type="number" min="0" step="1" required></td>
@@ -295,7 +295,7 @@
                     <td><input name="Items[${rowCount}].SQM" class="form-control sqm" readonly></td>
                     <td><input name="Items[${rowCount}].TotalSQM" class="form-control totalSQM" readonly></td>
                     <td><input name="Items[${rowCount}].TotalLM" class="form-control totalLM" readonly></td>
-                    <td><input name="Items[${rowCount}].ItemReference" class="form-control" required></td>
+                    <td><input name="Items[${rowCount}].CustomerReference" class="form-control" required></td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm removeRowBtn">
                             <i class="fas fa-trash"></i>
@@ -317,7 +317,6 @@
                 }
             });
 
-            // Form validation
             (function () {
                 'use strict';
                 var forms = document.querySelectorAll('.needs-validation');

@@ -433,10 +433,6 @@ namespace Factory.DAL.Migrations
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ItemReference")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("JobNo")
                         .IsRequired()
                         .HasMaxLength(50)

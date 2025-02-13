@@ -7,7 +7,6 @@ using Factory.DAL.Models.OrderList;
 
 namespace Factory.Controllers
 {
-    [Authorize]
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -17,7 +16,7 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize(Policy = "Orders_Read")]
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
@@ -42,12 +41,17 @@ namespace Factory.Controllers
             };
             return View(model);
         }
-
+        [Authorize(Policy = "Orders_Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel orderViewModel)
         {
-            if (!ModelState.IsValid) return View(orderViewModel);
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+            var model = new OrderViewModel
+            {
+                Items = items.Select(i => new OrderItemViewModel { Id = i.Id, ItemName = i.Name }).ToList()
+            };
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
@@ -62,6 +66,7 @@ namespace Factory.Controllers
                 return View(orderViewModel);
             }
         }
+        [Authorize(Policy = "Orders_Update")]
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -69,6 +74,7 @@ namespace Factory.Controllers
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
+        [Authorize(Policy = "Orders_Update")]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -93,12 +99,13 @@ namespace Factory.Controllers
             }
         }
 
-        [Authorize(Policy = "Delete")]
+        [Authorize(Policy = "Orders_Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             return order == null ? NotFound() : View(order);
         }
+        [Authorize(Policy = "Orders_Delete")]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -116,6 +123,7 @@ namespace Factory.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        [Authorize(Policy = "Orders_Read")]
 
         public async Task<IActionResult> Optimization(int id)
         {

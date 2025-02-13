@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Factory.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Apply : Migration
+    public partial class applyallchanges : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -121,6 +121,31 @@ namespace Factory.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CustomerReference = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ProjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    JobNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    SelectedMachines = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalSQM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalLM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    FinishDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Signature = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Partners",
                 columns: table => new
                 {
@@ -184,6 +209,53 @@ namespace Factory.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Property", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FactoryNameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    FactoryNameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FactoryLogo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaxNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FacebookUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TwitterUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkedInUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InstagramUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ItemsPerPage = table.Column<int>(type: "int", nullable: false),
+                    EnableAnimations = table.Column<bool>(type: "bit", nullable: false),
+                    EnableNotifications = table.Column<bool>(type: "bit", nullable: false),
+                    NotificationPreferences = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NotifyOnNewOrder = table.Column<bool>(type: "bit", nullable: false),
+                    NotifyOnDelivery = table.Column<bool>(type: "bit", nullable: false),
+                    ShowDesign1 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ShowDesign2 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ShowDesign3 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    DefaultDesign = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EnableTwoFactorAuth = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordExpiryDays = table.Column<int>(type: "int", nullable: false),
+                    RequireStrongPasswords = table.Column<bool>(type: "bit", nullable: false),
+                    EnableAutoBackup = table.Column<bool>(type: "bit", nullable: false),
+                    BackupFrequency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BackupLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -394,6 +466,34 @@ namespace Factory.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrderItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    ItemName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Width = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Height = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    SQM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalSQM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalLM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomerReference = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RolePermissions",
                 columns: table => new
                 {
@@ -593,6 +693,11 @@ namespace Factory.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_OrderId",
+                table: "OrderItem",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Partners_Name",
                 table: "Partners",
                 column: "Name",
@@ -607,6 +712,12 @@ namespace Factory.DAL.Migrations
                 name: "IX_RolePermissions_PermissionId",
                 table: "RolePermissions",
                 column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settings_UserId",
+                table: "Settings",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubModules_ModuleId",
@@ -662,6 +773,9 @@ namespace Factory.DAL.Migrations
                 name: "Items");
 
             migrationBuilder.DropTable(
+                name: "OrderItem");
+
+            migrationBuilder.DropTable(
                 name: "Partners");
 
             migrationBuilder.DropTable(
@@ -669,6 +783,9 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "SubModules");
@@ -681,6 +798,9 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "SubWarehouses");
+
+            migrationBuilder.DropTable(
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

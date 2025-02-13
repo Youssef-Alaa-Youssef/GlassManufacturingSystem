@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250212190227_OrderApplied")]
-    partial class OrderApplied
+    [Migration("20250213064305_apply all changes")]
+    partial class applyallchanges
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

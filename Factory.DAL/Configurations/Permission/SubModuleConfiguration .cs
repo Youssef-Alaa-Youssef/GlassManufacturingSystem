@@ -41,8 +41,15 @@ namespace Factory.DAL.Configurations.Permission
                 new SubModule { Id = 4, Name = "Sub Modules Management", Controller = "SubModule", Action = "Index", Title = "Sub Modules Management", ModuleId = 1 },
 
                 new SubModule { Id = 5, Name = "User Management", Controller = "Auth", Action = "index", Title = "User Management", ModuleId = 2 },
-                new SubModule { Id = 6, Name = "Role Management", Controller = "Role", Action = "index", Title = "Role Management", ModuleId = 3 }
-            );
+                new SubModule { Id = 6, Name = "Role Management", Controller = "Role", Action = "index", Title = "Role Management", ModuleId = 3 },
+
+
+                new SubModule { Id = 7, Name = "Warehouse Management", Controller = "Warehouse", Action = "index", Title = "Warehouse Management", ModuleId = 4 },
+                new SubModule { Id = 8, Name = "Item Management", Controller = "Item", Action = "index", Title = "Item Management", ModuleId = 4 },
+                new SubModule { Id = 9, Name = "Order Management", Controller = "Order", Action = "Create", Title = "Order Management", ModuleId = 5 },
+                new SubModule { Id = 10, Name = "Order Management", Controller = "Order", Action = "index", Title = "Order Management", ModuleId = 5 }
+
+                );
         }
     }
 }
