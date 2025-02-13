@@ -16,14 +16,14 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize]
+        [Authorize(Policy = "Permission Management_Read")]
         public async Task<IActionResult> Index()
         {
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
             return View(modules);
         }
 
-        [Authorize]
+        [Authorize(Policy = "Permission Management_Read")]
         public async Task<IActionResult> Details(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -35,11 +35,12 @@ namespace Factory.Controllers
             return View(module);
         }
 
-        [Authorize]
+        [Authorize(Policy = "Permission Management_Create")]
         public IActionResult Create()
         {
             return View();
         }
+        [Authorize(Policy = "Permission Management_Create")]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -74,7 +75,7 @@ namespace Factory.Controllers
             return View(ModulesViewModel);
         }
 
-        [Authorize]
+        [Authorize(Policy = "Permission Management_Update")]
         public async Task<IActionResult> Edit(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -95,10 +96,10 @@ namespace Factory.Controllers
 
             return View(ModulesViewModel);
         }
+        [Authorize(Policy = "Permission Management_Update")]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Edit(int id, ModulesViewModel ModulesViewModel)
         {
             if (id != ModulesViewModel.Id)
@@ -135,7 +136,7 @@ namespace Factory.Controllers
             return View(ModulesViewModel);
         }
 
-        [Authorize]
+        [Authorize(Policy = "Permission Management_Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -146,6 +147,7 @@ namespace Factory.Controllers
 
             return View(module);
         }
+        [Authorize(Policy = "Permission Management_Delete")]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
