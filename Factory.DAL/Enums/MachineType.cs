@@ -2,10 +2,11 @@
 {
     public enum MachineType
     {
-        DG,
-        IG,
-        Lamination,
         Cutting,
-        Drilling
+        Polish,
+        Drilling,
+        Temparing,
+        Lamination,
+        IGU,
     }
 }
