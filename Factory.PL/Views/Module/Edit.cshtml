@@ -3,13 +3,11 @@
 @{
     ViewData["Title"] = "Edit Module";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid mt-4 shadow-lg p-3  rounded">
+<div class="container-fluid mt-4 shadow-lg p-3 rounded">
     <div class="mt-5">
         @await Html.PartialAsync("ErrorSummaryPartial")
-
     </div>
 
     <h2 class="text-center mb-4 py-3 px-4 rounded">
@@ -19,30 +17,73 @@
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
 
-        <div class="form-group">
-            <label asp-for="Name" class="control-label"></label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+        <div class="row">
+            <div class="col-md-4 form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 form-group">
+                <label asp-for="Url" class="control-label"></label>
+                <input asp-for="Url" class="form-control" />
+                <span asp-validation-for="Url" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4 form-group">
+                <label asp-for="IconClass" class="control-label"></label>
+                <div class="input-group">
+                    <select asp-for="IconClass" class="form-control" id="iconSelect">
+                    </select>
+                    <span class="input-group-text" id="iconPreview">
+                        <i class="bi bi-question-circle"></i>
+                    </span>
+                </div>
+                <span asp-validation-for="IconClass" class="text-danger"></span>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Url" class="control-label"></label>
-            <input asp-for="Url" class="form-control" />
-            <span asp-validation-for="Url" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="IconClass" class="control-label"></label>
-            <input asp-for="IconClass" class="form-control" />
-            <span asp-validation-for="IconClass" class="text-danger"></span>
-        </div>
-
-        <div class="text-center mb-4  py-3 px-4 rounded">
+        <div class="text-center mb-4 py-3 px-4 rounded">
             <input type="submit" value="Save" class="btn btn-primary" />
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const icons = [
+                "bi-stack","bi-chevron-down","bi-dash", "bi-check", "bi-heart", "bi-star", "bi-gear", "bi-house",
+                "bi-person", "bi-envelope", "bi-trash", "bi-search", "bi-arrow-left",
+                "bi-arrow-right", "bi-plus", "bi-minus", "bi-x", "bi-list", "bi-grid",
+                "bi-bookmark", "bi-calendar", "bi-clock", "bi-cloud", "bi-download",
+                "bi-upload", "bi-pencil", "bi-save", "bi-lock", "bi-unlock", "bi-eye",
+                "bi-eye-slash", "bi-camera", "bi-image", "bi-music", "bi-film", "bi-mic",
+                "bi-volume-up", "bi-volume-mute", "bi-phone", "bi-link", "bi-share",
+                "bi-copy", "bi-printer"
+            ];
+
+            const selectElement = document.getElementById("iconSelect");
+            const iconPreview = document.getElementById("iconPreview");
+
+            icons.forEach(icon => {
+                const option = document.createElement("option");
+                option.value = `bi ${icon}`;
+                option.textContent = icon.replace("bi-", "");
+                selectElement.appendChild(option);
+            });
+
+            selectElement.addEventListener("change", function () {
+                const selectedIcon = this.value;
+                iconPreview.innerHTML = `<i class="${selectedIcon}"></i>`;
+            });
+
+            if (icons.length > 0) {
+                iconPreview.innerHTML = `<i class="bi ${icons[0]}"></i>`;
+            }
+        });
+    </script>
 }

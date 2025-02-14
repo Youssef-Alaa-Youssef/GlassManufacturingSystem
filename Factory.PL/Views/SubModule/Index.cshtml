@@ -41,9 +41,17 @@
                     <td>@item.Title</td>
                     <td>@item.Module?.Name</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm w-100 w-md-auto">
+                            🔍 Edit
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
+                            ✏ Details
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
+                            🗑 Delete
+                        </a>
+                    </div>
                     </td>
                 </tr>
             }

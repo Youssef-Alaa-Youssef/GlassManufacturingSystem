@@ -165,7 +165,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-        [Authorize]
+        [Authorize(Roles = $"{nameof(UserRole.Owner)}, {nameof(UserRole.GM)}")]
         public async Task<IActionResult> DashBoard()
         {
             var userCount = (await _unitOfWork.GetRepository<IdentityUser>().GetAllAsync()).Count();
