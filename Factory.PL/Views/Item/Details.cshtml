@@ -5,15 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    <div class="card shadow-lg">
-        <div class="card-header ">
-            <h2 class="card-title text-center mb-0">
-                <i class="bi bi-box-seam me-2"></i> @ViewData["Title"]
-            </h2>
-        </div>
         <div class="card-body">
             <div class="row">
                 <!-- Left Column: Basic Information -->
@@ -111,4 +106,3 @@
             </a>
         </div>
     </div>
-</div>

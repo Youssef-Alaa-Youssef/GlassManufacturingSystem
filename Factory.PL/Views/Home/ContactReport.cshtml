@@ -5,13 +5,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container mt-4 shadow-lg p-3">
-    <!-- Header Section -->
-    <div class="mb-4 text-center">
-        <h2 class="bg-light text-dark py-3 px-4 rounded">
-            <i class="bi bi-envelope-open me-2"></i> Contacts
-        </h2>
-    </div>
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+
+    @await Html.PartialAsync("_PageTitle")
+
 
     <!-- Statistics Cards -->
     <div class="row text-center mb-4">

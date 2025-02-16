@@ -4,10 +4,9 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow-lg mt-4 p-4 rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
-    <h2 class="mb-4 text-center fw-bold">Order Details</h2>
+    @await Html.PartialAsync("_PageTitle")
 
     <div class="row">
         <div class="col-lg-8">

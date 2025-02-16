@@ -56,7 +56,7 @@ namespace Factory.Controllers
                     Name = ModulesViewModel.Name,
                     Url = ModulesViewModel.Url,
                     IconClass = ModulesViewModel.IconClass,
-                    RolePermissions = ModulesViewModel.RolePermissions,
+                    //RolePermissions = ModulesViewModel.RolePermissions,
                     SubModules = ModulesViewModel.SubModules
                 };
 
@@ -90,7 +90,7 @@ namespace Factory.Controllers
                 Name = module.Name,
                 Url = module.Url,
                 IconClass = module.IconClass,
-                RolePermissions = module.RolePermissions,
+                //RolePermissions = module.RolePermissions,
                 SubModules = module.SubModules
             };
 
@@ -118,7 +118,7 @@ namespace Factory.Controllers
                 module.Name = ModulesViewModel.Name;
                 module.Url = ModulesViewModel.Url;
                 module.IconClass = ModulesViewModel.IconClass;
-                module.RolePermissions = ModulesViewModel.RolePermissions;
+                //module.RolePermissions = ModulesViewModel.RolePermissions;
                 module.SubModules = ModulesViewModel.SubModules;
 
                 try

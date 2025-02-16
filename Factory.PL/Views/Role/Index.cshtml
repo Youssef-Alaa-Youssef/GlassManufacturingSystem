@@ -5,12 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4 shadow-lg p-3 rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    <h2 class="text-center mb-4 text-dark py-3 px-4 ">
-        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
-    </h2>
     <div class="mb-3 text-center">
         <a asp-action="Create" class="btn btn-outline-primary">
             <i class="bi bi-plus-circle me-2"></i> Create Role

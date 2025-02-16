@@ -5,10 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4 shadow p-3 rounded">
-    <h2 class="text-center mb-4  py-3 px-4 rounded">
-        <i class="bi bi-person-check me-2"></i> @ViewData["Title"]
-    </h2>
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
     <form method="post">
         <input type="hidden" asp-for="UserId" />
 

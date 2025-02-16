@@ -5,12 +5,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4 shadow p-4 rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h2 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-people me-2"></i> @ViewData["Title"]
-    </h2>
+    @await Html.PartialAsync("_PageTitle")
+
     <form method="get" class="mb-4">
         <div class="input-group">
             <input type="text" name="query" value="@ViewBag.query" class="form-control" placeholder="Search roles..." />

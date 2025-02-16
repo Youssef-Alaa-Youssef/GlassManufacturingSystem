@@ -5,10 +5,9 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4 shadow p-3  rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
-    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+    @await Html.PartialAsync("_PageTitle")
 
     <form asp-action="AssignPermissions" method="post">
         <div class="mb-4">

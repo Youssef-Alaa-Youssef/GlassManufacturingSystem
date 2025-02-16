@@ -6,8 +6,9 @@
     int Counter = 0;
 }
 
-<div class="container-fluid mt-5 shadow-lg p-4">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
     <h2 class="text-center mb-4   py-3 px-4 rounded">
         Role Report

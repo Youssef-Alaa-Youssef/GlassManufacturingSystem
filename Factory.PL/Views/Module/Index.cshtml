@@ -6,12 +6,10 @@
 
 }
 
-<div class="container-fluid mt-4 shadow-lg p-3 rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    <h2 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
-    </h2>
 
     <p>
         <a asp-action="Create" class="btn btn-outline-primary">Create New</a>

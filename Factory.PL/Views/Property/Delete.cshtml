@@ -5,12 +5,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow-lg p-4">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h1 class="text-center mb-4  py-3 px-4 rounded">
-        <i class="bi bi-trash"></i> Delete Property
-    </h1>
+    @await Html.PartialAsync("_PageTitle")
+
 
     <form asp-action="Delete" method="post">
         <!-- Hidden field for Id -->

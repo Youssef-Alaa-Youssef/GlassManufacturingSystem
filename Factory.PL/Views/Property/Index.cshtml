@@ -5,12 +5,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow-lg p-4">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h1 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-house-door"></i> Properties
-    </h1>
+    @await Html.PartialAsync("_PageTitle")
+
 
     <!-- Display Error Message -->
     @if (TempData["Error"] != null)

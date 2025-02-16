@@ -6,12 +6,11 @@
 
 }
 
-<div class="container-fluid shadow-lg mt-5 p-4  rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h1 class="text-center mb-4 py-3 px-4 ">
-        Edit FAQ
-    </h1>
+    @await Html.PartialAsync("_PageTitle")
+
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />

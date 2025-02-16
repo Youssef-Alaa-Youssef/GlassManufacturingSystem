@@ -5,14 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid mt-4 shadow-lg p-3 rounded">
-    <div class="mt-5">
-        @await Html.PartialAsync("ErrorSummaryPartial")
-    </div>
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    <h2 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-person-badge me-2"></i> @ViewData["Title"]
-    </h2>
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
@@ -44,8 +40,8 @@
         </div>
 
         <div class="text-center mb-4 py-3 px-4 rounded">
-            <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            <input type="submit" value="Save" class="btn btn-outline-primary" />
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
         </div>
     </form>
 </div>

@@ -2,88 +2,105 @@
 
 <div class="row">
     <!-- Factory Information -->
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="FactoryNameAr" class="form-label"></label>
             <input asp-for="FactoryNameAr" class="form-control" placeholder="Enter factory name in Arabic" />
             <span asp-validation-for="FactoryNameAr" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="FactoryNameEn" class="form-label"></label>
             <input asp-for="FactoryNameEn" class="form-control" placeholder="Enter factory name in English" />
             <span asp-validation-for="FactoryNameEn" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="FactoryLogo" class="form-label"></label>
-            <input asp-for="FactoryLogo" class="form-control" placeholder="Enter logo URL or upload file" />
+            <input asp-for="FactoryLogo" type="file" class="form-control" />
             <span asp-validation-for="FactoryLogo" class="text-danger"></span>
         </div>
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="TaxNumber" class="form-label"></label>
             <input asp-for="TaxNumber" class="form-control" placeholder="Enter tax number" />
             <span asp-validation-for="TaxNumber" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="Address" class="form-label"></label>
             <input asp-for="Address" class="form-control" placeholder="Enter factory address" />
             <span asp-validation-for="Address" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="ContactNumber" class="form-label"></label>
             <input asp-for="ContactNumber" class="form-control" placeholder="Enter contact number" />
             <span asp-validation-for="ContactNumber" class="text-danger"></span>
         </div>
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="Email" class="form-label"></label>
             <input asp-for="Email" class="form-control" placeholder="Enter email address" />
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="Website" class="form-label"></label>
             <input asp-for="Website" class="form-control" placeholder="Enter website URL" />
             <span asp-validation-for="Website" class="text-danger"></span>
         </div>
     </div>
+</div>
 
-    <!-- Social Media Links -->
-    <div class="col-md-6">
+<!-- Social Media Links -->
+<div class="row">
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="FacebookUrl" class="form-label"></label>
             <input asp-for="FacebookUrl" class="form-control" placeholder="Enter Facebook URL" />
             <span asp-validation-for="FacebookUrl" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="TwitterUrl" class="form-label"></label>
             <input asp-for="TwitterUrl" class="form-control" placeholder="Enter Twitter URL" />
             <span asp-validation-for="TwitterUrl" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="LinkedInUrl" class="form-label"></label>
             <input asp-for="LinkedInUrl" class="form-control" placeholder="Enter LinkedIn URL" />
             <span asp-validation-for="LinkedInUrl" class="text-danger"></span>
         </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="InstagramUrl" class="form-label"></label>
-            <input asp-for="InstagramUrl" class="form-control" placeholder="Enter Instagram URL" />
-            <span asp-validation-for="InstagramUrl" class="text-danger"></span>
-        </div>
     </div>
 </div>
 
 <!-- Display, Notification, and Security Settings -->
-<div class="row mt-4">
-    <div class="col-md-6">
-        <!-- Display Settings -->
+<div class="row">
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="Theme" class="form-label"></label>
             <select asp-for="Theme" class="form-control">
@@ -92,7 +109,9 @@
             </select>
             <span asp-validation-for="Theme" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="Language" class="form-label"></label>
             <select asp-for="Language" class="form-control">
@@ -101,68 +120,41 @@
             </select>
             <span asp-validation-for="Language" class="text-danger"></span>
         </div>
+    </div>
 
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="ItemsPerPage" class="form-label"></label>
             <input asp-for="ItemsPerPage" class="form-control" placeholder="Enter items per page" />
             <span asp-validation-for="ItemsPerPage" class="text-danger"></span>
         </div>
+    </div>
+</div>
 
-        <!-- Notification Settings -->
-        <div class="form-group mb-3">
-            <label asp-for="EnableNotifications" class="form-label"></label>
-            <input asp-for="EnableNotifications" class="form-check-input" />
-            <span asp-validation-for="EnableNotifications" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="NotificationPreferences" class="form-label"></label>
-            <select asp-for="NotificationPreferences" class="form-control">
-                <option value="Email">Email</option>
-                <option value="SMS">SMS</option>
-                <option value="Both">Both</option>
-            </select>
-            <span asp-validation-for="NotificationPreferences" class="text-danger"></span>
+<!-- Security Settings -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group form-check">
+            <input asp-for="EnableTwoFactorAuth" class="form-check-input" />
+            <label asp-for="EnableTwoFactorAuth" class="form-check-label"></label>
+            <span asp-validation-for="EnableTwoFactorAuth" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <!-- Design Settings -->
-        <div class="form-group mb-3">
-            <label asp-for="ShowDesign1" class="form-label"></label>
-            <input asp-for="ShowDesign1" class="form-check-input" />
-            <span asp-validation-for="ShowDesign1" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="ShowDesign2" class="form-label"></label>
-            <input asp-for="ShowDesign2" class="form-check-input" />
-            <span asp-validation-for="ShowDesign2" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="ShowDesign3" class="form-label"></label>
-            <input asp-for="ShowDesign3" class="form-check-input" />
-            <span asp-validation-for="ShowDesign3" class="text-danger"></span>
-        </div>
-
-        <!-- Security Settings -->
-        <div class="form-group mb-3">
-            <label asp-for="EnableTwoFactorAuth" class="form-label"></label>
-            <input asp-for="EnableTwoFactorAuth" class="form-check-input" />
-            <span asp-validation-for="EnableTwoFactorAuth" class="text-danger"></span>
-        </div>
-
+    <div class="col-md-4">
         <div class="form-group mb-3">
             <label asp-for="PasswordExpiryDays" class="form-label"></label>
             <input asp-for="PasswordExpiryDays" class="form-control" placeholder="Enter password expiry days" />
             <span asp-validation-for="PasswordExpiryDays" class="text-danger"></span>
         </div>
+    </div>
 
-        <div class="form-group mb-3">
-            <label asp-for="RequireStrongPasswords" class="form-label"></label>
+    <div class="col-md-4">
+        <div class="form-group form-check">
             <input asp-for="RequireStrongPasswords" class="form-check-input" />
+            <label asp-for="RequireStrongPasswords" class="form-check-label"></label>
             <span asp-validation-for="RequireStrongPasswords" class="text-danger"></span>
         </div>
     </div>
 </div>
+

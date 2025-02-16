@@ -9,11 +9,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow mt-3 p-3">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-        <h2 class="text-primary">Orders</h2>
         <div class="d-flex flex-wrap gap-2">
             <a asp-action="Create" class="btn btn-outline-success">+ Create Order</a>
             <button id="exportExcelBtn" class="btn btn-outline-primary">📥 Export to Excel</button>

@@ -5,12 +5,10 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow-lg mt-5 p-4 rounded">
+<div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h1 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-info-circle me-2"></i> Partner Details
-    </h1>
+    @await Html.PartialAsync("_PageTitle")
 
     <div class="mb-4">
         <h3><i class="bi bi-person-circle me-2"></i> Name</h3>

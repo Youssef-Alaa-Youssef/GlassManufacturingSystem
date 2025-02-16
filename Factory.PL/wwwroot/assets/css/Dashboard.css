@@ -45,7 +45,7 @@ body[data-bs-theme="dark"] i {
     position: fixed;
     top: 56px;
     left: -270px;
-    background-color: #f8f9fa;
+/*    background-color: #f8f9fa;*/
     overflow-y: auto;
     transition: left 0.3s ease-in-out;
 }

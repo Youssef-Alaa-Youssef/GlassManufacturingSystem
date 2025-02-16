@@ -5,15 +5,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid shadow-lg p-4  rounded">
-    <!-- Display all validation errors -->
-    <div>
-        @await Html.PartialAsync("ErrorSummaryPartial")
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
 
-    </div>
-    <h2 class="text-center mb-4 py-3 px-4 rounded">
-        <i class="bi bi-house-door"></i> Create Property
-    </h2>
+    @await Html.PartialAsync("_PageTitle")
+
 
     <form asp-action="Create" enctype="multipart/form-data" method="post">
         <!-- General Information -->

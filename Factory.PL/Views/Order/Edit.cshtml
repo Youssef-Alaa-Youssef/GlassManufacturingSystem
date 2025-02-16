@@ -3,9 +3,10 @@
 @{
     ViewData["Title"] = "Edit Order";
 }
-<div class="container-fluid">
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-<h1>Edit Order</h1>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
