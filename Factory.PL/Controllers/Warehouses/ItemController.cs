@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Factory.BLL.InterFaces;
+using Factory.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Factory.DAL.Models.Warehouses;
 using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.Warehouses;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+using Factory.BLL.InterFaces;
 
 namespace Factory.Controllers.Warehouses
 {
+    [Authorize]
     public class ItemController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -16,7 +21,7 @@ namespace Factory.Controllers.Warehouses
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize]
+        // GET: Item/Index
         public async Task<IActionResult> Index()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
@@ -28,7 +33,7 @@ namespace Factory.Controllers.Warehouses
                 Type = i.Type,
                 Color = i.Color,
                 Thickness = i.Thickness,
-                Dimensions = i.Dimensions,
+                Dimensions = $"{i.Width} x {i.Height}",  // Show dimensions as a formatted string
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
                 WarehouseName = i.Warehouse?.NameEn,
@@ -42,13 +47,14 @@ namespace Factory.Controllers.Warehouses
 
             return View(itemViewModels);
         }
-        [Authorize]
+
+        // GET: Item/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
             if (item == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             var viewModel = new ItemDetailsViewModel
@@ -59,7 +65,7 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Dimensions = item.Dimensions,
+                Dimensions = $"{item.Width} x {item.Height}",
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseName = item.Warehouse?.NameEn,
@@ -71,9 +77,10 @@ namespace Factory.Controllers.Warehouses
                 Notes = item.Notes
             };
 
-            return View(viewModel); // Pass the view model to the Details view
+            return View(viewModel);
         }
-        [Authorize]
+
+        // GET: Item/Create
         public async Task<IActionResult> Create()
         {
             var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
@@ -101,7 +108,6 @@ namespace Factory.Controllers.Warehouses
         // POST: Item/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Create(ItemViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -113,7 +119,8 @@ namespace Factory.Controllers.Warehouses
                     Type = viewModel.Type,
                     Color = viewModel.Color,
                     Thickness = viewModel.Thickness,
-                    Dimensions = viewModel.Dimensions,
+                    Width = viewModel.Width,
+                    Height = viewModel.Height,
                     Quantity = viewModel.Quantity,
                     UnitPrice = viewModel.UnitPrice,
                     WarehouseId = viewModel.WarehouseId,
@@ -137,26 +144,11 @@ namespace Factory.Controllers.Warehouses
                 }
             }
 
-            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
-
-            viewModel.Warehouses = warehouses.Select(w => new SelectListItem
-            {
-                Value = w.Id.ToString(),
-                Text = w.NameEn
-            });
-
-            viewModel.SubWarehouses = subWarehouses.Select(sw => new SelectListItem
-            {
-                Value = sw.Id.ToString(),
-                Text = sw.NameEn
-            });
-
+            await PopulateDropDownLists(viewModel);
             return View(viewModel);
         }
 
         // GET: Item/Edit/5
-        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -164,9 +156,6 @@ namespace Factory.Controllers.Warehouses
             {
                 return NotFound();
             }
-
-            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
             var viewModel = new ItemViewModel
             {
@@ -176,7 +165,8 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Dimensions = item.Dimensions,
+                Width = item.Width,
+                Height = item.Height,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseId = item.WarehouseId,
@@ -185,26 +175,16 @@ namespace Factory.Controllers.Warehouses
                 ManufactureDate = item.ManufactureDate,
                 ExpiryDate = item.ExpiryDate,
                 IsFragile = item.IsFragile,
-                Notes = item.Notes,
-                Warehouses = warehouses.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.NameEn
-                }),
-                SubWarehouses = subWarehouses.Select(sw => new SelectListItem
-                {
-                    Value = sw.Id.ToString(),
-                    Text = sw.NameEn
-                })
+                Notes = item.Notes
             };
 
+            await PopulateDropDownLists(viewModel);
             return View(viewModel);
         }
 
         // POST: Item/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Edit(int id, ItemViewModel viewModel)
         {
             if (id != viewModel.Id)
@@ -225,7 +205,8 @@ namespace Factory.Controllers.Warehouses
                 item.Type = viewModel.Type;
                 item.Color = viewModel.Color;
                 item.Thickness = viewModel.Thickness;
-                item.Dimensions = viewModel.Dimensions;
+                item.Width = viewModel.Width;
+                item.Height = viewModel.Height;
                 item.Quantity = viewModel.Quantity;
                 item.UnitPrice = viewModel.UnitPrice;
                 item.WarehouseId = viewModel.WarehouseId;
@@ -248,27 +229,11 @@ namespace Factory.Controllers.Warehouses
                 }
             }
 
-            // Reload dropdowns if ModelState is invalid
-            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
-
-            viewModel.Warehouses = warehouses.Select(w => new SelectListItem
-            {
-                Value = w.Id.ToString(),
-                Text = w.NameEn
-            });
-
-            viewModel.SubWarehouses = subWarehouses.Select(sw => new SelectListItem
-            {
-                Value = sw.Id.ToString(),
-                Text = sw.NameEn
-            });
-
+            await PopulateDropDownLists(viewModel);
             return View(viewModel);
         }
 
         // GET: Item/Delete/5
-        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -285,7 +250,7 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Dimensions = item.Dimensions,
+                Dimensions = $"{item.Width} x {item.Height}",
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseName = item.Warehouse?.NameEn,
@@ -303,7 +268,6 @@ namespace Factory.Controllers.Warehouses
         // POST: Item/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -325,6 +289,24 @@ namespace Factory.Controllers.Warehouses
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PopulateDropDownLists(ItemViewModel viewModel)
+        {
+            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
+
+            viewModel.Warehouses = warehouses.Select(w => new SelectListItem
+            {
+                Value = w.Id.ToString(),
+                Text = w.NameEn
+            });
+
+            viewModel.SubWarehouses = subWarehouses.Select(sw => new SelectListItem
+            {
+                Value = sw.Id.ToString(),
+                Text = sw.NameEn
+            });
         }
     }
 }

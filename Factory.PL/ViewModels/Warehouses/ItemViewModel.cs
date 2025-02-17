@@ -34,9 +34,8 @@ namespace Factory.PL.ViewModels.Warehouses
         [Required(ErrorMessage = "The Dimensions field is required.")]
         [StringLength(50, ErrorMessage = "The Dimensions must be between 1 and 50 characters.", MinimumLength = 1)]
         [Display(Name = "Dimensions")]
-        public string Dimensions { get; set; } = string.Empty; // e.g., 1200x800mm
+        public string Dimensions { get; set; } = string.Empty; 
 
-        // Quantity and Pricing
         [Required(ErrorMessage = "The Quantity field is required.")]
         [Range(0, int.MaxValue, ErrorMessage = "The Quantity must be a positive number.")]
         [Display(Name = "Quantity")]
@@ -46,41 +45,38 @@ namespace Factory.PL.ViewModels.Warehouses
         [Range(0.01, double.MaxValue, ErrorMessage = "The Unit Price must be greater than 0.")]
         [DataType(DataType.Currency)]
         [Display(Name = "Unit Price")]
-        public decimal UnitPrice { get; set; } // Price per unit
+        public decimal UnitPrice { get; set; } 
 
-        // Warehouse Information
         [Required(ErrorMessage = "The Warehouse field is required.")]
         [Display(Name = "Warehouse")]
-        public int WarehouseId { get; set; } // Foreign key to Warehouse
+        public int WarehouseId { get; set; } 
 
         [Required(ErrorMessage = "The Sub-Warehouse field is required.")]
         [Display(Name = "Sub-Warehouse")]
-        public int SubWarehouseId { get; set; } // Foreign key to SubWarehouse
+        public int SubWarehouseId { get; set; } 
 
-        // Dropdowns for Warehouses and SubWarehouses
         public IEnumerable<SelectListItem> Warehouses { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> SubWarehouses { get; set; } = new List<SelectListItem>();
 
-        // Additional Properties
         [StringLength(100, ErrorMessage = "The Manufacturer must be less than 100 characters.")]
         [Display(Name = "Manufacturer")]
-        public string Manufacturer { get; set; } = string.Empty; // Manufacturer of the item
+        public string Manufacturer { get; set; } = string.Empty; 
 
         [Required(ErrorMessage = "The Manufacture Date field is required.")]
         [DataType(DataType.Date)]
         [Display(Name = "Manufacture Date")]
-        public DateTime ManufactureDate { get; set; } = DateTime.Now; // Date of manufacture
+        public DateTime ManufactureDate { get; set; } = DateTime.Now; 
 
         [Required(ErrorMessage = "The Expiry Date field is required.")]
         [DataType(DataType.Date)]
         [Display(Name = "Expiry Date")]
-        public DateTime ExpiryDate { get; set; } = DateTime.Now.AddYears(2); // Expiry date (if applicable)
+        public DateTime ExpiryDate { get; set; } = DateTime.Now.AddYears(2); 
 
         [Display(Name = "Is Fragile?")]
-        public bool IsFragile { get; set; } // Indicates if the item is fragile
+        public bool IsFragile { get; set; } 
 
         [StringLength(1000, ErrorMessage = "The Notes must be less than 1000 characters.")]
         [Display(Name = "Notes")]
-        public string Notes { get; set; } = string.Empty; // Additional notes
+        public string Notes { get; set; } = string.Empty; 
     }
 }

@@ -6,7 +6,7 @@
 }
 
 
-<div class="container-fluid card  shadow mt-3 p-3" data-bs-theme="auto">
+<div class="container-fluid card  shadow mt-3 p-3 content-body" data-bs-theme="auto">
     @await Html.PartialAsync("ErrorSummaryPartial")
 
     @if (User.IsInRole("Owner") || User.IsInRole("GM"))

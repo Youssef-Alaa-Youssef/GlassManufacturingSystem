@@ -1,6 +1,6 @@
 ﻿
 body {
-    background-color: #ffffff;
+    background-color: #EEEEEE;
     color: #000000;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
     font-family: 'Arial', sans-serif;
@@ -18,7 +18,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: #ffffff;
+    background-color: #EEEEEE;
     transition: background-color 0.3s ease-in-out;
 }
 
@@ -45,7 +45,7 @@ body[data-bs-theme="dark"] i {
     position: fixed;
     top: 56px;
     left: -270px;
-/*    background-color: #f8f9fa;*/
+    /*    background-color: #f8f9fa;*/
     overflow-y: auto;
     transition: left 0.3s ease-in-out;
 }
@@ -61,21 +61,24 @@ body[data-bs-theme="dark"] .sidebar {
     left: 0;
 }
 
-
+.sidebar .module {
+    font-weight: 550;
+}
 .sidebar .module,
 .sidebar .submodule {
-    padding: 12px 20px;
-    font-weight: bold;
-    border-bottom: 1px solid #dee2e6;
+    padding: 8px 15px;
+    border-bottom: 1px solid #ccc;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #000 !important;
 }
-
 
 body[data-bs-theme="dark"] .sidebar .module,
 body[data-bs-theme="dark"] .sidebar .submodule {
     border-bottom: 1px solid #333;
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .sidebar .module:hover,

@@ -29,9 +29,11 @@
 
     @if (modelState != null && !modelState.IsValid)
     {
-        foreach (var error in modelState.Values.SelectMany(v => v.Errors))
+        var errorMessages = string.Join("<br/>", modelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+
+        if (!string.IsNullOrEmpty(errorMessages))
         {
-            <text>toastr.error('@error.ErrorMessage', 'Validation Error', { timeOut: 7000, positionClass: "toast-top-right" });</text>
+            <text>toastr.error('@Html.Raw(errorMessages)', 'Validation Error', { timeOut: 7000, positionClass: "toast-top-right" });</text>
         }
     }
 

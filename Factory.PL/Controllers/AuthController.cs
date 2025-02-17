@@ -32,7 +32,7 @@ namespace Factory.Controllers
             _companydetails = companydetails.Value;
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "User Management_Read")]
         public async Task<IActionResult> Index(string query)
         {
             List<IdentityUser> users;
