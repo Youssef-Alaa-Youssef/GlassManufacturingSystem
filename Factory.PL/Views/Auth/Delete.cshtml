@@ -1,0 +1,36 @@
+﻿@model UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Delete User";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-5">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <h3 class="text-center mb-4">Delete User Confirmation</h3>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <p><strong>User Name:</strong> @Model.UserName</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Email:</strong> @Model.Email</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Phone Number:</strong> @Model.PhoneNumber</p>
+        </div>
+    </div>
+
+    <div class="alert alert-warning text-center mb-4">
+        <strong>Warning!</strong> Deleting this user cannot be undone. Are you sure you want to proceed?
+    </div>
+
+    <form method="post" action="@Url.Action("Delete", "Auth", new { id = Model.Id })">
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-outline-danger btn-lg me-2">Delete</button>
+            <a href="@Url.Action("Index", "Auth")" class="btn btn-outline-secondary btn-lg">Cancel</a>
+        </div>
+    </form>
+</div>

@@ -11,6 +11,7 @@ using Factory.PL.ViewModels.Auth;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Factory.DAL.Enums;
 namespace Factory.Controllers
 {
     public class AuthController : Controller
@@ -33,31 +34,64 @@ namespace Factory.Controllers
         }
 
         [Authorize(Policy = "User Management_Read")]
-        public async Task<IActionResult> Index(string query)
+        public async Task<IActionResult> Index(string query = "", int page = 1, int pageSize = 10)
         {
-            List<IdentityUser> users;
-
-            if (!string.IsNullOrEmpty(query))
+            try
             {
-                users = await _userManager.Users
-                    .Where(u => (u.UserName ?? "").Contains(query))
+                var usersQuery = _userManager.Users.AsNoTracking();
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    usersQuery = usersQuery.Where(u => (u.UserName ?? "").Contains(query));
+                }
+
+                var totalUsers = await usersQuery.CountAsync();
+                var users = await usersQuery
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
-            }
-            else
-            {
-                users = await _userManager.Users.ToListAsync();
-            }
 
-            var userViewModels = users.Select(user => new UserViewModel
-            {
-                Id = user.Id,
-                UserName = user.UserName ?? ""
-            }).ToList();
+                var activeUsers = new List<UserViewModel>();
+                var lockedUsers = new List<UserViewModel>();
 
-            ViewBag.Query = query;
-            return View(userViewModels);
+                foreach (var user in users)
+                {
+                    var userViewModel = new UserViewModel
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName ?? "",
+                        IsActive = user.LockoutEnabled
+                    };
+
+                    if (userViewModel.IsActive)
+                    {
+                        activeUsers.Add(userViewModel);
+                    }
+                    else
+                    {
+                        lockedUsers.Add(userViewModel);
+                    }
+                }
+
+                var paginationViewModel = new PaginationViewModel<UserViewModel>
+                {
+                    ActiveUsers = activeUsers,
+                    LockedUsers = lockedUsers,
+                    Query = query,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalItems = totalUsers
+                };
+
+                return View(paginationViewModel);
+            }
+            catch (Exception ex)
+            {
+
+                TempData["ErrorMessage"] = "An error occurred while fetching users. Please try again later.";
+                return RedirectToAction(nameof(HomeController));
+            }
         }
-
         public IActionResult LogIn()
         {
             if (User.Identity.IsAuthenticated)
@@ -461,7 +495,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Policy = "User Management_Update")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -481,12 +515,13 @@ namespace Factory.Controllers
                 Id = user.Id,
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                PhoneNumber = user.PhoneNumber ?? string.Empty
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                IsActive = user.LockoutEnabled
             };
 
             return View(viewModel);
         }
-
+        [Authorize(Policy = "User Management_Update")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, UserEditViewModel model)
@@ -508,12 +543,13 @@ namespace Factory.Controllers
                 user.UserName = model.UserName;
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
+                user.LockoutEnabled = model.IsActive;
 
                 var result = await _userManager.UpdateAsync(user);
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction(nameof(Details), new { id = user.Id });
+                    return RedirectToAction(nameof(Index));
                 }
 
                 foreach (var error in result.Errors)
@@ -524,7 +560,7 @@ namespace Factory.Controllers
 
             return View(model);
         }
-
+        [Authorize(Policy = "User Management_Delete")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -549,7 +585,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Policy = "User Management_Delete")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -673,5 +709,50 @@ namespace Factory.Controllers
             return RedirectToAction(nameof(TwoFactorSettings));
         }
 
+        [Authorize(Policy = "User Management_Create")]
+
+        [HttpGet]
+        public IActionResult Add()
+        {
+            var viewModel = new UserCreateViewModel
+            {
+                IsActive = true 
+            };
+
+            return View(viewModel);
+        }
+        [Authorize(Policy = "User Management_Create")]
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] 
+        public async Task<IActionResult> Add(UserCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = new IdentityUser
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                LockoutEnabled = model.IsActive
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
     }
 }

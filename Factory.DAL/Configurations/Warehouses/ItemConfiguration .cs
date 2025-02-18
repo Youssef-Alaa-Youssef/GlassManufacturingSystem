@@ -28,10 +28,7 @@ namespace Factory.DAL.Configurations
             builder.Property(i => i.Thickness)
                 .HasMaxLength(50);
 
-            builder.Property(i => i.Width)
-                .HasPrecision(10, 2);
-
-            builder.Property(i => i.Height)
+            builder.Property(i => i.Dimensions)
                 .HasPrecision(10, 2);
 
             builder.Property(i => i.UnitPrice)

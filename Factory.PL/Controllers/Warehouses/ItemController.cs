@@ -33,7 +33,7 @@ namespace Factory.Controllers.Warehouses
                 Type = i.Type,
                 Color = i.Color,
                 Thickness = i.Thickness,
-                Dimensions = $"{i.Width} x {i.Height}",  // Show dimensions as a formatted string
+                Dimensions = i.Dimensions,  
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
                 WarehouseName = i.Warehouse?.NameEn,
@@ -65,7 +65,7 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Dimensions = $"{item.Width} x {item.Height}",
+                Dimensions = item.Dimensions,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseName = item.Warehouse?.NameEn,
@@ -119,8 +119,7 @@ namespace Factory.Controllers.Warehouses
                     Type = viewModel.Type,
                     Color = viewModel.Color,
                     Thickness = viewModel.Thickness,
-                    Width = viewModel.Width,
-                    Height = viewModel.Height,
+                    Dimensions = viewModel.Dimensions,
                     Quantity = viewModel.Quantity,
                     UnitPrice = viewModel.UnitPrice,
                     WarehouseId = viewModel.WarehouseId,
@@ -165,8 +164,7 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Width = item.Width,
-                Height = item.Height,
+                Dimensions = item.Dimensions,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseId = item.WarehouseId,
@@ -205,8 +203,7 @@ namespace Factory.Controllers.Warehouses
                 item.Type = viewModel.Type;
                 item.Color = viewModel.Color;
                 item.Thickness = viewModel.Thickness;
-                item.Width = viewModel.Width;
-                item.Height = viewModel.Height;
+                item.Dimensions = viewModel.Dimensions;
                 item.Quantity = viewModel.Quantity;
                 item.UnitPrice = viewModel.UnitPrice;
                 item.WarehouseId = viewModel.WarehouseId;
@@ -250,7 +247,7 @@ namespace Factory.Controllers.Warehouses
                 Type = item.Type,
                 Color = item.Color,
                 Thickness = item.Thickness,
-                Dimensions = $"{item.Width} x {item.Height}",
+                Dimensions = item.Dimensions,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 WarehouseName = item.Warehouse?.NameEn,
