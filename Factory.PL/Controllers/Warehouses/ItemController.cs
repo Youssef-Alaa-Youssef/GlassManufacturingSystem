@@ -21,7 +21,6 @@ namespace Factory.Controllers.Warehouses
             _unitOfWork = unitOfWork;
         }
 
-        // GET: Item/Index
         public async Task<IActionResult> Index()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
@@ -48,7 +47,6 @@ namespace Factory.Controllers.Warehouses
             return View(itemViewModels);
         }
 
-        // GET: Item/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -80,7 +78,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // GET: Item/Create
         public async Task<IActionResult> Create()
         {
             var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
@@ -105,7 +102,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // POST: Item/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemViewModel viewModel)
@@ -119,7 +115,7 @@ namespace Factory.Controllers.Warehouses
                     Type = viewModel.Type,
                     Color = viewModel.Color,
                     Thickness = viewModel.Thickness,
-                    Dimensions = viewModel.Dimensions,
+                    Dimensions = $"{viewModel.Height}x{viewModel.Width}",
                     Quantity = viewModel.Quantity,
                     UnitPrice = viewModel.UnitPrice,
                     WarehouseId = viewModel.WarehouseId,
@@ -147,7 +143,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // GET: Item/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -180,7 +175,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // POST: Item/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ItemViewModel viewModel)
@@ -230,7 +224,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // GET: Item/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -262,7 +255,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // POST: Item/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

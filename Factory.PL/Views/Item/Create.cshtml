@@ -4,6 +4,7 @@
     ViewData["Title"] = "Create Item";
     Layout = "_LogedUser";
 }
+<script src="https://jscolor.com/releases/2.4.5/jscolor.js"></script>
 
 <div class="container-fluid card  shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
@@ -33,7 +34,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label asp-for="Color" class="control-label"></label>
-                    <input asp-for="Color" class="form-control" />
+                    <input asp-for="Color" class="form-control jscolor" />
                     <span asp-validation-for="Color" class="text-danger"></span>
                 </div>
             </div>
@@ -47,11 +48,18 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label asp-for="Dimensions" class="control-label"></label>
-                    <input asp-for="Dimensions" class="form-control" />
-                    <span asp-validation-for="Dimensions" class="text-danger"></span>
+                    <label asp-for="Height" class="control-label"></label>
+                    <input asp-for="Height" class="form-control" />
+                    <span asp-validation-for="Height" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="Width" class="control-label"></label>
+                    <input asp-for="Width" class="form-control" />
+                    <span asp-validation-for="Width" class="text-danger"></span>
                 </div>
             </div>
             <div class="col-md-6">

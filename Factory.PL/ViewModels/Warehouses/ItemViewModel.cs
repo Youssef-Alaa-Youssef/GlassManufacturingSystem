@@ -31,10 +31,19 @@ namespace Factory.PL.ViewModels.Warehouses
         [Display(Name = "Thickness")]
         public string Thickness { get; set; } = string.Empty; // e.g., 5mm, 10mm
 
-        [Required(ErrorMessage = "The Dimensions field is required.")]
-        [StringLength(50, ErrorMessage = "The Dimensions must be between 1 and 50 characters.", MinimumLength = 1)]
-        [Display(Name = "Dimensions")]
-        public string Dimensions { get; set; } = string.Empty; 
+        public string Dimensions { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "The height (in mm) field is required.")]
+        [Range(1, 5000, ErrorMessage = "The height must be between 1 and 5000 millimeters.")]
+        [Display(Name = "Height (in mm)")]
+        public int Height{ get; set; }
+
+        [Required(ErrorMessage = "The width (in mm) field is required.")]
+        [Range(1, 5000, ErrorMessage = "The width must be between 1 and 5000 millimeters.")]
+        [Display(Name = "Width (in mm)")]
+        public int Width { get; set; }
+
+        public string width { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The Quantity field is required.")]
         [Range(0, int.MaxValue, ErrorMessage = "The Quantity must be a positive number.")]
@@ -73,7 +82,7 @@ namespace Factory.PL.ViewModels.Warehouses
         public DateTime ExpiryDate { get; set; } = DateTime.Now.AddYears(2); 
 
         [Display(Name = "Is Fragile?")]
-        public bool IsFragile { get; set; } 
+        public bool IsFragile { get; set; }  = true;
 
         [StringLength(1000, ErrorMessage = "The Notes must be less than 1000 characters.")]
         [Display(Name = "Notes")]
