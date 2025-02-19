@@ -5,13 +5,9 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid">
-    <div class="card shadow">
-        <div class="card-header">
-            <h3 class="card-title text-center">Order Card</h3>
-        </div>
-        <div class="card-body">
+<div class="container-fluid card  shadow p-3">
             @await Html.PartialAsync("ErrorSummaryPartial")
+            @await Html.PartialAsync("_PageTitle")
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -54,7 +50,8 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="JobNo" class="form-label">Job No</label>
-                        <input asp-for="JobNo" class="form-control" placeholder="Enter job number" required>
+                        <input class="form-control" value="@Model.JobNo" readonly>
+                        <input type="hidden" asp-for="JobNo">
                         <span asp-validation-for="JobNo" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
@@ -118,7 +115,7 @@
                                 <th>Height (mm)</th>
                                 <th id="stepWidthHeader" style="display: none;">Width (mm)</th>
                                 <th id="stepHeightHeader" style="display: none;">Height (mm)</th>
-                                <th width="80px">Qty</th>
+                                <th width="100px">Qty</th>
                                 <th width="110px">SQM (mm)</th>
                                 <th class="d-none" width="110px">SQM (mm)</th>
                                 <th width="110px">LM (mm)</th>
@@ -146,15 +143,15 @@
                                         }
                                     </select>
                                 </td>
-                                <td><input name="Items[0].Width" class="form-control width" type="number" min="0" step="1" required></td>
-                                <td><input name="Items[0].Height" class="form-control height" type="number" min="0" step="1" required></td>
-                                <td class="stepWidthInput" style="display: none;"><input name="Items[0].StepWidth" class="form-control step-width" type="number" min="0" step="1"></td>
-                                <td class="stepHeightInput" style="display: none;"><input name="Items[0].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
+                                <td><input name="Items[0].Width" class="form-control width" type="number" min="0" max="@Model.Items[0].Width" step="1" required></td>
+                                <td><input name="Items[0].Height" class="form-control height" type="number" min="0" max="@Model.Items[0].Height" step="1" required></td>
+                                <td class="stepWidthInput" style="display: none;"><input name="Items[0].StepWidth" class="form-control step-width" type="number" min="0" max="@Model.Items[0].Width" step="1"></td>
+                                <td class="stepHeightInput" style="display: none;"><input name="Items[0].StepHeight" class="form-control step-height" type="number" min="0" max="@Model.Items[0].Height" step="1"></td>
                                 <td><input name="Items[0].Quantity" class="form-control quantity" type="number" min="1" required></td>
                                 <td><input name="Items[0].SQM" class="form-control sqm" readonly></td>
                                 <td class="d-none"><input name="Items[0].TotalSQM" class="form-control totalSQM d-none" step="0.01" readonly></td>
                                 <td><input name="Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly></td>
-                                <td><input name="Items[0].CustomerReference" class="form-control" step="0.01" required></td>
+                                <td><input name="Items[0].CustomerReference" class="form-control"  required></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm removeRowBtn">
                                         <i class="bi bi-trash"></i>
@@ -175,7 +172,6 @@
                     </table>
                 </div>
 
-                <!-- Finished Date, Signature, and IsAccepted -->
                 <div class="row mt-4">
                     <div class="col-md-4 mb-3">
                         <label asp-for="FinishDate" class="form-label">Delivery Date</label>
@@ -197,14 +193,12 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-outline-primary btn-lg">Create Order Now</button>
+                <div class="card-footer text-center">
+                    <button type="submit" class="btn btn-outline-secondary">Create Order Now</button>
                 </div>
             </form>
         </div>
-    </div>
-</div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -223,7 +217,6 @@
             const totalSQM = document.getElementById("totalSQM");
             const totalLM = document.getElementById("totalLM");
 
-            // Show/Hide Step Radio Section based on Machine Selection
             machineCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     if (this.value === 'IGU' && this.checked) {
@@ -239,7 +232,6 @@
                 });
             });
 
-            // Show/Hide Step Width and Height Columns based on Step Radio Selection
             document.querySelectorAll('input[name="stepRadio"]').forEach(radio => {
                 radio.addEventListener('change', function () {
                     if (this.value === 'Yes' && this.checked) {
@@ -255,7 +247,6 @@
                     }
                 });
             });
-             // Function to calculate totals
             function calculateTotals() {
                 let totalQty = 0;
                 let totalSQMValue = 0;
@@ -276,13 +267,11 @@
                 totalLM.value = totalLMValue.toFixed(2);
             }
 
-            // Function to recalculate SQM, Total SQM, and Total LM
             function recalculate() {
                 const width = parseFloat(this.closest('tr').querySelector('.width').value) || 0;
                 const height = parseFloat(this.closest('tr').querySelector('.height').value) || 0;
                 const qty = parseInt(this.closest('tr').querySelector('.quantity').value) || 0;
 
-                // Convert mm to meters for calculations
                 const widthMeters = width / 1000;
                 const heightMeters = height / 1000;
 
@@ -296,7 +285,6 @@
                 calculateTotals();
             }
 
-            // Attach event listeners to the first row's inputs
             const firstRow = tableBody.querySelector('tr');
             if (firstRow) {
                 firstRow.querySelector('.width').addEventListener('input', recalculate);
@@ -304,7 +292,6 @@
                 firstRow.querySelector('.quantity').addEventListener('input', recalculate);
             }
 
-            // Add new row
             addRowBtn.addEventListener("click", function () {
                 const rowCount = tableBody.children.length;
                 const newRow = document.createElement("tr");
@@ -338,13 +325,11 @@
                 `;
                 tableBody.appendChild(newRow);
 
-                // Attach event listeners to new inputs
                 newRow.querySelector('.width').addEventListener('input', recalculate);
                 newRow.querySelector('.height').addEventListener('input', recalculate);
                 newRow.querySelector('.quantity').addEventListener('input', recalculate);
             });
 
-            // Remove row
             tableBody.addEventListener("click", function (e) {
                 if (e.target.closest(".removeRowBtn")) {
                     e.target.closest("tr").remove();

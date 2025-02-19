@@ -22,6 +22,7 @@ public static class ServiceConfiguration
         services.AddControllersWithViews();
         services.AddLocalization();
         services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizationFactory>();
+        services.AddMemoryCache();
 
         services.Configure<RequestLocalizationOptions>(options =>
         {

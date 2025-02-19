@@ -30,28 +30,65 @@ namespace Factory.Controllers
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
-        [Authorize(Policy = "Orders_Create")]
+        private async Task<OrderViewModel> CreateOrderViewModel()
+        {
+            var lastOrder = (await _unitOfWork.GetRepository<Order>()
+                                .GetAllAsync(order => order.JobNo != null))
+                                .OrderByDescending(o => o.Id)
+                                .FirstOrDefault();
 
+            string newJobNumber = "1000";
+            if (lastOrder != null)
+            {
+                newJobNumber = lastOrder.JobNo + 1; 
+            }
+
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+
+            return new OrderViewModel
+            {
+                JobNo = newJobNumber,
+                Items = items.Select(i =>
+                {
+                    var dimensions = i.Dimensions?.Trim().Split('x', StringSplitOptions.RemoveEmptyEntries);
+                    int width = 3210, height = 6000;
+
+                    if (dimensions?.Length == 2 &&
+                        int.TryParse(dimensions[0].Trim(), out int parsedWidth) &&
+                        int.TryParse(dimensions[1].Trim(), out int parsedHeight))
+                    {
+                        width = parsedWidth;
+                        height = parsedHeight;
+                    }
+
+                    return new OrderItemViewModel
+                    {
+                        Id = i.Id,
+                        ItemName = i.Name,
+                        Width = width,
+                        Height = height
+                    };
+                }).ToList()
+            };
+        }
+
+        [Authorize(Policy = "Orders_Create")]
         public async Task<IActionResult> Create()
         {
-            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
-            var model = new OrderViewModel
-            {
-                Items = items.Select(i => new OrderItemViewModel { Id = i.Id, ItemName = i.Name }).ToList()
-            };
+            var model = await CreateOrderViewModel();
             return View(model);
         }
+
         [Authorize(Policy = "Orders_Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel orderViewModel)
         {
-            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
-            var model = new OrderViewModel
+            if (!ModelState.IsValid)
             {
-                Items = items.Select(i => new OrderItemViewModel { Id = i.Id, ItemName = i.Name }).ToList()
-            };
-            if (!ModelState.IsValid) return View(model);
+                var model = await CreateOrderViewModel();
+                return View(model);
+            }
 
             try
             {
@@ -66,6 +103,7 @@ namespace Factory.Controllers
                 return View(orderViewModel);
             }
         }
+
         [Authorize(Policy = "Orders_Update")]
 
         public async Task<IActionResult> Edit(int id)

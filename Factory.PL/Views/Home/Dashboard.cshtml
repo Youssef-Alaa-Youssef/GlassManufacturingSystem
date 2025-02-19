@@ -16,10 +16,10 @@
             @await Html.PartialAsync("_PageTitle")
 
             <div class="d-flex flex-column flex-md-row align-items-center">
-                <button class="btn btn-outline-primary mb-2 mb-md-0 me-md-2">
+                <a class="btn btn-outline-primary mb-2 mb-md-0 me-md-2" asp-action="Add" asp-controller="Auth">
                     <i class="bi bi-plus-circle"></i> Add New
-                </button>
-                <button class="btn btn-outline-primary">
+                </a>
+                <button class="btn btn-outline-primary" asp-action="Index" asp-controller="setting">
                     <i class="bi bi-gear"></i> Settings
                 </button>
             </div>

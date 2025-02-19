@@ -17,11 +17,8 @@
                         <tbody>
                             <tr><td><strong>Customer Name:</strong></td><td>@Model.CustomerName</td></tr>
                             <tr><td><strong>Customer Reference:</strong></td><td>@Model.CustomerReference</td></tr>
-                            <tr><td><strong>Project Name:</strong></td><td>@Model.ProjectName</td></tr>
-                            <tr><td><strong>Address:</strong></td><td>@Model.Address</td></tr>
-                            <tr><td><strong>Priority:</strong></td><td>@Model.Priority</td></tr>
-                            <tr><td><strong>Finish Date:</strong></td><td>@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</td></tr>
-                            <tr><td><strong>Accepted:</strong></td><td>@(Model.IsAccepted ? "Yes" : "No")</td></tr>
+                            <tr><td><strong>Project Name:</strong></td><td>@Model.ProjectName , @Model.Address</td></tr>
+                            <tr><td><strong>Delivery Date:</strong></td><td>@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -43,13 +40,13 @@
         </div>
     </div>
 
-    <h3 class="mt-5 text-center text-primary fw-bold">Order Items</h3>
+    <h3 class="mt-5 text-center fw-bold">Order Items</h3>
 
     @if (Model.Items?.Any() == true)
     {
         <div class="table-responsive mt-2">
             <table class="table table-bordered table-striped">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>Item Name</th>
                         <th>Width</th>
@@ -82,7 +79,7 @@
         <p class="text-muted text-center mt-3">No items available for this order.</p>
     }
 
-    <div class="text-center my-4">
+    <div class="card-footer text-center">
         <a asp-action="Index" class="btn btn-outline-primary px-4">Back to List</a>
         <a onclick="window.print()" class="btn btn-outline-success px-4">Print</a>
     </div>

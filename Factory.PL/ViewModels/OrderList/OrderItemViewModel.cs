@@ -17,9 +17,16 @@ namespace Factory.PL.ViewModels.OrderList
         [Range(0.01, double.MaxValue, ErrorMessage = "Width must be greater than 0.")]
         public decimal Width { get; set; }
 
+        [Range(0.01, double.MaxValue, ErrorMessage = "Step Width must be greater than 0.")]
+        public decimal StepWidth { get; set; }
+
+
         [Required(ErrorMessage = "Height is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Height must be greater than 0.")]
         public decimal Height { get; set; }
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "Step Height must be greater than 0.")]
+        public decimal StepHeight { get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]
@@ -27,15 +34,15 @@ namespace Factory.PL.ViewModels.OrderList
 
         [Required(ErrorMessage = "SQM is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for SQM.")]
-        public double SQM { get; set; }
+        public decimal SQM { get; set; }
 
         [Required(ErrorMessage = "Total SQM is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for TotalLM.")]
-        public double TotalLM { get; set; }
+        public decimal TotalLM { get; set; }
 
         [Required(ErrorMessage = "Total LM is required.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Invalid value for TotalSQM.")]
-        public double TotalSQM { get; set; }
+        public decimal TotalSQM { get; set; }
 
         [Required(ErrorMessage = "Customer Reference is required.")]
         [StringLength(100, ErrorMessage = "Customer Reference cannot exceed 100 characters.")]

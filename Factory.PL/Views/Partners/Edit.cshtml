@@ -53,7 +53,7 @@
             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-        <div class="text-center border p-2">
+        <div class="card-footer text-center">
             <a href="@Url.Action("Edit", "Partners", new { id = Model.Id })" class="btn btn-outline-secondary me-2" title="Update Partner">
                 <i class="bi bi-pencil me-2"></i> Update Partner
             </a>

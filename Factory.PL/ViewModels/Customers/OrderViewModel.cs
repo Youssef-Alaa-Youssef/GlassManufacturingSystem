@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace Factory.PL.ViewModels.Customers
 {
     public class OrderViewModel
@@ -14,7 +13,7 @@ namespace Factory.PL.ViewModels.Customers
 
         [Required(ErrorMessage = "Glass type is required. Please provide the type of glass.")]
         [MaxLength(50, ErrorMessage = "Glass type cannot exceed 50 characters.")]
-        public string GlassType { get; set; }
+        public string GlassType { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Height is required. Please provide the height of the glass.")]
         [Range(0.1, double.MaxValue, ErrorMessage = "Height must be a positive number.")]
@@ -33,9 +32,9 @@ namespace Factory.PL.ViewModels.Customers
         public decimal TotalCost { get; set; }
 
         [MaxLength(100, ErrorMessage = "Delivery method description cannot exceed 100 characters.")]
-        public string DeliveryMethod { get; set; }
+        public string DeliveryMethod { get; set; } = string.Empty;
 
         [MaxLength(250, ErrorMessage = "Delivery address cannot exceed 250 characters.")]
-        public string DeliveryAddress { get; set; }
+        public string DeliveryAddress { get; set; } = string.Empty;
     }
 }

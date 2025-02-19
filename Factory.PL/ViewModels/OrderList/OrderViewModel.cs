@@ -22,9 +22,7 @@ namespace Factory.PL.ViewModels.OrderList
         [Required(ErrorMessage = "Date is required.")]
         public DateTime Date { get; set; }
 
-        [Required(ErrorMessage = "Job Number is required.")]
-        [StringLength(50, ErrorMessage = "Job Number cannot exceed 50 characters.")]
-        public string JobNo { get; set; } = string.Empty;
+        public string JobNo { get; set; } 
 
         [Required(ErrorMessage = "Address is required.")]
         [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
