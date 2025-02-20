@@ -1,8 +1,8 @@
-﻿using Factory.DAL.Models.OrderList;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Factory.DAL.Models.OrderList;
 
-namespace Factory.DAL.Configurations.OrderList
+namespace Factory.DAL.Configurations
 {
     public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
     {
@@ -11,37 +11,35 @@ namespace Factory.DAL.Configurations.OrderList
             builder.HasKey(oi => oi.Id);
 
             builder.Property(oi => oi.ItemName)
-                .IsRequired()
-                .HasMaxLength(200);
-
-            builder.Property(oi => oi.CustomerReference)
-                .IsRequired()
-                .HasMaxLength(100);
+                   .IsRequired()
+                   .HasMaxLength(255);
 
             builder.Property(oi => oi.Width)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                   .HasPrecision(18, 2)
+                   .IsRequired();
 
             builder.Property(oi => oi.Height)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                   .HasPrecision(18, 2)
+                   .IsRequired();
+
+            builder.Property(oi => oi.StepWidth)
+                   .HasPrecision(18, 2);
+
+            builder.Property(oi => oi.StepHeight)
+                   .HasPrecision(18, 2);
 
             builder.Property(oi => oi.SQM)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(oi => oi.TotalSQM)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                   .HasPrecision(18, 2)
+                   .IsRequired();
 
             builder.Property(oi => oi.TotalLM)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                   .HasPrecision(18, 2)
+                   .IsRequired();
 
             builder.HasOne(oi => oi.Order)
-                .WithMany(o => o.Items)
-                .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(o => o.Items)
+                   .HasForeignKey(oi => oi.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

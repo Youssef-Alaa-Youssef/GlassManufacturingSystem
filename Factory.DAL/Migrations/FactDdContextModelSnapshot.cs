@@ -411,18 +411,22 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("CustomerReference")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -433,19 +437,19 @@ namespace Factory.DAL.Migrations
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
-                    b.Property<long>("JobNo")
-                        .HasMaxLength(50)
-                        .HasColumnType("bigint");
+                    b.Property<string>("JobNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Priority")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("SelectedMachines")
                         .IsRequired()
@@ -453,14 +457,19 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Signature")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<decimal>("TotalLM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalLM")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
-                    b.Property<decimal>("TotalSQM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalSQM")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -477,37 +486,42 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("CustomerReference")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                    b.Property<double>("Height")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
                     b.Property<string>("ItemName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("SQM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("SQM")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
-                    b.Property<decimal>("TotalLM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("StepHeight")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
-                    b.Property<decimal>("TotalSQM")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("StepWidth")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
-                    b.Property<decimal>("Width")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalLM")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
+
+                    b.Property<double>("Width")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
                     b.HasKey("Id");
 
@@ -1333,7 +1347,8 @@ namespace Factory.DAL.Migrations
                     b.HasOne("Factory.DAL.Models.OrderList.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });

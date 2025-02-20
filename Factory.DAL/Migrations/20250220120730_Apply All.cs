@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Factory.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class applyallchanges : Migration
+    public partial class ApplyAll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -531,21 +531,21 @@ namespace Factory.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Thickness = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Dimensions = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Thickness = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Dimensions = table.Column<string>(type: "nvarchar(max)", precision: 10, scale: 2, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     WarehouseId = table.Column<int>(type: "int", nullable: false),
                     SubWarehouseId = table.Column<int>(type: "int", nullable: false),
-                    Manufacturer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Manufacturer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     ManufactureDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsFragile = table.Column<bool>(type: "bit", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false)
+                    IsFragile = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -576,7 +576,9 @@ namespace Factory.DAL.Migrations
                 {
                     { 1, "", "Permission Management", "/Users/Index" },
                     { 2, "", "User Management", "/Auth/Index" },
-                    { 3, "", "Role Management", "/Role/Index" }
+                    { 3, "", "Role Management", "/Role/Index" },
+                    { 4, "", "Warehouse Management", "/Warehouse/Index" },
+                    { 5, "", "Order Management", "/Order/Index" }
                 });
 
             migrationBuilder.InsertData(
@@ -600,7 +602,11 @@ namespace Factory.DAL.Migrations
                     { 3, "index", "Module", 1, "Modules Management", "Modules Management" },
                     { 4, "Index", "SubModule", 1, "Sub Modules Management", "Sub Modules Management" },
                     { 5, "index", "Auth", 2, "User Management", "User Management" },
-                    { 6, "index", "Role", 3, "Role Management", "Role Management" }
+                    { 6, "index", "Role", 3, "Role Management", "Role Management" },
+                    { 7, "index", "Warehouse", 4, "Warehouse Management", "Warehouse Management" },
+                    { 8, "index", "Item", 4, "Item Management", "Item Management" },
+                    { 9, "Create", "Order", 5, "Order Management", "Order Management" },
+                    { 10, "index", "Order", 5, "Order Management", "Order Management" }
                 });
 
             migrationBuilder.InsertData(
@@ -610,15 +616,6 @@ namespace Factory.DAL.Migrations
                 {
                     { 1, "القسم الأول، المستودع الرئيسي", "Main Warehouse, Section 1", 1, "المستودع الفرعي أ", "Sub-Warehouse A" },
                     { 2, "القسم الثاني، المستودع الرئيسي", "Main Warehouse, Section 2", 1, "المستودع الفرعي ب", "Sub-Warehouse B" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Items",
-                columns: new[] { "Id", "Color", "Description", "Dimensions", "ExpiryDate", "IsFragile", "ManufactureDate", "Manufacturer", "Name", "Notes", "Quantity", "SubWarehouseId", "Thickness", "Type", "UnitPrice", "WarehouseId" },
-                values: new object[,]
-                {
-                    { 1, "Clear", "Transparent glass panel", "1200x800mm", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "GlassCo", "Glass Panel", "Handle with care", 100, 1, "5mm", "Panel", 50.00m, 1 },
-                    { 2, "Tinted", "Strong tempered glass", "1500x1000mm", new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TemperedGlassCo", "Tempered Glass", "Heat-resistant", 50, 2, "10mm", "Tempered", 100.00m, 1 }
                 });
 
             migrationBuilder.CreateIndex(

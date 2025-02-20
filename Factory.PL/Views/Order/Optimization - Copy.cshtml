@@ -1,0 +1,163 @@
+﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
+@{
+    ViewData["Title"] = "Glass Cutting Optimization";
+    Layout = "_LogedUser";
+}
+
+<div class="container my-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        @await Html.PartialAsync("_PageTitle")
+
+        <div class="card-body">
+            <div class="text-center">
+                <h5 class="text-primary"><i class="fas fa-border-all"></i> Glass Sheet Layout</h5>
+                <div class="border shadow-sm rounded p-3 ">
+                    <canvas id="glassCanvas" class="w-100"></canvas>
+                </div>
+            </div>
+
+            <div id="optimizationResults" class="mt-4 p-3 border rounded">
+                <h5 class="fw-bold text-dark"><i class="fas fa-chart-line"></i> Optimization Report</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success"></i>
+                        Total Sheets Used: <strong id="totalSheetsUsed">0</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success"></i>
+                        Total Items Placed: <strong id="totalItemsPlaced">0</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        Total Glass Lost: <strong id="totalGlassLost">0 mm²</strong>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-percentage text-info"></i>
+                        Utilization Efficiency: <strong id="utilizationEfficiency">0%</strong>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-footer text-center">
+                <button class="btn btn-lg btn-primary shadow-sm px-4" id="optimizeButton">
+                    <i class="fas fa-cut"></i> Optimize & Draw
+                </button>
+                <button class="btn btn-lg btn-secondary shadow-sm px-4 ms-3" id="clearButton">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    canvas {
+        border: 2px solid #000;
+        background-color: #f8f9fa;
+    }
+
+    .list-group-item {
+        font-size: 1.1rem;
+    }
+
+    .btn-lg {
+        font-size: 1.2rem;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            adjustCanvasSize();
+            window.addEventListener("resize", adjustCanvasSize);
+
+            document.getElementById("optimizeButton").addEventListener("click", optimizeGlassCutting);
+            document.getElementById("clearButton").addEventListener("click", clearCanvas);
+        });
+
+        function adjustCanvasSize() {
+            const canvas = document.getElementById("glassCanvas");
+            const parentDiv = canvas.parentElement;
+            canvas.width = parentDiv.clientWidth - 10;
+            canvas.height = canvas.width * 0.5; 
+        }
+
+        function optimizeGlassCutting() {
+            const canvas = document.getElementById("glassCanvas");
+            const ctx = canvas.getContext("2d");
+            const sheetWidth = 2000; 
+            const sheetHeight = 3000; 
+            const scaleX = canvas.width / sheetWidth; 
+            const scaleY = canvas.height / sheetHeight; 
+            const glassPieces = @Html.Raw(Json.Serialize(Model.Items));
+
+            if (!glassPieces || glassPieces.length === 0) {
+                alert("No glass pieces found!");
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let totalSheetsUsed = 1;
+            let totalItemsPlaced = 0;
+            let totalGlassLost = 0;
+            let x = 10, y = 10; 
+
+            glassPieces.forEach((item) => {
+                const itemWidth = item.width * scaleX;
+                const itemHeight = item.height * scaleY;
+                const itemArea = item.width * item.height; 
+
+                for (let i = 0; i < item.quantity; i++) {
+                    if (x + itemWidth > canvas.width) {
+                        x = 10; 
+                        y += itemHeight + 10; 
+                    }
+
+                    if (y + itemHeight > canvas.height) {
+                        totalSheetsUsed++; 
+                        x = 10;
+                        y = 10;
+                    }
+
+                    ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.7)`;
+                    ctx.fillRect(x, y, itemWidth, itemHeight);
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, itemWidth, itemHeight);
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "12px Arial";
+                    ctx.fillText(`${item.width} mm x ${item.height} mm`, x + 5, y + 15);
+                    ctx.fillText(`Qty: ${item.quantity}`, x + 5, y + 30);
+
+                    x += itemWidth + 10; // Move to the next position
+                    totalItemsPlaced++;
+                }
+            });
+
+            const sheetArea = sheetWidth * sheetHeight; // Total sheet area in mm²
+            const utilizedArea = glassPieces.reduce((sum, item) => sum + (item.width * item.height * item.quantity), 0); // Total utilized area in mm²
+            totalGlassLost = (totalSheetsUsed * sheetArea) - utilizedArea; // Total glass lost in mm²
+            const utilizationEfficiency = ((utilizedArea / (totalSheetsUsed * sheetArea)) * 100).toFixed(2); // Utilization efficiency in %
+
+            // Update optimization results
+            document.getElementById("totalSheetsUsed").innerText = totalSheetsUsed;
+            document.getElementById("totalItemsPlaced").innerText = totalItemsPlaced;
+            document.getElementById("totalGlassLost").innerText = `${totalGlassLost.toFixed(2)} mm²`;
+            document.getElementById("utilizationEfficiency").innerText = `${utilizationEfficiency}%`;
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById("glassCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Reset optimization results
+            document.getElementById("totalSheetsUsed").innerText = 0;
+            document.getElementById("totalItemsPlaced").innerText = 0;
+            document.getElementById("totalGlassLost").innerText = "0 mm²";
+            document.getElementById("utilizationEfficiency").innerText = "0%";
+        }
+    </script>
+}

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250213064305_apply all changes")]
-    partial class applyallchanges
+    [Migration("20250220120730_Apply All")]
+    partial class ApplyAll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -567,6 +567,20 @@ namespace Factory.DAL.Migrations
                             IconClass = "",
                             Name = "Role Management",
                             Url = "/Role/Index"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IconClass = "",
+                            Name = "Warehouse Management",
+                            Url = "/Warehouse/Index"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IconClass = "",
+                            Name = "Order Management",
+                            Url = "/Order/Index"
                         });
                 });
 
@@ -724,6 +738,42 @@ namespace Factory.DAL.Migrations
                             ModuleId = 3,
                             Name = "Role Management",
                             Title = "Role Management"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Action = "index",
+                            Controller = "Warehouse",
+                            ModuleId = 4,
+                            Name = "Warehouse Management",
+                            Title = "Warehouse Management"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Action = "index",
+                            Controller = "Item",
+                            ModuleId = 4,
+                            Name = "Item Management",
+                            Title = "Item Management"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Action = "Create",
+                            Controller = "Order",
+                            ModuleId = 5,
+                            Name = "Order Management",
+                            Title = "Order Management"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Action = "index",
+                            Controller = "Order",
+                            ModuleId = 5,
+                            Name = "Order Management",
+                            Title = "Order Management"
                         });
                 });
 
@@ -899,32 +949,34 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Dimensions")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsFragile")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("ManufactureDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -934,16 +986,17 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Thickness")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("int");
@@ -955,46 +1008,6 @@ namespace Factory.DAL.Migrations
                     b.HasIndex("WarehouseId");
 
                     b.ToTable("Items", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Color = "Clear",
-                            Description = "Transparent glass panel",
-                            Dimensions = "1200x800mm",
-                            ExpiryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsFragile = true,
-                            ManufactureDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Manufacturer = "GlassCo",
-                            Name = "Glass Panel",
-                            Notes = "Handle with care",
-                            Quantity = 100,
-                            SubWarehouseId = 1,
-                            Thickness = "5mm",
-                            Type = "Panel",
-                            UnitPrice = 50.00m,
-                            WarehouseId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Color = "Tinted",
-                            Description = "Strong tempered glass",
-                            Dimensions = "1500x1000mm",
-                            ExpiryDate = new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsFragile = true,
-                            ManufactureDate = new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Manufacturer = "TemperedGlassCo",
-                            Name = "Tempered Glass",
-                            Notes = "Heat-resistant",
-                            Quantity = 50,
-                            SubWarehouseId = 2,
-                            Thickness = "10mm",
-                            Type = "Tempered",
-                            UnitPrice = 100.00m,
-                            WarehouseId = 1
-                        });
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Warehouses.MainWarehouse", b =>

@@ -19,6 +19,19 @@ public static class ServiceConfiguration
 {
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
+        ConfigureLocalization(services);
+        ConfigureApplicationServices(services, configuration);
+        ConfigureDatabase(services, configuration);
+        ConfigureIdentity(services);
+        ConfigureSecurity(services);
+    }
+
+    private static void ConfigureLocalization(IServiceCollection services)
+    {
+        var cultureInfo = new CultureInfo("en-US");
+        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
         services.AddControllersWithViews();
         services.AddLocalization();
         services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizationFactory>();
@@ -26,18 +39,33 @@ public static class ServiceConfiguration
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            var supportedCultures = new[] { new CultureInfo("ar_EG"), new CultureInfo("en_US") };
-            options.DefaultRequestCulture = new RequestCulture(culture: supportedCultures[0], uiCulture: supportedCultures[0]);
+            var supportedCultures = new[] { new CultureInfo("ar-EG"), new CultureInfo("en-US") };
+            options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
         });
+    }
 
+    private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
+    {
         services.Configure<EmailConfiguration>(configuration.GetSection("MailConfigurations"));
         services.AddSingleton<EmailConfiguration>();
         services.Configure<CompanyDetails>(configuration.GetSection("CompanyDetails"));
         services.AddSingleton<CompanyDetails>();
         services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IVideoService, VideoService>();
+        services.AddScoped<IModuleService, ModuleService>();
+        services.AddScoped<INavigationService, NavigationService>();
+        services.AddScoped<IEmailService, EmailSender>();
+        services.AddAuthorization();
+        services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
+    }
+
+    private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
+    {
         var factoryName = configuration["Factory:Name"];
         var domain = configuration["Factory:Domain"];
         var baseConnectionString = configuration.GetConnectionString("DefaultConnection");
@@ -54,20 +82,20 @@ public static class ServiceConfiguration
             options.UseLazyLoadingProxies();
             options.UseSqlServer(dynamicConnectionString, sqlOptions =>
             {
-                sqlOptions.EnableRetryOnFailure(maxRetryCount: 5, maxRetryDelay: TimeSpan.FromSeconds(10), errorNumbersToAdd: null);
+                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).EnableSensitiveDataLogging();
         });
+    }
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IVideoService, VideoService>();
-        services.AddScoped<IModuleService, ModuleService>();
-        services.AddScoped<INavigationService, NavigationService>();
-
+    private static void ConfigureIdentity(IServiceCollection services)
+    {
         services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<FactDdContext>()
             .AddDefaultTokenProviders();
+    }
 
+    private static void ConfigureSecurity(IServiceCollection services)
+    {
         services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = "FactoryAuthCookie";
@@ -87,12 +115,5 @@ public static class ServiceConfiguration
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.Cookie.SameSite = SameSiteMode.Strict;
         });
-
-        services.AddScoped<IEmailService, EmailSender>();
-
-        services.AddAuthorization();
-        services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
-
-        //services.AddTransient<PermissionPolicyMiddleware>();
     }
 }

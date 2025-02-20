@@ -1,71 +1,102 @@
-﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
-@using Factory.DAL.Enums
+﻿@using Factory.DAL.Enums
+@model Factory.PL.ViewModels.OrderList.OrderViewModel
 @{
-    ViewData["Title"] = "Job Card";
+    ViewData["Title"] = "Order Card";
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card  shadow p-3">
-            @await Html.PartialAsync("ErrorSummaryPartial")
-            @await Html.PartialAsync("_PageTitle")
+<div class="container-fluid card shadow p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="text-primary">شركة الزجاج العالمية</h2>
-                    <h2 class="text-secondary">Global Glass Factory</h2>
-                </div>
-                <div>
-                    <img src="~/assets/images/Login.png" alt="Company Logo" width="120">
-                </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary">شركة الزجاج العالمية @TempData["Error"]</h2>
+            <h2 class="text-secondary">Global Glass Factory</h2>
+        </div>
+        <div>
+            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" width="120">
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+        @Html.AntiForgeryToken()
+
+        <!-- Customer Information Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Information</h5>
             </div>
-
-            <!-- Form Section -->
-            <form asp-action="Create" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
-
+            <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label asp-for="CustomerName" class="form-label">Customer Name</label>
-                        <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required>
+                        <label asp-for="CustomerName" class="form-label fw-semibold">Customer Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required>
+                        </div>
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="CustomerReference" class="form-label">Customer Reference</label>
-                        <input asp-for="CustomerReference" class="form-control" placeholder="Enter reference" required>
+                        <label asp-for="CustomerReference" class="form-label fw-semibold">Customer Reference</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                            <input asp-for="CustomerReference" class="form-control" placeholder="Enter reference" required>
+                        </div>
                         <span asp-validation-for="CustomerReference" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="ProjectName" class="form-label">Project Name</label>
-                        <input asp-for="ProjectName" class="form-control" placeholder="Enter project name" required>
+                        <label asp-for="ProjectName" class="form-label fw-semibold">Project Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-building"></i></span>
+                            <input asp-for="ProjectName" class="form-control" placeholder="Enter project name" required>
+                        </div>
                         <span asp-validation-for="ProjectName" class="text-danger"></span>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Job Details -->
+        <!-- Job Details Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Job Details</h5>
+            </div>
+            <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label asp-for="Date" class="form-label">Date</label>
-                        <input asp-for="Date" type="date" disabled value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" required>
+                        <label asp-for="Date" class="form-label fw-semibold">Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                            <input asp-for="Date" type="date" disabled value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" required>
+                        </div>
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="JobNo" class="form-label">Job No</label>
-                        <input class="form-control" value="@Model.JobNo" readonly>
-                        <input type="hidden" asp-for="JobNo">
+                        <label asp-for="JobNo" class="form-label fw-semibold">Job No</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-upc"></i></span>
+                            <input class="form-control" value="@Model.JobNo" disabled>
+                            <input type="hidden" asp-for="JobNo">
+                        </div>
                         <span asp-validation-for="JobNo" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="Address" class="form-label">Address</label>
-                        <input asp-for="Address" class="form-control" placeholder="Enter address" required>
+                        <label asp-for="Address" class="form-label fw-semibold">Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            <input asp-for="Address" class="form-control" placeholder="Enter address" required>
+                        </div>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
                 </div>
 
                 <!-- Priority and Machine Selection -->
-                <div class="row mb-3 ">
+                <div class="row mb-3">
                     <div class="col-md-4 d-none">
-                        <label asp-for="Priority" class="form-label">Priority</label>
-                        <select asp-for="Priority" class="form-control" required>
+                        <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
+                        <select asp-for="Priority" class="form-select" required>
                             <option value="">--Select Priority--</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
@@ -73,66 +104,76 @@
                         </select>
                         <span asp-validation-for="Priority" class="text-danger"></span>
                     </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Machines</label>
-                        <div class="d-flex flex-wrap">
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Machines</label>
+                        <div id="machinesContainer" class="d-flex flex-wrap border rounded p-3">
                             @foreach (var machine in Enum.GetValues(typeof(MachineType)))
                             {
-                                <div class="form-check me-3">
-                                    <input type="checkbox" class="form-check-input machine-checkbox" name="SelectedMachines" value="@machine" id="machine-@machine">
-                                    <label class="form-check-label" for="machine-@machine">@machine</label>
+                                <div class="form-check me-4 mb-2">
+                                    <input name="SelectedMachines" class="form-check-input machine-checkbox"
+                                           type="checkbox" value="@machine" id="machine-@machine">
+                                    <label class="form-check-label" for="machine-@machine">
+                                        <i class="bi bi-tools me-1"></i>@machine
+                                    </label>
                                 </div>
                             }
+                            <div id="machineValidationError" class="invalid-feedback" style="display: none;">
+                                Please select at least one machine
+                            </div>
                         </div>
-                        <span class="text-danger" id="machineValidationError" style="display: none;">Please select at least one machine.</span>
                     </div>
                 </div>
 
                 <!-- Step Radio Button Section (Hidden by Default) -->
-                <div id="stepRadioSection" style="display: none;" class="mb-3">
-                    <label class="form-label">Step Glass</label>
-                    <div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="stepRadio" id="stepYes" value="Yes">
-                            <label class="form-check-label" for="stepYes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="stepRadio" id="stepNo" value="No">
-                            <label class="form-check-label" for="stepNo">No</label>
+                <div id="stepRadioSection" style="display: none;" class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Step Glass</label>
+                        <div class="border rounded p-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="stepRadio" id="stepYes" value="Yes">
+                                <label class="form-check-label" for="stepYes">Yes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="stepRadio" id="stepNo" value="No">
+                                <label class="form-check-label" for="stepNo">No</label>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Items Table -->
-                @* <h4 class="mt-4 mb-3">Items</h4> *@
+        <!-- Items Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Item Details</h5>
+                <button type="button" class="btn btn-outline-success btn-sm" id="addRowBtn" title="Add New Item">
+                    <i class="bi bi-plus-lg"></i> Add Item
+                </button>
+            </div>
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="itemsTable">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th width="250px" style="font-size: 16px; font-weight: bold;">Item</th> <!-- Increased width & text size -->
-                                <th>Width (mm)</th>
-                                <th>Height (mm)</th>
-                                <th id="stepWidthHeader" style="display: none;">Width (mm)</th>
-                                <th id="stepHeightHeader" style="display: none;">Height (mm)</th>
-                                <th width="100px">Qty</th>
-                                <th width="110px">SQM (mm)</th>
-                                <th class="d-none" width="110px">SQM (mm)</th>
-                                <th width="110px">LM (mm)</th>
-                                <th>Customer Ref</th>
-                                <th>
-                                    <button type="button" class="btn btn-success btn-sm" id="addRowBtn">
-                                        <i class="bi bi-plus"></i>
-                                    </button>
-                                </th>
-
+                                <th class="text-center">#</th>
+                                <th width="250px" class="text-center">Item</th>
+                                <th width="150px" class="text-center">Width</th>
+                                <th width="150px" class="text-center">Height</th>
+                                <th id="stepWidthHeader" class="text-center" style="display: none;">Step Width (mm)</th>
+                                <th id="stepHeightHeader" class="text-center" style="display: none;">Step Height (mm)</th>
+                                <th width="120px" class="text-center">Qty</th>
+                                <th class="text-center">SQM</th>
+                                <th class="text-center">LM</th>
+                                <th class="text-center">Customer Ref</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>1</td>
+                                <td class="text-center">1</td>
                                 <td>
-                                    <select name="Items[0].ItemName" class="form-control" required>
+                                    <select asp-for="Items[0].ItemName" class="form-select item-select">
                                         <option value="">--Select Item--</option>
                                         @if (Model?.Items != null && Model.Items.Any())
                                         {
@@ -143,17 +184,44 @@
                                         }
                                     </select>
                                 </td>
-                                <td><input name="Items[0].Width" class="form-control width" type="number" min="0" max="@Model.Items[0].Width" step="1" required></td>
-                                <td><input name="Items[0].Height" class="form-control height" type="number" min="0" max="@Model.Items[0].Height" step="1" required></td>
-                                <td class="stepWidthInput" style="display: none;"><input name="Items[0].StepWidth" class="form-control step-width" type="number" min="0" max="@Model.Items[0].Width" step="1"></td>
-                                <td class="stepHeightInput" style="display: none;"><input name="Items[0].StepHeight" class="form-control step-height" type="number" min="0" max="@Model.Items[0].Height" step="1"></td>
-                                <td><input name="Items[0].Quantity" class="form-control quantity" type="number" min="1" required></td>
-                                <td><input name="Items[0].SQM" class="form-control sqm" readonly></td>
-                                <td class="d-none"><input name="Items[0].TotalSQM" class="form-control totalSQM d-none" step="0.01" readonly></td>
-                                <td><input name="Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly></td>
-                                <td><input name="Items[0].CustomerReference" class="form-control"  required></td>
                                 <td>
-                                    <button type="button" class="btn btn-danger btn-sm removeRowBtn">
+                                    <div class="input-group">
+                                        <input asp-for="@Model.Items[0].Width" class="form-control width">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input asp-for="@Model.Items[0].Height" class="form-control height">
+                                    </div>
+                                </td>
+                                <td class="stepWidthInput" style="display: none;">
+                                    <div class="input-group">
+                                        <input name="Items[0].StepWidth" class="form-control step-width" max="@Model.Items[0].Width">
+                                    </div>
+                                </td>
+                                <td class="stepHeightInput" style="display: none;">
+                                    <div class="input-group">
+                                        <input name="@Model.Items[0].StepHeight" class="form-control step-height" max="@Model.Items[0].Height">
+                                    </div>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Items[0].Quantity" class="form-control quantity">
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input asp-for="@Model.Items[0].SQM" class="form-control sqm" step="0.01" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input asp-for="@Model.Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Items[0].CustomerReference" class="form-control" required>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm removeRowBtn" title="Remove Item">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
@@ -162,43 +230,64 @@
                         <tfoot>
                             <tr>
                                 <th colspan="4" class="text-end">Total</th>
-                                <th><input type="number" id="totalQuantity" class="form-control" readonly></th>
-                                <th><input type="number" id="totalSQM" class="form-control" readonly></th>
-                                <th class="d-none"><input type="number" id="totalSQMHidden" class="form-control" readonly></th>
-                                <th><input type="number" id="totalLM" class="form-control" readonly></th>
+                                <th class="text-center">
+                                    <input type="number" id="totalQuantity" class="form-control form-control-sm " readonly>
+                                </th>
+                                <th class="text-center">
+                                    <input asp-for="@Model.TotalSQM" id="totalSQM" class="form-control form-control-sm " readonly>
+                                </th>
+                                <th class="d-none">
+                                    <input type="number" id="totalSQMHidden" class="form-control form-control-sm " readonly>
+                                </th>
+                                <th class="text-center">
+                                    <input asp-for="@Model.TotalLM" id="totalLM" class="form-control form-control-sm " readonly>
+                                </th>
                                 <th colspan="2"></th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
+            </div>
+        </div>
 
-                <div class="row mt-4">
+        <!-- Delivery Information -->
+        <div class="card mb-4">
+            <div class="card-header ">
+                <h5 class="mb-0">Delivery Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="FinishDate" class="form-label">Delivery Date</label>
-                        <input asp-for="FinishDate" type="date" class="form-control" id="finishDateInput" value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd")">
+                        <label asp-for="FinishDate" class="form-label fw-semibold">Delivery Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-truck"></i></span>
+                            <input asp-for="FinishDate" type="date" class="form-control" id="finishDateInput" value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd")">
+                        </div>
                         <span asp-validation-for="FinishDate" class="text-danger"></span>
                     </div>
-                    <div class="col-md-4 mb-3 d-none">
-                        <label asp-for="Signature" class="form-label">Signature</label>
-                        <input  asp-for="Signature" class="form-control" value="@User.Identity?.Name" placeholder="Enter signature">
-                        <span asp-validation-for="Signature" class="text-danger"></span>
-                    </div>
+                    <input type="hidden" asp-for="Signature" class="form-control" value="@User.Identity?.Name">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="IsAccepted" class="form-label">Is Accepted</label>
-                        <select asp-for="IsAccepted" class="form-control">
+                        <label asp-for="IsAccepted" class="form-label fw-semibold">Is Accepted</label>
+                        <select asp-for="IsAccepted" class="form-select">
                             <option value="true">Yes</option>
                             <option value="false">No</option>
                         </select>
                         <span asp-validation-for="IsAccepted" class="text-danger"></span>
                     </div>
                 </div>
-
-                <div class="card-footer text-center">
-                    <button type="submit" class="btn btn-outline-secondary">Create Order Now</button>
-                </div>
-            </form>
+            </div>
         </div>
 
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-outline-primary px-5">
+                <i class="bi bi-check-circle me-2"></i>Create Order
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-5 ms-2">
+                <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -211,42 +300,50 @@
             const stepRadioSection = document.getElementById('stepRadioSection');
             const stepWidthHeader = document.getElementById('stepWidthHeader');
             const stepHeightHeader = document.getElementById('stepHeightHeader');
-            const stepWidthInputs = document.querySelectorAll('.stepWidthInput');
-            const stepHeightInputs = document.querySelectorAll('.stepHeightInput');
             const totalQuantity = document.getElementById("totalQuantity");
             const totalSQM = document.getElementById("totalSQM");
+            const totalSQMHidden = document.getElementById("totalSQMHidden");
             const totalLM = document.getElementById("totalLM");
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
             machineCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     if (this.value === 'IGU' && this.checked) {
-                        stepRadioSection.style.display = 'block';
+                        stepRadioSection.style.display = 'flex';
                     } else if (this.value === 'IGU' && !this.checked) {
                         stepRadioSection.style.display = 'none';
                         document.querySelectorAll('input[name="stepRadio"]').forEach(radio => radio.checked = false);
-                        stepWidthHeader.style.display = 'none';
-                        stepHeightHeader.style.display = 'none';
-                        stepWidthInputs.forEach(input => input.style.display = 'none');
-                        stepHeightInputs.forEach(input => input.style.display = 'none');
+                        toggleStepInputsVisibility(false);
                     }
+                    validateMachineSelection();
                 });
             });
 
             document.querySelectorAll('input[name="stepRadio"]').forEach(radio => {
                 radio.addEventListener('change', function () {
-                    if (this.value === 'Yes' && this.checked) {
-                        stepWidthHeader.style.display = 'table-cell';
-                        stepHeightHeader.style.display = 'table-cell';
-                        stepWidthInputs.forEach(input => input.style.display = 'table-cell');
-                        stepHeightInputs.forEach(input => input.style.display = 'table-cell');
-                    } else {
-                        stepWidthHeader.style.display = 'none';
-                        stepHeightHeader.style.display = 'none';
-                        stepWidthInputs.forEach(input => input.style.display = 'none');
-                        stepHeightInputs.forEach(input => input.style.display = 'none');
-                    }
+                    toggleStepInputsVisibility(this.value === 'Yes' && this.checked);
                 });
             });
+
+            function toggleStepInputsVisibility(show) {
+                stepWidthHeader.style.display = show ? 'table-cell' : 'none';
+                stepHeightHeader.style.display = show ? 'table-cell' : 'none';
+                document.querySelectorAll('.stepWidthInput').forEach(input => {
+                    input.style.display = show ? 'table-cell' : 'none';
+                });
+                document.querySelectorAll('.stepHeightInput').forEach(input => {
+                    input.style.display = show ? 'table-cell' : 'none';
+                });
+            }
+
+            function validateMachineSelection() {
+                let isMachineSelected = Array.from(machineCheckboxes).some(checkbox => checkbox.checked);
+                machineValidationError.style.display = isMachineSelected ? 'none' : 'block';
+                return isMachineSelected;
+            }
+
             function calculateTotals() {
                 let totalQty = 0;
                 let totalSQMValue = 0;
@@ -258,115 +355,187 @@
                     const lm = parseFloat(row.querySelector(".totalLM").value) || 0;
 
                     totalQty += qty;
-                    totalSQMValue += sqm; 
-                    totalLMValue += lm; 
+                    totalSQMValue += sqm;
+                    totalLMValue += lm;
                 });
 
                 totalQuantity.value = totalQty;
-                totalSQM.value = totalSQMValue.toFixed(2);
-                totalLM.value = totalLMValue.toFixed(2);
+                totalSQM.value = Math.round(totalSQMValue.toFixed(2),0);
+                totalLM.value = Math.round(totalLMValue.toFixed(2),0);
             }
 
-            function recalculate() {
-                const width = parseFloat(this.closest('tr').querySelector('.width').value) || 0;
-                const height = parseFloat(this.closest('tr').querySelector('.height').value) || 0;
-                const qty = parseInt(this.closest('tr').querySelector('.quantity').value) || 0;
+            function recalculateMeasurements() {
+                const row = this.closest('tr');
+                const width = parseFloat(row.querySelector('.width').value) || 0;
+                const height = parseFloat(row.querySelector('.height').value) || 0;
+                const qty = parseInt(row.querySelector('.quantity').value) || 0;
 
                 const widthMeters = width / 1000;
                 const heightMeters = height / 1000;
 
-                const sqm = parseFloat((widthMeters * heightMeters).toFixed(2));
-                const totalSQM = parseFloat((sqm * qty).toFixed(2));
-                const totalLM = parseFloat(((widthMeters + heightMeters) * 2).toFixed(2));
-        
-                this.closest('tr').querySelector('.sqm').value = parseFloat(sqm);
-                this.closest('tr').querySelector('.totalSQM').value = parseFloat(totalSQM);
-                this.closest('tr').querySelector('.totalLM').value = parseFloat(totalLM);
+                const sqm = (widthMeters * heightMeters);
+                const totalSQM = sqm * qty;
+
+                const totalLM = (widthMeters + heightMeters) * 2;
+
+                row.querySelector('.sqm').value = Math.round(sqm.toFixed(2),0);
+                row.querySelector('.totalLM').value = Math.round(totalLM.toFixed(2),0);
+
                 calculateTotals();
+            }
+
+            function addRowEventListeners(row) {
+                row.querySelector('.width').addEventListener('input', recalculateMeasurements);
+                row.querySelector('.height').addEventListener('input', recalculateMeasurements);
+                row.querySelector('.quantity').addEventListener('input', recalculateMeasurements);
             }
 
             const firstRow = tableBody.querySelector('tr');
             if (firstRow) {
-                firstRow.querySelector('.width').addEventListener('input', recalculate);
-                firstRow.querySelector('.height').addEventListener('input', recalculate);
-                firstRow.querySelector('.quantity').addEventListener('input', recalculate);
+                addRowEventListeners(firstRow);
             }
 
             addRowBtn.addEventListener("click", function () {
                 const rowCount = tableBody.children.length;
                 const newRow = document.createElement("tr");
+
                 newRow.innerHTML = `
-                    <td>${rowCount + 1}</td>
+                    <td class="text-center">${rowCount + 1}</td>
                     <td>
-                        <select name="Items[${rowCount}].ItemName" class="form-control" required>
-                            @if (Model?.Items != null && Model.Items.Any())
-                            {
-                                @foreach (var item in Model.Items)
-                                {
-                                    <option value="@item.Id">@item.ItemName</option>
-                                }
-                            }
+                        <select asp-for="Items[${rowCount}].ItemName" class="form-select item-select" >
+                           <option value="">--Select Item--</option>
+        @if (Model?.Items != null && Model.Items.Any())
+        {
+            @foreach (var item in Model.Items)
+            {
+                                                <option value="@item.Id">@item.ItemName</option>
+            }
+        }
                         </select>
                     </td>
-                    <td><input name="Items[${rowCount}].Width" class="form-control width" type="number" min="0" step="1" required></td>
-                    <td><input name="Items[${rowCount}].Height" class="form-control height" type="number" min="0" step="1" required></td>
-                    <td class="stepWidthInput" style="display: none;"><input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1"></td>
-                    <td class="stepHeightInput" style="display: none;"><input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1"></td>
-                    <td><input name="Items[${rowCount}].Quantity" class="form-control quantity" type="number" min="1" required></td>
-                    <td><input name="Items[${rowCount}].SQM" step="0.01" class="form-control sqm" readonly></td>
-                    <td class="d-none"><input name="Items[${rowCount}].TotalSQM" step="0.01" class="form-control totalSQM " readonly></td>
-                    <td><input name="Items[${rowCount}].TotalLM" step="0.01" class="form-control totalLM" readonly></td>
-                    <td><input name="Items[${rowCount}].CustomerReference" class="form-control" required></td>
                     <td>
-                        <button type="button" class="btn btn-danger btn-sm removeRowBtn">
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].Width" class="form-control width">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].Height" class="form-control height" >
+                        </div>
+                    </td>
+                    <td class="stepWidthInput" style="${stepWidthHeader.style.display}">
+                        <div class="input-group">
+                            <input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1">
+                        </div>
+                    </td>
+                    <td class="stepHeightInput" style="${stepHeightHeader.style.display}">
+                        <div class="input-group">
+                            <input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].Quantity" class="form-control quantity" >
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].SQM" class="form-control sqm" readonly>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].TotalLM" class="form-control totalLM" readonly>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input asp-for="Items[${rowCount}].CustomerReference" class="form-control" >
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm removeRowBtn" title="Remove Item">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 `;
-                tableBody.appendChild(newRow);
 
-                newRow.querySelector('.width').addEventListener('input', recalculate);
-                newRow.querySelector('.height').addEventListener('input', recalculate);
-                newRow.querySelector('.quantity').addEventListener('input', recalculate);
+                tableBody.appendChild(newRow);
+                addRowEventListeners(newRow);
+
+                const stepInputsVisible = stepWidthHeader.style.display === 'table-cell';
+                newRow.querySelectorAll('.stepWidthInput, .stepHeightInput').forEach(input => {
+                    input.style.display = stepInputsVisible ? 'table-cell' : 'none';
+                });
+
+                updateRowNumbers();
             });
 
             tableBody.addEventListener("click", function (e) {
                 if (e.target.closest(".removeRowBtn")) {
-                    e.target.closest("tr").remove();
-                    calculateTotals(); 
+                    if (tableBody.children.length > 1) {
+                        e.target.closest("tr").remove();
+                        updateRowNumbers();
+                        calculateTotals();
+                    } else {
+                        const row = tableBody.querySelector("tr");
+                        row.querySelectorAll("input:not([type=hidden])").forEach(input => {
+                            input.value = input.type === "number" ? "0" : "";
+                        });
+                        row.querySelector("select").selectedIndex = 0;
+                        calculateTotals();
+                    }
                 }
             });
 
+            function updateRowNumbers() {
+                tableBody.querySelectorAll("tr").forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+
+                    row.querySelectorAll("[name^='Items[']").forEach(element => {
+                        const nameAttr = element.getAttribute("name");
+                        const newName = nameAttr.replace(/Items\[\d+\]/, `Items[${index}]`);
+                        element.setAttribute("name", newName);
+                    });
+                });
+            }
+
             (function () {
                 'use strict';
-                var forms = document.querySelectorAll('.needs-validation');
-                Array.prototype.slice.call(forms).forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        let isMachineSelected = false;
-                        machineCheckboxes.forEach(checkbox => {
-                            if (checkbox.checked) {
-                                isMachineSelected = true;
-                            }
-                        });
+                const forms = document.querySelectorAll('.needs-validation');
 
-                        if (!isMachineSelected) {
+                Array.from(forms).forEach(form => {
+                    form.addEventListener('submit', function (event) {
+                        if (!validateMachineSelection()) {
                             event.preventDefault();
                             event.stopPropagation();
-                            machineValidationError.style.display = 'inline';
-                        } else {
-                            machineValidationError.style.display = 'none';
+                            document.getElementById('machinesContainer').scrollIntoView({ behavior: 'smooth' });
                         }
 
                         if (!form.checkValidity()) {
                             event.preventDefault();
                             event.stopPropagation();
+
+                            const firstInvalid = form.querySelector(':invalid');
+                            if (firstInvalid) {
+                                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                firstInvalid.focus();
+                            }
                         }
+
                         form.classList.add('was-validated');
                     }, false);
                 });
             })();
-                        calculateTotals();
 
+            calculateTotals();
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && event.target.nodeName !== 'TEXTAREA') {
+                    event.preventDefault();
+                    return false;
+                }
+            });
         });
     </script>
 }

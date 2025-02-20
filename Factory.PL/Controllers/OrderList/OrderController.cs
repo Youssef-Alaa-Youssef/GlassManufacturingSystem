@@ -30,47 +30,6 @@ namespace Factory.Controllers
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
-        private async Task<OrderViewModel> CreateOrderViewModel()
-        {
-            var lastOrder = (await _unitOfWork.GetRepository<Order>()
-                                .GetAllAsync(order => order.JobNo != null))
-                                .OrderByDescending(o => o.Id)
-                                .FirstOrDefault();
-
-            string newJobNumber = "1000";
-            if (lastOrder != null)
-            {
-                newJobNumber = lastOrder.JobNo + 1; 
-            }
-
-            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
-
-            return new OrderViewModel
-            {
-                JobNo = newJobNumber,
-                Items = items.Select(i =>
-                {
-                    var dimensions = i.Dimensions?.Trim().Split('x', StringSplitOptions.RemoveEmptyEntries);
-                    int width = 3210, height = 6000;
-
-                    if (dimensions?.Length == 2 &&
-                        int.TryParse(dimensions[0].Trim(), out int parsedWidth) &&
-                        int.TryParse(dimensions[1].Trim(), out int parsedHeight))
-                    {
-                        width = parsedWidth;
-                        height = parsedHeight;
-                    }
-
-                    return new OrderItemViewModel
-                    {
-                        Id = i.Id,
-                        ItemName = i.Name,
-                        Width = width,
-                        Height = height
-                    };
-                }).ToList()
-            };
-        }
 
         [Authorize(Policy = "Orders_Create")]
         public async Task<IActionResult> Create()
@@ -78,7 +37,6 @@ namespace Factory.Controllers
             var model = await CreateOrderViewModel();
             return View(model);
         }
-
         [Authorize(Policy = "Orders_Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -86,6 +44,11 @@ namespace Factory.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = string.Join("<br>",
+                    ModelState.Values
+                              .SelectMany(v => v.Errors)
+                              .Select(e => e.ErrorMessage));
+
                 var model = await CreateOrderViewModel();
                 return View(model);
             }
@@ -93,19 +56,95 @@ namespace Factory.Controllers
             try
             {
                 var order = MapToModel(orderViewModel);
+
                 await _unitOfWork.GetRepository<Order>().AddAsync(order);
+
                 TempData["Success"] = "Order created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"An error occurred: {ex.InnerException?.Message ?? ex.Message}";
-                return View(orderViewModel);
+
+                var model = await CreateOrderViewModel();
+                return View(model);
             }
         }
 
-        [Authorize(Policy = "Orders_Update")]
+        private static Order MapToModel(OrderViewModel viewModel, Order? order = null)
+        {
+            order ??= new Order();
+            order.CustomerName = viewModel.CustomerName;
+            order.CustomerReference = viewModel.CustomerReference;
+            order.ProjectName = viewModel.ProjectName;
+            order.Date = viewModel.Date;
+            order.JobNo = viewModel.JobNo;
+            order.Address = viewModel.Address;
+            order.Priority = viewModel.Priority;
+            order.FinishDate = viewModel.FinishDate;
+            order.IsAccepted = viewModel.IsAccepted;
+            order.Signature = viewModel.Signature;
+            order.SelectedMachines = viewModel.SelectedMachines;
+            order.TotalSQM = viewModel.TotalSQM;
+            order.TotalLM = viewModel.TotalLM;
 
+            order.Items = viewModel.Items
+                .Where(i => !string.IsNullOrEmpty(i.ItemName) && i.Quantity > 0)
+                .Select(i => new OrderItem
+                {
+                    Id = i.Id,
+                    ItemName = i.ItemName,
+                    Width = i.Width,
+                    Height = i.Height,
+                    StepWidth = i.StepWidth,
+                    StepHeight = i.StepHeight,
+                    Quantity = i.Quantity,
+                    SQM = i.SQM,
+                    TotalLM = i.TotalLM,
+                    CustomerReference = i.CustomerReference
+                }).ToList();
+
+            return order;
+        }
+        private async Task<OrderViewModel> CreateOrderViewModel()
+        {
+            var maxJobNo = (await _unitOfWork.GetRepository<Order>()
+                              .GetAllAsync(order => order.JobNo != null))
+                              .OrderByDescending(o => o.Id);
+
+            string newJobNo = "JOB-0001";
+            if (maxJobNo.Any())
+            {
+                var lastJobNo = maxJobNo.First().JobNo;
+                if (lastJobNo != null && lastJobNo.StartsWith("JOB-"))
+                {
+                    if (int.TryParse(lastJobNo.Substring(4), out int jobNumber))
+                    {
+                        newJobNo = $"JOB-{(jobNumber + 1):D4}";
+                    }
+                }
+            }
+
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+
+            var model = new OrderViewModel
+            {
+                JobNo = newJobNo,
+                Date = DateTime.Now,
+                FinishDate = DateTime.Now.AddDays(10),
+                Priority = "High",
+                IsAccepted = true,
+                Signature = User.Identity?.Name,
+                Items = new List<OrderItemViewModel>
+        {
+            new OrderItemViewModel() 
+        }
+            };
+
+            return model;
+        }
+
+        [Authorize(Policy = "Orders_Update")]
         public async Task<IActionResult> Edit(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
@@ -118,7 +157,7 @@ namespace Factory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OrderViewModel orderViewModel)
         {
-            if (id != orderViewModel.Id || !ModelState.IsValid) return View(orderViewModel);
+            if (!ModelState.IsValid) return View(orderViewModel);
 
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
@@ -174,7 +213,7 @@ namespace Factory.Controllers
 
         private static OrderViewModel MapToViewModel(Order order) => new()
         {
-            Id = order.Id,
+            //Id = order.Id,
             CustomerName = order.CustomerName,
             CustomerReference = order.CustomerReference,
             ProjectName = order.ProjectName,
@@ -197,34 +236,5 @@ namespace Factory.Controllers
                 CustomerReference = i.CustomerReference
             }).ToList()
         };
-
-        private static Order MapToModel(OrderViewModel viewModel, Order? order = null)
-        {
-            order ??= new Order();
-            order.CustomerName = viewModel.CustomerName;
-            order.CustomerReference = viewModel.CustomerReference;
-            order.ProjectName = viewModel.ProjectName;
-            order.Date = viewModel.Date;
-            order.JobNo = viewModel.JobNo;
-            order.Address = viewModel.Address;
-            order.Priority = viewModel.Priority;
-            order.FinishDate = viewModel.FinishDate;
-            order.IsAccepted = viewModel.IsAccepted;
-            order.SelectedMachines = viewModel.SelectedMachines;
-            order.TotalSQM = viewModel.TotalSQM;
-            order.TotalLM = viewModel.TotalLM;
-
-            order.Items = viewModel.Items.Select(i => new OrderItem
-            {
-                Id = i.Id,
-                ItemName = i.ItemName,
-                Width = i.Width,
-                Height = i.Height,
-                Quantity = i.Quantity,
-                CustomerReference = i.CustomerReference
-
-            }).ToList();
-            return order;
-        }
     }
 }
