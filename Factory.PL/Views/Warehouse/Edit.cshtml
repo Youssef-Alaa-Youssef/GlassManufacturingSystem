@@ -3,43 +3,43 @@
 @{
     ViewData["Title"] = "Edit Main Warehouse";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
 
-    @await Html.PartialAsync("ErrorSummaryPartial")
-
-
     <form method="post">
-        <div class="mb-3">
-            <label asp-for="NameEn" class="form-label"></label>
-            <input class="form-control" asp-for="NameEn">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="NameEn" class="form-label"></label>
+                <input class="form-control" asp-for="NameEn">
+            </div>
+            <div class="col-md-6">
+                <label asp-for="NameAr" class="form-label"></label>
+                <input class="form-control" asp-for="NameAr">
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="NameAr" class="form-label"></label>
-            <input class="form-control" asp-for="NameAr">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="AddressEn" class="form-label"></label>
+                <input class="form-control" asp-for="AddressEn">
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AddressAr" class="form-label"></label>
+                <input class="form-control" asp-for="AddressAr">
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="AddressEn" class="form-label"></label>
-            <input class="form-control" asp-for="AddressEn">
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="AddressAr" class="form-label"></label>
-            <input  class="form-control"  asp-for="AddressAr">
-        </div>
         <div class="card-footer text-center">
-
-        <button type="submit" class="btn btn-outline-primary">Update Warehouse</button>
-         </div>
+            <button type="submit" class="btn btn-outline-primary">
+                Update Now
+            </button>
+        </div>
     </form>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

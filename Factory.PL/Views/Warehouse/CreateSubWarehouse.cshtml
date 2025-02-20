@@ -4,47 +4,51 @@
     ViewData["Title"] = "Create Sub Warehouse";
     Layout = "_LogedUser";  
 }
-
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-1 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
 
-
     <form method="post">
-        <div class="mb-3">
-            <label asp-for="NameEn" class="form-label"></label>
-            <input class="form-control" asp-for="NameEn" />
-            <span asp-validation-for="NameEn" class="text-danger"></span>
+        <!-- First Row: NameEn & NameAr -->
+        <div class="row">
+            <div class="col-md-6">
+                <label asp-for="NameEn" class="form-label"></label>
+                <input class="form-control" asp-for="NameEn" />
+                <span asp-validation-for="NameEn" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="NameAr" class="form-label"></label>
+                <input class="form-control" asp-for="NameAr" />
+                <span asp-validation-for="NameAr" class="text-danger"></span>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="NameAr" class="form-label"></label>
-            <input class="form-control" asp-for="NameAr" />
-            <span asp-validation-for="NameAr" class="text-danger"></span>
+        <!-- Second Row: AddressEn & AddressAr -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label asp-for="AddressEn" class="form-label"></label>
+                <input class="form-control" asp-for="AddressEn" />
+                <span asp-validation-for="AddressEn" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="AddressAr" class="form-label"></label>
+                <input class="form-control" asp-for="AddressAr" />
+                <span asp-validation-for="AddressAr" class="text-danger"></span>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="AddressEn" class="form-label"></label>
-            <input class="form-control" asp-for="AddressEn" />
-            <span asp-validation-for="AddressEn" class="text-danger"></span>
-        </div>
-
-        <!-- Arabic Address -->
-        <div class="mb-3">
-            <label asp-for="AddressAr" class="form-label"></label>
-            <input class="form-control" asp-for="AddressAr" />
-            <span asp-validation-for="AddressAr" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
+        <!-- Warehouse Selection -->
+        <div class="mt-3">
             <label asp-for="MainWarehouseId" class="form-label"></label>
             <select class="form-control" asp-for="MainWarehouseId" asp-items="Model.MainWarehouses">
-                <option value="">Please Select </option>
+                <option value="">Please Select</option>
             </select>
             <span asp-validation-for="MainWarehouseId" class="text-danger"></span>
         </div>
-        <div class="card-footer text-center">
+
+        <div class="card-footer text-center mt-3">
             <button type="submit" class="btn btn-outline-primary">Create Sub Warehouse</button>
         </div>
     </form>
@@ -53,3 +57,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+

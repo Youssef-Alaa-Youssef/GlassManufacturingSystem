@@ -586,7 +586,7 @@ namespace Factory.Controllers
             return View(viewModel);
         }
         [Authorize(Policy = "User Management_Delete")]
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {

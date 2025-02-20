@@ -8,6 +8,9 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Factory.BLL.InterFaces;
+using Factory.DAL.Enums;
+using Microsoft.EntityFrameworkCore;
+using Factory.PL.Services.Setting;
 
 namespace Factory.Controllers.Warehouses
 {
@@ -16,14 +19,16 @@ namespace Factory.Controllers.Warehouses
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SettingController> _logger;
+        private readonly ISettingsService _settingsService;
 
-        public SettingController(IUnitOfWork unitOfWork, ILogger<SettingController> logger)
+        public SettingController(IUnitOfWork unitOfWork, ISettingsService settingsService, ILogger<SettingController> logger)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _settingsService = settingsService;
+
         }
 
-        // GET: Setting/Index
         public async Task<IActionResult> Index()
         {
             try
@@ -63,7 +68,6 @@ namespace Factory.Controllers.Warehouses
             }
         }
 
-        // GET: Setting/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
@@ -108,7 +112,6 @@ namespace Factory.Controllers.Warehouses
             }
         }
 
-        // GET: Setting/Create
         public IActionResult Create()
         {
             var viewModel = new SettingsViewModel
@@ -118,7 +121,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // POST: Setting/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SettingsViewModel viewModel)
@@ -164,7 +166,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // GET: Setting/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -209,7 +210,6 @@ namespace Factory.Controllers.Warehouses
             }
         }
 
-        // POST: Setting/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SettingsViewModel viewModel)
@@ -262,7 +262,6 @@ namespace Factory.Controllers.Warehouses
             return View(viewModel);
         }
 
-        // GET: Setting/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -307,7 +306,6 @@ namespace Factory.Controllers.Warehouses
             }
         }
 
-        // POST: Setting/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -332,6 +330,82 @@ namespace Factory.Controllers.Warehouses
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> NotificationSettings()
+        {
+            try
+            {
+                var viewModel = await _settingsService.GetNotificationSettingsAsync();
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching notification settings.");
+                TempData["ErrorMessage"] = "An error occurred while fetching notification settings.";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveNotificationSettings(NotificationSettingsViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("NotificationSettings", model);
+            }
+
+            try
+            {
+                await _settingsService.SaveNotificationSettingsAsync(model);
+                TempData["SuccessMessage"] = "Notification settings saved successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving notification settings.");
+                TempData["ErrorMessage"] = "An error occurred while saving notification settings.";
+            }
+
+            return RedirectToAction(nameof(NotificationSettings));
+        }
+
+        public async Task<IActionResult> ContractSettings()
+        {
+            try
+            {
+                var viewModel = await _settingsService.GetContractSettingsAsync();
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching contract settings.");
+                TempData["ErrorMessage"] = "An error occurred while fetching contract settings.";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveContractSettings(ContractSettingsViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("ContractSettings", model);
+            }
+
+            try
+            {
+                await _settingsService.SaveContractSettingsAsync(model);
+                TempData["SuccessMessage"] = "Contract settings saved successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while saving contract settings.");
+                TempData["ErrorMessage"] = "An error occurred while saving contract settings.";
+            }
+
+            return RedirectToAction(nameof(ContractSettings));
         }
     }
 }

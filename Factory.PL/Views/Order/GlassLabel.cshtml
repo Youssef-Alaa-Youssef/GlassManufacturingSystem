@@ -1,0 +1,56 @@
+@model Factory.PL.ViewModels.OrderList.LabelViewModel
+
+@{
+    ViewData["Title"] = "Glass Order Label";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow p-4">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row">
+        @foreach (var label in Model.Items)
+        {
+            for (int i = 0; i < label.Quantity; i++)
+            {
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="card shadow-sm border-0 position-relative p-4" style="border-radius: 12px; overflow: hidden;">
+
+                        <div class="position-absolute top-50 start-50 translate-middle" style="opacity: 0.4;">
+                            <img src="/assets/images/Login.png" alt="Logo" class="img-fluid" style="width: 80%; max-width: 200px;">
+                        </div>
+
+                        <div class="card-body position-relative text-center" style="z-index: 2;">
+                            <h4 class="fw-bold">
+                                MasterCopy Innovations
+                            </h4>
+                            <hr>
+
+                            <div class="text-start">
+                                <p class="mb-1"><strong>Order ID:</strong> @Model.OrderId</p>
+                                <p class="mb-1"><strong>Customer:</strong> @Model.CustomerName</p>
+                                <p class="mb-1"><strong>Glass Type:</strong> @Model.JobNo</p>
+                                <p class="mb-1"><strong>Order Date:</strong> @Model.OrderDate</p>
+                                <p class="mb-1"><strong>Customer Reference:</strong> @label.CustomerReference</p>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.Barcode))
+                            {
+                                <div class="text-center mt-3">
+                                    <img src="@Model.Barcode" alt="Barcode" class="img-fluid shadow-sm" style="max-width: 200px; border-radius: 5px;">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="card-footer text-center mt-2 d-print-none">
+        <button onclick="window.print()" class="btn btn-outline-primary">
+            <i class="fas fa-print"></i> Print Label
+        </button>
+    </div>
+</div>

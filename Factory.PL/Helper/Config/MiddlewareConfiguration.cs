@@ -9,6 +9,7 @@ public static class MiddlewareConfiguration
 {
     public static void ConfigureMiddleware(WebApplication app, IWebHostEnvironment env)
     {
+
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
@@ -42,6 +43,7 @@ public static class MiddlewareConfiguration
                 });
             });
         }
+        app.UseMiddleware<ContractExpirationMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();

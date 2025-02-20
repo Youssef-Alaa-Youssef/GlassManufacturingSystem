@@ -27,7 +27,7 @@
         <strong>Warning!</strong> Deleting this user cannot be undone. Are you sure you want to proceed?
     </div>
 
-    <form method="post" action="@Url.Action("Delete", "Auth", new { id = Model.Id })">
+    <form method="post" action="@Url.Action("DeleteConfirmed", "Auth", new { id = Model.Id })">
         <div class="d-flex justify-content-center mt-4">
             <button type="submit" class="btn btn-outline-danger btn-lg me-2">Delete</button>
             <a href="@Url.Action("Index", "Auth")" class="btn btn-outline-secondary btn-lg">Cancel</a>

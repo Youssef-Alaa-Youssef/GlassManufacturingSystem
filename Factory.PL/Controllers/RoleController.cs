@@ -106,7 +106,7 @@ namespace Factory.Controllers
 
             if (model.Roles == null || !model.Roles.Any())
             {
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                await _userManager.UpdateAsync(user);
                 TempData["Success"] = "All roles have been removed from the user.";
                 return RedirectToAction(nameof(Index));
             }

@@ -208,5 +208,10 @@ namespace Factory.Controllers
             return context.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         }
 
+        public IActionResult ContractExpired()
+        {
+            return View();
+        }
+
     }
 }

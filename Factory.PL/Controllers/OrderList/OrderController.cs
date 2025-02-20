@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.OrderList;
 using Factory.DAL.Models.Warehouses;
 using Factory.DAL.Models.OrderList;
-
+using ZXing;
+using ZXing.Common;
 namespace Factory.Controllers
 {
     public class OrderController : Controller
@@ -127,19 +128,21 @@ namespace Factory.Controllers
 
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
 
-            var model = new OrderViewModel
-            {
-                JobNo = newJobNo,
-                Date = DateTime.Now,
-                FinishDate = DateTime.Now.AddDays(10),
-                Priority = "High",
-                IsAccepted = true,
-                Signature = User.Identity?.Name,
-                Items = new List<OrderItemViewModel>
-        {
-            new OrderItemViewModel() 
-        }
-            };
+var model = new OrderViewModel
+{
+    JobNo = newJobNo,
+    Date = DateTime.Now,
+    FinishDate = DateTime.Now.AddDays(10),
+    Priority = "High",
+    IsAccepted = true,
+    Signature = User.Identity?.Name,
+    Items = items.Select(item => new OrderItemViewModel
+    {
+        Id = item.Id,  // Assuming Item has an Id property
+        ItemName = item.Name,  // Assuming Item has a Name property
+    }).ToList()
+};
+
 
             return model;
         }
@@ -213,7 +216,7 @@ namespace Factory.Controllers
 
         private static OrderViewModel MapToViewModel(Order order) => new()
         {
-            //Id = order.Id,
+            Id = order.Id,
             CustomerName = order.CustomerName,
             CustomerReference = order.CustomerReference,
             ProjectName = order.ProjectName,
@@ -236,5 +239,71 @@ namespace Factory.Controllers
                 CustomerReference = i.CustomerReference
             }).ToList()
         };
+
+        [Authorize(Policy = "Orders_Read")]
+        public async Task<IActionResult> GlassLabel(int id)
+        {
+        var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+        if (order == null)
+        {
+        return NotFound(); 
+        }
+
+        var labelViewModel = MapToLabelViewModel(order);
+
+        return View(labelViewModel);
+        }
+
+        private LabelViewModel MapToLabelViewModel(Order order)
+        {
+            return new LabelViewModel
+            {
+                OrderId = order.Id,
+                CustomerName = order.CustomerName,
+                JobNo = order.JobNo,
+                OrderDate = order.Date.ToString("d"),
+                Barcode = GenerateBarcode(order.Id), 
+                Items = order.Items.Select(item => new OrderItemViewModel
+                {
+                    Id = item.Id,
+                    ItemName = item.ItemName,
+                    Quantity = item.Quantity,
+                    CustomerReference = item.CustomerReference
+                }).ToList() 
+            };
+        }
+
+
+        private string GenerateBarcode(int orderId)
+{
+    var barcodeWriter = new BarcodeWriterPixelData
+    {
+        Format = BarcodeFormat.CODE_128,
+        Options = new EncodingOptions
+        {
+            Height = 50,
+            Width = 200
+        }
+    };
+
+    var pixelData = barcodeWriter.Write(orderId.ToString());
+    using (var bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
+    {
+        using (var ms = new MemoryStream())
+        {
+            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+            try
+            {
+                System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+        }
+    }
+}
     }
 }

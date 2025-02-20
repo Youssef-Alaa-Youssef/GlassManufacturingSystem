@@ -6,12 +6,12 @@
 }
 
 <div class="container-fluid card shadow p-3">
-    @await Html.PartialAsync("ErrorSummaryPartial")
-    @await Html.PartialAsync("_PageTitle")
+    <partial name="ErrorSummaryPartial" />
+    <partial name="_PageTitle" />
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="text-primary">شركة الزجاج العالمية @TempData["Error"]</h2>
+            <h2 class="text-secondary">شركة الزجاج العالمية</h2>
             <h2 class="text-secondary">Global Glass Factory</h2>
         </div>
         <div>
@@ -21,7 +21,7 @@
 
     <!-- Form Section -->
     <form asp-action="Create" method="post" class="needs-validation" novalidate>
-        @Html.AntiForgeryToken()
+        <input asp-for="@Model.Signature" type="hidden" value="@User.Identity?.Name">
 
         <!-- Customer Information Section -->
         <div class="card mb-4">
@@ -31,26 +31,26 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label asp-for="CustomerName" class="form-label fw-semibold">Customer Name</label>
+                        <label asp-for="CustomerName" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required>
+                            <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required />
                         </div>
                         <span asp-validation-for="CustomerName" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="CustomerReference" class="form-label fw-semibold">Customer Reference</label>
+                        <label asp-for="CustomerReference" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                            <input asp-for="CustomerReference" class="form-control" placeholder="Enter reference" required>
+                            <input asp-for="CustomerReference" class="form-control" placeholder="Enter reference" required />
                         </div>
                         <span asp-validation-for="CustomerReference" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="ProjectName" class="form-label fw-semibold">Project Name</label>
+                        <label asp-for="ProjectName" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-building"></i></span>
-                            <input asp-for="ProjectName" class="form-control" placeholder="Enter project name" required>
+                            <input asp-for="ProjectName" class="form-control" placeholder="Enter project name" required />
                         </div>
                         <span asp-validation-for="ProjectName" class="text-danger"></span>
                     </div>
@@ -66,27 +66,27 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label asp-for="Date" class="form-label fw-semibold">Date</label>
+                        <label asp-for="Date" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-calendar"></i></span>
-                            <input asp-for="Date" type="date" disabled value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" required>
+                            <input asp-for="Date" type="date" disabled value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" required />
                         </div>
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="JobNo" class="form-label fw-semibold">Job No</label>
+                        <label asp-for="JobNo" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-upc"></i></span>
-                            <input class="form-control" value="@Model.JobNo" disabled>
-                            <input type="hidden" asp-for="JobNo">
+                            <input class="form-control" value="@Model.JobNo" disabled />
+                            <input type="hidden" asp-for="JobNo" />
                         </div>
                         <span asp-validation-for="JobNo" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="Address" class="form-label fw-semibold">Address</label>
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                            <input asp-for="Address" class="form-control" placeholder="Enter address" required>
+                            <input asp-for="Address" class="form-control" placeholder="Enter address" required />
                         </div>
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
@@ -95,7 +95,7 @@
                 <!-- Priority and Machine Selection -->
                 <div class="row mb-3">
                     <div class="col-md-4 d-none">
-                        <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
+                        <label asp-for="Priority" class="form-label fw-semibold"></label>
                         <select asp-for="Priority" class="form-select" required>
                             <option value="">--Select Priority--</option>
                             <option value="Low">Low</option>
@@ -111,7 +111,7 @@
                             {
                                 <div class="form-check me-4 mb-2">
                                     <input name="SelectedMachines" class="form-check-input machine-checkbox"
-                                           type="checkbox" value="@machine" id="machine-@machine">
+                                           type="checkbox" value="@machine" id="machine-@machine" />
                                     <label class="form-check-label" for="machine-@machine">
                                         <i class="bi bi-tools me-1"></i>@machine
                                     </label>
@@ -130,11 +130,11 @@
                         <label class="form-label fw-semibold">Step Glass</label>
                         <div class="border rounded p-3">
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="stepRadio" id="stepYes" value="Yes">
+                                <input class="form-check-input" type="radio" name="stepRadio" id="stepYes" value="Yes" />
                                 <label class="form-check-label" for="stepYes">Yes</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="stepRadio" id="stepNo" value="No">
+                                <input class="form-check-input" type="radio" name="stepRadio" id="stepNo" value="No" />
                                 <label class="form-check-label" for="stepNo">No</label>
                             </div>
                         </div>
@@ -185,40 +185,28 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <div class="input-group">
-                                        <input asp-for="@Model.Items[0].Width" class="form-control width">
-                                    </div>
+                                    <input asp-for="Items[0].Width" class="form-control width" />
                                 </td>
                                 <td>
-                                    <div class="input-group">
-                                        <input asp-for="@Model.Items[0].Height" class="form-control height">
-                                    </div>
+                                    <input asp-for="Items[0].Height" class="form-control height" />
                                 </td>
                                 <td class="stepWidthInput" style="display: none;">
-                                    <div class="input-group">
-                                        <input name="Items[0].StepWidth" class="form-control step-width" max="@Model.Items[0].Width">
-                                    </div>
+                                    <input name="Items[0].StepWidth" class="form-control step-width" />
                                 </td>
                                 <td class="stepHeightInput" style="display: none;">
-                                    <div class="input-group">
-                                        <input name="@Model.Items[0].StepHeight" class="form-control step-height" max="@Model.Items[0].Height">
-                                    </div>
+                                    <input name="Items[0].StepHeight" class="form-control step-height" max="@Model.Items[0].Height" />
                                 </td>
                                 <td>
-                                    <input asp-for="@Model.Items[0].Quantity" class="form-control quantity">
+                                    <input asp-for="Items[0].Quantity" class="form-control quantity" />
                                 </td>
                                 <td>
-                                    <div class="input-group">
-                                        <input asp-for="@Model.Items[0].SQM" class="form-control sqm" step="0.01" readonly>
-                                    </div>
+                                    <input asp-for="Items[0].SQM" class="form-control sqm" step="0.01" readonly />
                                 </td>
                                 <td>
-                                    <div class="input-group">
-                                        <input asp-for="@Model.Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly>
-                                    </div>
+                                    <input asp-for="Items[0].TotalLM" class="form-control totalLM" step="0.01" readonly />
                                 </td>
                                 <td>
-                                    <input asp-for="@Model.Items[0].CustomerReference" class="form-control" required>
+                                    <input asp-for="Items[0].CustomerReference" class="form-control" required />
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-outline-danger btn-sm removeRowBtn" title="Remove Item">
@@ -231,16 +219,16 @@
                             <tr>
                                 <th colspan="4" class="text-end">Total</th>
                                 <th class="text-center">
-                                    <input type="number" id="totalQuantity" class="form-control form-control-sm " readonly>
+                                    <input type="number" id="totalQuantity" class="form-control form-control-sm" readonly />
                                 </th>
                                 <th class="text-center">
-                                    <input asp-for="@Model.TotalSQM" id="totalSQM" class="form-control form-control-sm " readonly>
+                                    <input asp-for="TotalSQM" id="totalSQM" class="form-control form-control-sm" readonly />
                                 </th>
                                 <th class="d-none">
-                                    <input type="number" id="totalSQMHidden" class="form-control form-control-sm " readonly>
+                                    <input type="number" id="totalSQMHidden" class="form-control form-control-sm" readonly />
                                 </th>
                                 <th class="text-center">
-                                    <input asp-for="@Model.TotalLM" id="totalLM" class="form-control form-control-sm " readonly>
+                                    <input asp-for="TotalLM" id="totalLM" class="form-control form-control-sm" readonly />
                                 </th>
                                 <th colspan="2"></th>
                             </tr>
@@ -252,22 +240,21 @@
 
         <!-- Delivery Information -->
         <div class="card mb-4">
-            <div class="card-header ">
+            <div class="card-header">
                 <h5 class="mb-0">Delivery Information</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="FinishDate" class="form-label fw-semibold">Delivery Date</label>
+                        <label asp-for="FinishDate" class="form-label fw-semibold"></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-truck"></i></span>
-                            <input asp-for="FinishDate" type="date" class="form-control" id="finishDateInput" value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd")">
+                            <input asp-for="FinishDate" type="date" class="form-control" id="finishDateInput" value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd")" />
                         </div>
                         <span asp-validation-for="FinishDate" class="text-danger"></span>
                     </div>
-                    <input type="hidden" asp-for="Signature" class="form-control" value="@User.Identity?.Name">
                     <div class="col-md-4 mb-3">
-                        <label asp-for="IsAccepted" class="form-label fw-semibold">Is Accepted</label>
+                        <label asp-for="IsAccepted" class="form-label fw-semibold"></label>
                         <select asp-for="IsAccepted" class="form-select">
                             <option value="true">Yes</option>
                             <option value="false">No</option>
@@ -278,7 +265,7 @@
             </div>
         </div>
 
-        <div class="text-center mt-4">
+        <div class="card-footer text-center mt-2">
             <button type="submit" class="btn btn-outline-primary px-5">
                 <i class="bi bi-check-circle me-2"></i>Create Order
             </button>
@@ -402,56 +389,40 @@
                 newRow.innerHTML = `
                     <td class="text-center">${rowCount + 1}</td>
                     <td>
-                        <select asp-for="Items[${rowCount}].ItemName" class="form-select item-select" >
+                        <select name="Items[${rowCount}].ItemName" class="form-select item-select" required>
                            <option value="">--Select Item--</option>
         @if (Model?.Items != null && Model.Items.Any())
         {
             @foreach (var item in Model.Items)
             {
-                                                <option value="@item.Id">@item.ItemName</option>
+                                                        <option value="@item.Id">@item.ItemName</option>
             }
         }
                         </select>
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].Width" class="form-control width">
-                        </div>
+                        <input name="Items[${rowCount}].Width" class="form-control width" type="number" min="0" step="1" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].Height" class="form-control height" >
-                        </div>
+                        <input name="Items[${rowCount}].Height" class="form-control height" type="number" min="0" step="1" />
                     </td>
                     <td class="stepWidthInput" style="${stepWidthHeader.style.display}">
-                        <div class="input-group">
-                            <input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1">
-                        </div>
+                        <input name="Items[${rowCount}].StepWidth" class="form-control step-width" type="number" min="0" step="1" />
                     </td>
                     <td class="stepHeightInput" style="${stepHeightHeader.style.display}">
-                        <div class="input-group">
-                            <input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1">
-                        </div>
+                        <input name="Items[${rowCount}].StepHeight" class="form-control step-height" type="number" min="0" step="1" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].Quantity" class="form-control quantity" >
-                        </div>
+                        <input name="Items[${rowCount}].Quantity" class="form-control quantity" type="number" min="1" step="1" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].SQM" class="form-control sqm" readonly>
-                        </div>
+                        <input name="Items[${rowCount}].SQM" class="form-control sqm" type="number" step="0.01" readonly />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].TotalLM" class="form-control totalLM" readonly>
-                        </div>
+                        <input name="Items[${rowCount}].TotalLM" class="form-control totalLM" type="number" step="0.01" readonly />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <input asp-for="Items[${rowCount}].CustomerReference" class="form-control" >
-                        </div>
+                        <input name="Items[${rowCount}].CustomerReference" class="form-control" required />
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-danger btn-sm removeRowBtn" title="Remove Item">

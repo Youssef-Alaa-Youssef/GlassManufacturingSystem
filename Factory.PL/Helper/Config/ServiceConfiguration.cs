@@ -7,6 +7,7 @@ using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
 using Factory.PL.Services.Permssions;
+using Factory.PL.Services.Setting;
 using Factory.PL.Services.UploadFile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -56,6 +57,7 @@ public static class ServiceConfiguration
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<IVideoService, VideoService>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddScoped<INavigationService, NavigationService>();

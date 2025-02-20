@@ -1,0 +1,79 @@
+﻿@using Factory.DAL.Enums
+@model Factory.PL.ViewModels.Settings.NotificationSettingsViewModel
+
+@{
+    ViewData["Title"] = "Notification Settings";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow p-4">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="SaveNotificationSettings" method="post">
+        <!-- Row for EnableEmailNotifications and EnableSmsNotifications -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="EnableEmailNotifications" />
+                        <label class="form-check-label" asp-for="EnableEmailNotifications">Enable Email Notifications</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="EnableSmsNotifications" />
+                        <label class="form-check-label" asp-for="EnableSmsNotifications">Enable SMS Notifications</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row for EnablePushNotifications and EmailAddress -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="EnablePushNotifications" />
+                        <label class="form-check-label" asp-for="EnablePushNotifications">Enable Push Notifications</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="EmailAddress">Email Address</label>
+                    <input asp-for="EmailAddress" class="form-control" />
+                    <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row for PhoneNumber and Frequency -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="PhoneNumber">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Frequency">Notification Frequency</label>
+                    <select asp-for="Frequency" class="form-control">
+                        <option value="@NotificationFrequency.Daily">Daily</option>
+                        <option value="@NotificationFrequency.Weekly">Weekly</option>
+                        <option value="@NotificationFrequency.Monthly">Monthly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="card-footer text-center mt-2">
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+        </div>
+    </form>
+</div>

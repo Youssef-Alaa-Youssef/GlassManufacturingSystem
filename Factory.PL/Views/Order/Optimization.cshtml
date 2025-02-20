@@ -4,13 +4,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container my-5">
-    <div class="card shadow-lg border-0 rounded-4">
-        @await Html.PartialAsync("_PageTitle")
-
+<div class="container-fluid card shadow p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
         <div class="card-body">
             <div class="text-center">
-                <h5 class="text-primary"><i class="fas fa-border-all"></i> Glass Sheet Layout</h5>
                 <div class="border shadow-sm rounded p-3 ">
                     <canvas id="glassCanvas" class="w-100"></canvas>
                 </div>
@@ -35,35 +33,23 @@
                         <i class="fas fa-percentage text-info"></i>
                         Utilization Efficiency: <strong id="utilizationEfficiency">0%</strong>
                     </li>
+                <li class="list-group-item">
+                    <i class="fas fa-percentage text-info"></i>
+                    Wasting : <strong id="wastePercentage">0%</strong>
+                </li>
                 </ul>
             </div>
 
-            <div class="card-footer text-center">
-                <button class="btn btn-lg btn-primary shadow-sm px-4" id="optimizeButton">
+            <div class="card-footer text-center mt-2">
+                <button class="btn btn-lg btn-outline-primary shadow-sm px-4" id="optimizeButton">
                     <i class="fas fa-cut"></i> Optimize & Draw
                 </button>
-                <button class="btn btn-lg btn-secondary shadow-sm px-4 ms-3" id="clearButton">
+                <button class="btn btn-lg btn-outline-secondary shadow-sm px-4 ms-3" id="clearButton">
                     <i class="fas fa-eraser"></i> Clear
                 </button>
             </div>
         </div>
-    </div>
 </div>
-
-<style>
-    canvas {
-        border: 2px solid #000;
-        background-color: #f8f9fa;
-    }
-
-    .list-group-item {
-        font-size: 1.1rem;
-    }
-
-    .btn-lg {
-        font-size: 1.2rem;
-    }
-</style>
 
 @section Scripts {
     <script>
@@ -92,35 +78,80 @@
             const glassPieces = @Html.Raw(Json.Serialize(Model.Items));
 
             if (!glassPieces || glassPieces.length === 0) {
-                alert("No glass pieces found!");
+                alert("No glass pieces found! Please check your data.");
                 return;
             }
 
             // Clear the canvas
             clearCanvas();
 
-            // Sort glass pieces by area (descending)
-            const sortedPieces = [];
+            // Create array of all pieces, accounting for quantity
+            const allPieces = [];
             glassPieces.forEach(item => {
                 for (let i = 0; i < item.quantity; i++) {
-                    sortedPieces.push({
-                        width: item.width,
-                        height: item.height,
-                        area: item.width * item.height,
+                    allPieces.push({
+                        id: `${item.id || 'item'}-${i+1}`,
+                        width: parseInt(item.width),
+                        height: parseInt(item.height),
+                        area: parseInt(item.width) * parseInt(item.height),
                         originalItem: item
                     });
                 }
             });
 
-            // Sort by height first, then width (better for guillotine cutting)
-            sortedPieces.sort((a, b) => {
-                if (b.height === a.height) {
-                    return b.width - a.width;
+            const strategies = [
+                () => [...allPieces].sort((a, b) => b.area - a.area),
+
+                () => [...allPieces].sort((a, b) => b.height - a.height),
+
+                () => [...allPieces].sort((a, b) => b.width - a.width),
+
+                () => [...allPieces].sort((a, b) => Math.max(b.width, b.height) - Math.max(a.width, a.height)),
+
+                () => [...allPieces].sort((a, b) => (2*b.width + 2*b.height) - (2*a.width + 2*a.height))
+            ];
+
+            // Try each strategy and keep the best result
+            let bestResult = null;
+            let bestWastePercentage = 100;
+
+            strategies.forEach((sortStrategy, strategyIndex) => {
+                const sortedPieces = sortStrategy();
+                const result = packGlassPieces(sortedPieces, sheetWidth, sheetHeight);
+
+                const totalSheetArea = result.sheets.length * sheetWidth * sheetHeight;
+                const totalUsedArea = result.totalAreaUsed;
+                const wastePercentage = 100 - ((totalUsedArea / totalSheetArea) * 100);
+
+                if (wastePercentage < bestWastePercentage) {
+                    bestWastePercentage = wastePercentage;
+                    bestResult = result;
+                    // console.log(`Strategy ${strategyIndex+1} is new best with ${wastePercentage.toFixed(2)}% waste`);
+                    function setWasteClass(wastePercentage) {
+                        const Wasting = document.getElementById("wastePercentage");
+                        const wasteValue = parseFloat(wastePercentage);
+                        Wasting.innerText = `${wasteValue.toFixed(2)}%`;
+                        Wasting.classList.remove('text-success', 'text-warning', 'text-danger');
+                        if (wasteValue >= 85) {
+                            Wasting.classList.add('text-danger');  
+                        } else if (wasteValue >= 50) {
+                            Wasting.classList.add('text-warning');  
+                        } else {
+                            Wasting.classList.add('text-success');  
+                        }
+                    }
+
+                    setWasteClass(wastePercentage);
                 }
-                return b.height - a.height;
             });
 
-            // Initialize sheet tracking
+            if (bestResult) {
+                drawSheets(ctx, bestResult.sheets, scaleX, scaleY, sheetWidth, sheetHeight);
+                updateOptimizationResults(bestResult, sheetWidth, sheetHeight);
+            }
+        }
+
+        function packGlassPieces(pieces, sheetWidth, sheetHeight) {
             const sheets = [{
                 id: 1,
                 width: sheetWidth,
@@ -130,191 +161,339 @@
             }];
 
             let totalItemsPlaced = 0;
+            let totalAreaUsed = 0;
 
-            // Place each piece using the Guillotine algorithm
-            sortedPieces.forEach(piece => {
+            pieces.forEach(piece => {
                 let placed = false;
 
-                // Try to place the item in existing sheets
+                // Try to place on existing sheets
                 for (let sheetIndex = 0; sheetIndex < sheets.length; sheetIndex++) {
                     const sheet = sheets[sheetIndex];
 
-                    // Try each free rectangle in the current sheet
+                    // Find the best-fit rectangle using various heuristics
+                    let bestRect = null;
+                    let bestScore = Infinity;
+                    let bestRotation = false;
+
+                    // Try each free rectangle
                     for (let rectIndex = 0; rectIndex < sheet.freeRectangles.length; rectIndex++) {
                         const rect = sheet.freeRectangles[rectIndex];
 
-                        // Check if piece fits in this rectangle
+                        // Try normal orientation
                         if (piece.width <= rect.width && piece.height <= rect.height) {
-                            // Place the item
-                            sheet.placements.push({
-                                x: rect.x,
-                                y: rect.y,
-                                width: piece.width,
-                                height: piece.height,
-                                item: piece
-                            });
+                            // Best-fit heuristic: minimize wasted area
+                            const wastedArea = (rect.width - piece.width) * (rect.height - piece.height);
 
-                            // Split the free rectangle into two (guillotine cut)
-                            // Remove the current rectangle
-                            sheet.freeRectangles.splice(rectIndex, 1);
+                            // Alternative: Best Short Side Fit
+                            const shortSideFit = Math.min(rect.width - piece.width, rect.height - piece.height);
 
-                            // Add two new rectangles (if there's space)
-                            if (rect.width > piece.width) {
-                                sheet.freeRectangles.push({
-                                    x: rect.x + piece.width,
-                                    y: rect.y,
-                                    width: rect.width - piece.width,
-                                    height: piece.height
-                                });
+                            // Combined score (lower is better)
+                            const score = wastedArea + (shortSideFit * 10);
+
+                            if (score < bestScore) {
+                                bestRect = rect;
+                                bestScore = score;
+                                bestRotation = false;
                             }
-
-                            if (rect.height > piece.height) {
-                                sheet.freeRectangles.push({
-                                    x: rect.x,
-                                    y: rect.y + piece.height,
-                                    width: rect.width,
-                                    height: rect.height - piece.height
-                                });
-                            }
-
-                            // Merge overlapping free rectangles (optimization)
-                            mergeOverlappingRectangles(sheet.freeRectangles);
-
-                            totalItemsPlaced++;
-                            placed = true;
-                            break;
                         }
 
-                        // Try rotated piece if original orientation doesn't fit
-                        if (!placed && piece.width !== piece.height && piece.height <= rect.width && piece.width <= rect.height) {
-                            // Place the rotated item
-                            sheet.placements.push({
-                                x: rect.x,
-                                y: rect.y,
-                                width: piece.height, // Swapped dimensions
-                                height: piece.width, // Swapped dimensions
-                                item: piece,
-                                rotated: true
-                            });
+                        // Try rotated orientation if dimensions are different
+                        if (piece.width !== piece.height && piece.height <= rect.width && piece.width <= rect.height) {
+                            const wastedArea = (rect.width - piece.height) * (rect.height - piece.width);
+                            const shortSideFit = Math.min(rect.width - piece.height, rect.height - piece.width);
+                            const score = wastedArea + (shortSideFit * 10);
 
-                            // Split the free rectangle
-                            sheet.freeRectangles.splice(rectIndex, 1);
-
-                            if (rect.width > piece.height) {
-                                sheet.freeRectangles.push({
-                                    x: rect.x + piece.height,
-                                    y: rect.y,
-                                    width: rect.width - piece.height,
-                                    height: piece.width
-                                });
+                            if (score < bestScore) {
+                                bestRect = rect;
+                                bestScore = score;
+                                bestRotation = true;
                             }
-
-                            if (rect.height > piece.width) {
-                                sheet.freeRectangles.push({
-                                    x: rect.x,
-                                    y: rect.y + piece.width,
-                                    width: rect.width,
-                                    height: rect.height - piece.width
-                                });
-                            }
-
-                            mergeOverlappingRectangles(sheet.freeRectangles);
-
-                            totalItemsPlaced++;
-                            placed = true;
-                            break;
                         }
                     }
 
-                    if (placed) break;
+                    // If we found a rectangle where this piece fits
+                    if (bestRect) {
+                        const actualWidth = bestRotation ? piece.height : piece.width;
+                        const actualHeight = bestRotation ? piece.width : piece.height;
+
+                        // Place the item
+                        sheet.placements.push({
+                            x: bestRect.x,
+                            y: bestRect.y,
+                            width: actualWidth,
+                            height: actualHeight,
+                            item: piece,
+                            rotated: bestRotation
+                        });
+
+                        // Add to total area used
+                        totalAreaUsed += piece.area;
+
+                        // NEW: Advanced guillotine split - use the Guillotine MAXRECT variant
+                        // Delete the rectangle we used
+                        sheet.freeRectangles = sheet.freeRectangles.filter(r => r !== bestRect);
+
+                        // Split the space into new free rectangles
+                        // Right split
+                        if (bestRect.width > actualWidth) {
+                            sheet.freeRectangles.push({
+                                x: bestRect.x + actualWidth,
+                                y: bestRect.y,
+                                width: bestRect.width - actualWidth,
+                                height: bestRect.height
+                            });
+                        }
+
+                        // Bottom split
+                        if (bestRect.height > actualHeight) {
+                            sheet.freeRectangles.push({
+                                x: bestRect.x,
+                                y: bestRect.y + actualHeight,
+                                width: bestRect.width,
+                                height: bestRect.height - actualHeight
+                            });
+                        }
+
+                        // Reduce overlap between free rectangles - MAXRECTS approach
+                        pruneFreeRectangles(sheet.freeRectangles);
+
+                        totalItemsPlaced++;
+                        placed = true;
+                        break;
+                    }
                 }
 
                 // If not placed in any existing sheet, create a new sheet
                 if (!placed) {
+                    const actualWidth = piece.width;
+                    const actualHeight = piece.height;
+
                     const newSheet = {
                         id: sheets.length + 1,
                         width: sheetWidth,
                         height: sheetHeight,
-                        freeRectangles: [{
-                            x: piece.width,
-                            y: 0,
-                            width: sheetWidth - piece.width,
-                            height: piece.height
-                        }, {
-                            x: 0,
-                            y: piece.height,
-                            width: sheetWidth,
-                            height: sheetHeight - piece.height
-                        }],
+                        freeRectangles: [
+                            // Right area
+                            {
+                                x: actualWidth,
+                                y: 0,
+                                width: sheetWidth - actualWidth,
+                                height: actualHeight
+                            },
+                            // Bottom area
+                            {
+                                x: 0,
+                                y: actualHeight,
+                                width: sheetWidth,
+                                height: sheetHeight - actualHeight
+                            }
+                        ],
                         placements: [{
                             x: 0,
                             y: 0,
-                            width: piece.width,
-                            height: piece.height,
-                            item: piece
+                            width: actualWidth,
+                            height: actualHeight,
+                            item: piece,
+                            rotated: false
                         }]
                     };
 
                     sheets.push(newSheet);
+                    totalAreaUsed += piece.area;
                     totalItemsPlaced++;
                 }
             });
 
-            // Draw the sheets with their placements
-            drawSheets(ctx, sheets, scaleX, scaleY);
-
-            // Calculate optimization metrics
-            const totalSheetsUsed = sheets.length;
-            const sheetArea = sheetWidth * sheetHeight;
-            const utilizedArea = sheets.reduce((sum, sheet) => {
-                return sum + sheet.placements.reduce((sheetSum, placement) => {
-                    return sheetSum + (placement.width * placement.height);
-                }, 0);
-            }, 0);
-
-            const totalGlassLost = (totalSheetsUsed * sheetArea) - utilizedArea;
-            const utilizationEfficiency = ((utilizedArea / (totalSheetsUsed * sheetArea)) * 100).toFixed(2);
-
-            // Update optimization results
-            document.getElementById("totalSheetsUsed").innerText = totalSheetsUsed;
-            document.getElementById("totalItemsPlaced").innerText = totalItemsPlaced;
-            document.getElementById("totalGlassLost").innerText = `${totalGlassLost.toFixed(2)} mm²`;
-            document.getElementById("utilizationEfficiency").innerText = `${utilizationEfficiency}%`;
+            return {
+                sheets,
+                totalItemsPlaced,
+                totalAreaUsed
+            };
         }
 
-        function mergeOverlappingRectangles(rectangles) {
-            // Simple implementation to merge obviously overlapping rectangles
-            // Note: A full implementation would be more complex
+        // Improved rectangle pruning to reduce wasted space
+        function pruneFreeRectangles(rectangles) {
+            // Remove contained rectangles
             for (let i = 0; i < rectangles.length; i++) {
                 for (let j = i + 1; j < rectangles.length; j++) {
                     const r1 = rectangles[i];
                     const r2 = rectangles[j];
 
                     // Check if r1 contains r2
-                    if (r1.x <= r2.x && (r1.x + r1.width) >= (r2.x + r2.width) &&
-                        r1.y <= r2.y && (r1.y + r1.height) >= (r2.y + r2.height)) {
+                    if (r1.x <= r2.x && r1.y <= r2.y &&
+                        r1.x + r1.width >= r2.x + r2.width &&
+                        r1.y + r1.height >= r2.y + r2.height) {
                         rectangles.splice(j, 1);
                         j--;
                         continue;
                     }
 
                     // Check if r2 contains r1
-                    if (r2.x <= r1.x && (r2.x + r2.width) >= (r1.x + r1.width) &&
-                        r2.y <= r1.y && (r2.y + r2.height) >= (r1.y + r1.height)) {
+                    if (r2.x <= r1.x && r2.y <= r1.y &&
+                        r2.x + r2.width >= r1.x + r1.width &&
+                        r2.y + r2.height >= r1.y + r1.height) {
                         rectangles.splice(i, 1);
                         i--;
                         break;
                     }
                 }
             }
+
+            // Split overlapping rectangles - MAXRECTS improvement
+            for (let i = 0; i < rectangles.length; i++) {
+                for (let j = i + 1; j < rectangles.length; j++) {
+                    const r1 = rectangles[i];
+                    const r2 = rectangles[j];
+
+                    // Find intersection
+                    const overlapX = Math.max(0, Math.min(r1.x + r1.width, r2.x + r2.width) - Math.max(r1.x, r2.x));
+                    const overlapY = Math.max(0, Math.min(r1.y + r1.height, r2.y + r2.height) - Math.max(r1.y, r2.y));
+
+                    // If there's overlap
+                    if (overlapX > 0 && overlapY > 0) {
+                        // Calculate intersection area
+                        const intersectionArea = overlapX * overlapY;
+                        const r1Area = r1.width * r1.height;
+                        const r2Area = r2.width * r2.height;
+
+                        // Decide which rectangle to split based on resulting area
+                        if (r1Area > r2Area) {
+                            splitRectangle(rectangles, j, r1);
+                        } else {
+                            splitRectangle(rectangles, i, r2);
+                            i--; // Reprocess this index
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
-        function drawSheets(ctx, sheets, scaleX, scaleY) {
-            // Draw only the first sheet for visualization
-            // In a production system, you might want pagination to show all sheets
-            if (sheets.length === 0) return;
+        // Split a rectangle to avoid overlap
+        function splitRectangle(rectangles, index, other) {
+            const rect = rectangles[index];
+            rectangles.splice(index, 1); // Remove the original
 
-            const sheet = sheets[0];
+            // Calculate overlap region
+            const overlapLeft = Math.max(rect.x, other.x);
+            const overlapTop = Math.max(rect.y, other.y);
+            const overlapRight = Math.min(rect.x + rect.width, other.x + other.width);
+            const overlapBottom = Math.min(rect.y + rect.height, other.y + other.height);
+
+            // Create non-overlapping regions
+            // Left segment
+            if (rect.x < overlapLeft) {
+                rectangles.push({
+                    x: rect.x,
+                    y: rect.y,
+                    width: overlapLeft - rect.x,
+                    height: rect.height
+                });
+            }
+
+            // Right segment
+            if (rect.x + rect.width > overlapRight) {
+                rectangles.push({
+                    x: overlapRight,
+                    y: rect.y,
+                    width: (rect.x + rect.width) - overlapRight,
+                    height: rect.height
+                });
+            }
+
+            // Top segment
+            if (rect.y < overlapTop) {
+                rectangles.push({
+                    x: rect.x,
+                    y: rect.y,
+                    width: rect.width,
+                    height: overlapTop - rect.y
+                });
+            }
+
+            // Bottom segment
+            if (rect.y + rect.height > overlapBottom) {
+                rectangles.push({
+                    x: rect.x,
+                    y: overlapBottom,
+                    width: rect.width,
+                    height: (rect.y + rect.height) - overlapBottom
+                });
+            }
+        }
+
+        function drawSheets(ctx, sheets, scaleX, scaleY, sheetWidth, sheetHeight) {
+            // Set up sheet navigation if multiple sheets
+            if (sheets.length > 1) {
+                const container = document.querySelector('.container-fluid');
+
+                // Add navigation controls if needed
+                if (!document.getElementById('sheetNavigation')) {
+                    const navDiv = document.createElement('div');
+                    navDiv.id = 'sheetNavigation';
+                    navDiv.className = 'my-3 d-flex justify-content-between align-items-center';
+                    navDiv.innerHTML = `
+                        <div>
+                            <button id="prevSheet" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-arrow-left"></i> Previous Sheet
+                            </button>
+                            <span class="mx-2" id="sheetCounter">Sheet 1 of ${sheets.length}</span>
+                            <button id="nextSheet" class="btn btn-sm btn-outline-primary">
+                                Next Sheet <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    // Insert after canvas container
+                    const canvasContainer = document.querySelector('.text-center');
+                    canvasContainer.parentNode.insertBefore(navDiv, canvasContainer.nextSibling);
+
+                    // Set up event listeners
+                    document.getElementById('prevSheet').addEventListener('click', () => navigateSheets(-1));
+                    document.getElementById('nextSheet').addEventListener('click', () => navigateSheets(1));
+
+                    // Store current sheet index
+                    window.currentSheetIndex = 0;
+                } else {
+                    // Update sheet counter
+                    document.getElementById('sheetCounter').textContent = `Sheet 1 of ${sheets.length}`;
+                    window.currentSheetIndex = 0;
+                }
+            }
+
+            // Draw first sheet
+            drawSingleSheet(ctx, sheets[0], scaleX, scaleY, sheetWidth, sheetHeight);
+
+            // Store sheets for navigation
+            window.allSheets = sheets;
+        }
+
+        function drawSingleSheet(ctx, sheet, scaleX, scaleY, sheetWidth, sheetHeight) {
+            // Clear canvas
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            // Draw sheet background
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, sheetWidth * scaleX, sheetHeight * scaleY);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, sheetWidth * scaleX, sheetHeight * scaleY);
+
+            // Draw grid lines (every 100mm)
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 0.5;
+            for (let x = 100; x < sheetWidth; x += 100) {
+                ctx.beginPath();
+                ctx.moveTo(x * scaleX, 0);
+                ctx.lineTo(x * scaleX, sheetHeight * scaleY);
+                ctx.stroke();
+            }
+            for (let y = 100; y < sheetHeight; y += 100) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * scaleY);
+                ctx.lineTo(sheetWidth * scaleX, y * scaleY);
+                ctx.stroke();
+            }
 
             // Draw placements with semi-transparent colors
             sheet.placements.forEach((placement, index) => {
@@ -327,25 +506,108 @@
                 const height = placement.height * scaleY;
 
                 ctx.fillRect(x, y, width, height);
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#333333';
+                ctx.lineWidth = 1;
                 ctx.strokeRect(x, y, width, height);
 
                 // Add text information
-                ctx.fillStyle = "black";
-                ctx.font = "12px Arial";
+                ctx.fillStyle = '#000000';
+                ctx.font = '12px Arial';
+
+                // Display dimensions and ID
+                let displayText = `${placement.width} × ${placement.height} mm`;
                 if (placement.rotated) {
-                    ctx.fillText(`${placement.height} × ${placement.width} mm (R)`, x + 5, y + 15);
-                } else {
-                    ctx.fillText(`${placement.width} × ${placement.height} mm`, x + 5, y + 15);
+                    displayText += ' (R)';
+                }
+
+                // Add item ID if available
+                if (placement.item.id) {
+                    displayText += ` [${placement.item.id}]`;
+                }
+
+                // Text position depends on size
+                if (width > 100 && height > 30) {
+                    ctx.fillText(displayText, x + 5, y + 20);
+
+                    // Add cutting lines visualization if large enough
+                    if (width > 150 && height > 60) {
+                        ctx.strokeStyle = '#ff0000';
+                        ctx.setLineDash([5, 3]);
+
+                        // Horizontal cutting line
+                        ctx.beginPath();
+                        ctx.moveTo(x, y + height / 2);
+                        ctx.lineTo(x + width, y + height / 2);
+                        ctx.stroke();
+
+                        // Vertical cutting line
+                        ctx.beginPath();
+                        ctx.moveTo(x + width / 2, y);
+                        ctx.lineTo(x + width / 2, y + height);
+                        ctx.stroke();
+
+                        ctx.setLineDash([]);
+                    }
+                } else if (width > 50 && height > 20) {
+                    ctx.fillText(displayText, x + 3, y + 12);
                 }
             });
+        }
 
-            // If there are more sheets, indicate this
-            if (sheets.length > 1) {
-                ctx.fillStyle = "black";
-                ctx.font = "14px Arial";
-                ctx.fillText(`Sheet 1 of ${sheets.length} - Use controls to view other sheets`, 10, ctx.canvas.height - 10);
+        function navigateSheets(direction) {
+            if (!window.allSheets || !window.hasOwnProperty('currentSheetIndex')) return;
+
+            const sheets = window.allSheets;
+            let newIndex = window.currentSheetIndex + direction;
+
+            // Handle boundaries
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= sheets.length) newIndex = sheets.length - 1;
+
+            if (newIndex !== window.currentSheetIndex) {
+                window.currentSheetIndex = newIndex;
+
+                // Update sheet counter
+                document.getElementById('sheetCounter').textContent = `Sheet ${newIndex + 1} of ${sheets.length}`;
+
+                // Redraw canvas
+                const canvas = document.getElementById('glassCanvas');
+                const ctx = canvas.getContext('2d');
+                const sheetWidth = 2000;
+                const sheetHeight = 3000;
+                const scaleX = canvas.width / sheetWidth;
+                const scaleY = canvas.height / sheetHeight;
+
+                drawSingleSheet(ctx, sheets[newIndex], scaleX, scaleY, sheetWidth, sheetHeight);
+            }
+        }
+
+       
+        function updateOptimizationResults(result, sheetWidth, sheetHeight) {
+            const totalSheetsUsed = result.sheets.length;
+            const totalItemsPlaced = result.totalItemsPlaced;
+            const totalSheetArea = totalSheetsUsed * sheetWidth * sheetHeight;
+            const totalUsedArea = result.totalAreaUsed;
+            const totalGlassLost = totalSheetArea - totalUsedArea;
+            const utilizationEfficiency = ((totalUsedArea / totalSheetArea) * 100).toFixed(2);
+
+            // Update results display
+            document.getElementById("totalSheetsUsed").innerText = totalSheetsUsed;
+            document.getElementById("totalItemsPlaced").innerText = totalItemsPlaced;
+            document.getElementById("totalGlassLost").innerText = `${totalGlassLost.toLocaleString()} mm²`;
+            document.getElementById("utilizationEfficiency").innerText = `${utilizationEfficiency}%`;
+
+            // Add color coding based on efficiency
+            const efficiencyElement = document.getElementById("utilizationEfficiency");
+            if (parseFloat(utilizationEfficiency) >= 85) {
+                efficiencyElement.classList.add('text-success');
+                efficiencyElement.classList.remove('text-warning', 'text-danger');
+            } else if (parseFloat(utilizationEfficiency) >= 70) {
+                efficiencyElement.classList.add('text-warning');
+                efficiencyElement.classList.remove('text-success', 'text-danger');
+            } else {
+                efficiencyElement.classList.add('text-danger');
+                efficiencyElement.classList.remove('text-success', 'text-warning');
             }
         }
 
@@ -359,6 +621,16 @@
             document.getElementById("totalItemsPlaced").innerText = 0;
             document.getElementById("totalGlassLost").innerText = "0 mm²";
             document.getElementById("utilizationEfficiency").innerText = "0%";
+
+            // Remove sheet navigation if exists
+            const navElement = document.getElementById('sheetNavigation');
+            if (navElement) {
+                navElement.remove();
+            }
+
+            // Clear any highlights
+            const efficiencyElement = document.getElementById("utilizationEfficiency");
+            efficiencyElement.classList.remove('text-success', 'text-warning', 'text-danger');
         }
     </script>
 }

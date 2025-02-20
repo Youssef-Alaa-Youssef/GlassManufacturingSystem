@@ -3,47 +3,45 @@
 @{
     ViewData["Title"] = "Edit Sub-Warehouse";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
-
 
     <form method="post">
         <input type="hidden" name="Id" value="@Model.Id" />
 
-        <div class="mb-3">
-            <label asp-for="NameEn" class="form-label"></label>
-            <input class="form-control" asp-for="NameEn" >
+        <div class="row">
+            <div class="col-md-6">
+                <label asp-for="NameEn" class="form-label"></label>
+                <input class="form-control" asp-for="NameEn">
+            </div>
+            <div class="col-md-6">
+                <label asp-for="NameAr" class="form-label"></label>
+                <input class="form-control" asp-for="NameAr">
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="NameAr" class="form-label"></label>
-            <input class="form-control" asp-for="NameAr">
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="AddressEn" class="form-label"></label>
-            <input class="form-control"  asp-for="AddressEn">
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="AddressAr" class="form-label"></label>
-            <input class="form-control" asp-for="AddressAr">
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label asp-for="AddressEn" class="form-label"></label>
+                <input class="form-control" asp-for="AddressEn">
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AddressAr" class="form-label"></label>
+                <input class="form-control" asp-for="AddressAr">
+            </div>
         </div>
 
         <input type="hidden" name="MainWarehouseId" value="@Model.MainWarehouseId" />
-        <div class="text-center mt-4">
-            <div class="card-footer text-center">
 
-        <button type="submit" class="btn btn-outline-warning">Update Sub-Warehouse</button>
-        </div>
-    </div>
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-outline-warning">Update Sub-Warehouse</button>
+            </div>
     </form>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

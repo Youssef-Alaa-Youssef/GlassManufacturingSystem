@@ -1,0 +1,48 @@
+﻿@model Factory.PL.ViewModels.Settings.ContractSettingsViewModel
+
+@{
+    ViewData["Title"] = "Contract Settings";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow p-4">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="SaveContractSettings" method="post">
+        <!-- Row for ContractStartDate and ContractEndDate -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ContractStartDate">Contract Start Date</label>
+                    <input asp-for="ContractStartDate" class="form-control" type="date" />
+                    <span asp-validation-for="ContractStartDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ContractEndDate">Contract End Date</label>
+                    <input asp-for="ContractEndDate" class="form-control" type="date" />
+                    <span asp-validation-for="ContractEndDate" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row for IsActive -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="IsActive" />
+                        <label class="form-check-label" asp-for="IsActive">Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="card-footer text-center mt-4">
+            <button type="submit" class="btn btn-outline-primary">Save Settings</button>
+        </div>
+    </form>
+</div>
