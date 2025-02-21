@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Factory.PL.Helper;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Factory.PL.ViewModels.OrderList
 {
@@ -10,11 +12,11 @@ namespace Factory.PL.ViewModels.OrderList
         public string ItemName { get; set; }
 
         [Required(ErrorMessage = "Width is required")]
-        [Range(1, 6000, ErrorMessage = "Width must be between 1 and 6000 mm")]
+        [Range(1, 6000, ErrorMessage = "Width must be between 1 and 3200 mm")]
         public double Width { get; set; }
 
         [Required(ErrorMessage = "Height is required")]
-        [Range(1, 6000, ErrorMessage = "Height must be between 1 and 6000 mm")]
+        [Range(1, 6000, ErrorMessage = "Height must be between 1 and 5000 mm")]
         public double Height { get; set; }
 
         public double? StepWidth { get; set; }
@@ -26,13 +28,16 @@ namespace Factory.PL.ViewModels.OrderList
         public int Quantity { get; set; }
 
         [Required]
+        [ModelBinder(BinderType = typeof(InvariantDecimalModelBinder))]
         public double SQM { get; set; }
 
         [Required]
+        [ModelBinder(BinderType = typeof(InvariantDecimalModelBinder))]
         public double TotalLM { get; set; }
 
         [Required(ErrorMessage = "Customer reference is required")]
         [StringLength(50, ErrorMessage = "Customer reference cannot exceed 50 characters")]
         public string CustomerReference { get; set; }
+        public string Description { get; set; }
     }
 }

@@ -45,11 +45,6 @@ namespace Factory.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = string.Join("<br>",
-                    ModelState.Values
-                              .SelectMany(v => v.Errors)
-                              .Select(e => e.ErrorMessage));
-
                 var model = await CreateOrderViewModel();
                 return View(model);
             }

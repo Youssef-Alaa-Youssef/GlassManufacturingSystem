@@ -5,15 +5,16 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
 
     <p class="lead text-muted">Manage and view documentation entries.</p>
-
-    <a asp-action="Create" class="btn btn-outline-primary mb-3">Create New</a>
-
+    <div class="col-md-3">
+    <a asp-action="Create" class="btn btn-outline-primary mb-3">
+        <i class="fas fa-plus-circle me-2"></i>Create New
+    </a>
+    </div>
     @if (Model.Any())
     {
         <table class="table table-striped table-hover">
@@ -22,6 +23,7 @@
                     <th>Title</th>
                     <th>Description</th>
                     <th>Created At</th>
+                    <th>Video Preview</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -33,9 +35,47 @@
                         <td>@item.Description</td>
                         <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                            @if (!string.IsNullOrEmpty(item.VideoUrl))
+                            {
+                                <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#videoModal-@item.Id">
+                                    <i class="fas fa-play-circle me-2"></i>Preview Video
+                                </button>
+
+                                <!-- Video Modal -->
+                                <div class="modal fade" id="videoModal-@item.Id" tabindex="-1" aria-labelledby="videoModalLabel-@item.Id" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="videoModalLabel-@item.Id">@item.Title</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="ratio ratio-16x9">
+                                                    <iframe src="https://www.youtube.com/embed/@item.VideoUrl.Split('=').Last()" title="@item.Title" allowfullscreen></iframe>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Video</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-info-circle me-2"></i>Details
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash-alt me-2"></i>Delete
+                            </a>
                         </td>
                     </tr>
                 }
@@ -45,7 +85,7 @@
     else
     {
         <div class="alert alert-info text-center" role="alert">
-            <i class="bi bi-info-circle-fill"></i> No documentation entries found. Click "Create New" to add one.
+            <i class="fas fa-info-circle me-2"></i> No documentation entries found. Click "Create New" to add one.
         </div>
     }
 </div>

@@ -20,6 +20,18 @@ public static class ServiceConfiguration
 {
     public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMvc()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
+            });
+
+        var cultureInfo = new System.Globalization.CultureInfo("en-US");
+        cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
         ConfigureLocalization(services);
         ConfigureApplicationServices(services, configuration);
         ConfigureDatabase(services, configuration);

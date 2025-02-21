@@ -23,6 +23,13 @@ namespace Factory.Controllers
             return View(documentation);
         }
         [Authorize()]
+        public async Task<IActionResult> Help()
+        {
+            var documentation = await _unitOfWork.GetRepository<Documentation>().GetAllAsync();
+            return View(documentation);
+        }
+
+        [Authorize()]
 
         public async Task<IActionResult> Details(int id)
         {

@@ -1,4 +1,6 @@
 ﻿using Factory.DAL.Enums;
+using Factory.PL.Helper;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace Factory.PL.ViewModels.OrderList
@@ -42,12 +44,15 @@ namespace Factory.PL.ViewModels.OrderList
         [Required(ErrorMessage = "At least one machine must be selected")]
         public List<MachineType> SelectedMachines { get; set; } = new List<MachineType>();
 
-        [Required]
-        [Range(0, double.MaxValue, ErrorMessage = "Total SQM must be a positive number")]
+        //[Required]
+        //[Range(0, double.MaxValue, ErrorMessage = "Total SQM must be a positive number")]
+        [ModelBinder(BinderType = typeof(InvariantDecimalModelBinder))]
         public double TotalSQM { get; set; }
 
-        [Required]
-        [Range(0, double.MaxValue, ErrorMessage = "Total LM must be a positive number")]
+        //[Required]
+        //[Range(0, double.MaxValue, ErrorMessage = "Total LM must be a positive number")]
+        [ModelBinder(BinderType = typeof(InvariantDecimalModelBinder))]
+
         public double TotalLM { get; set; }
 
         public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();

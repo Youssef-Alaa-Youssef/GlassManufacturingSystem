@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Factory.DAL.Models.Documentation.Documentation>
+
+@{
+    ViewData["Title"] = "Documentation";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-2 p-3">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Welcome to the Platform Documentation</h1>
+        <p class="lead">Find detailed guides, tutorials, and information about all platform features.</p>
+    </div>
+    <div class="mb-4">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search documentation..." aria-label="Search">
+    </div>
+
+    <div class="accordion" id="documentationAccordion">
+        @foreach (var item in Model)
+        {
+            <div class="accordion-item mb-3 border rounded">
+                <h2 class="accordion-header" id="heading-@item.Id">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id" aria-expanded="false" aria-controls="collapse-@item.Id">
+                        <i class="bi bi-file-earmark-text me-2"></i> @item.Title
+                        @if (!string.IsNullOrEmpty(item.VideoUrl))
+                        {
+                            <span class="badge bg-success ms-2"><i class="bi bi-play-circle me-1"></i> Video</span>
+                        }
+                    </button>
+                </h2>
+                <div id="collapse-@item.Id" class="accordion-collapse collapse" aria-labelledby="heading-@item.Id" data-bs-parent="#documentationAccordion">
+                    <div class="accordion-body">
+                        <h5 class="mb-3"><i class="bi bi-card-text me-2"></i> Description</h5>
+                        <p>@item.Description</p>
+
+                        @if (!string.IsNullOrEmpty(item.Content))
+                        {
+                            <h5 class="mb-3"><i class="bi bi-file-text me-2"></i> Content</h5>
+                            <p>@item.Content</p>
+                        }
+
+                        @if (!string.IsNullOrEmpty(item.VideoUrl))
+                        {
+                            <h5 class="mb-3"><i class="bi bi-play-circle me-2"></i> Video Tutorial</h5>
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.youtube.com/embed/@item.VideoUrl.Split('=').Last()" title="@item.Title" allowfullscreen></iframe>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const accordionItems = document.querySelectorAll('.accordion-item');
+
+            accordionItems.forEach(item => {
+                const title = item.querySelector('.accordion-button').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+}

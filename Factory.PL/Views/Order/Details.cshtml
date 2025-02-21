@@ -1,86 +1,125 @@
 ﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
 @{
-    ViewData["Title"] = "Order Details";
+    ViewData["Title"] = "Delivery Invoice";
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
-    @await Html.PartialAsync("ErrorSummaryPartial")
-    @await Html.PartialAsync("_PageTitle")
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 p-3">
-                <h5 class="text-secondary fw-bold mb-3">Customer Information</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <tbody>
-                            <tr><td><strong>Customer Name:</strong></td><td>@Model.CustomerName</td></tr>
-                            <tr><td><strong>Customer Reference:</strong></td><td>@Model.CustomerReference</td></tr>
-                            <tr><td><strong>Project Name:</strong></td><td>@Model.ProjectName , @Model.Address</td></tr>
-                            <tr><td><strong>Delivery Date:</strong></td><td>@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    .invoice-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .header img {
+            max-width: 120px;
+        }
+
+    .info-container {
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        margin-bottom: 5px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th, .table td {
+            padding: 8px;
+            text-align: left;
+        }
+
+
+    .no-items {
+        text-align: center;
+        font-style: italic;
+    }
+    @@media print {
+        .no-print
+
+    {
+        display: none;
+    }
+
+    }
+</style>
+
+<div class="invoice-container">
+    <div class="header">
+        <div>
+            <h2>شركة الزجاج العالمية</h2>
+            <h2>Global Glass Factory</h2>
         </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0 p-3">
-                <h5 class="text-secondary fw-bold mb-3">Additional Info</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <tbody>
-                            <tr><td><strong>Date:</strong></td><td>@Model.Date.ToString("yyyy-MM-dd")</td></tr>
-                            <tr><td><strong>Job No:</strong></td><td>@Model.JobNo</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div>
+            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo">
         </div>
     </div>
 
-    <h3 class="mt-5 text-center fw-bold">Order Items</h3>
+    <div class="text-center">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+
+    <div class="info-container">
+        <div class="info-item"><strong>Customer Name:</strong> @Model.CustomerName</div>
+        <div class="info-item"><strong>Customer Reference:</strong> @Model.CustomerReference</div>
+        <div class="info-item"><strong>Project Name:</strong> @Model.ProjectName , @Model.Address</div>
+        <div class="info-item"><strong>Delivery Date:</strong> @(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</div>
+        <div class="info-item"><strong>Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</div>
+        <div class="info-item"><strong>Job No:</strong> @Model.JobNo</div>
+    </div>
 
     @if (Model.Items?.Any() == true)
     {
-        <div class="table-responsive mt-2">
-            <table class="table table-bordered table-striped">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Glass Description</th>
+                    <th>Width</th>
+                    <th>Height</th>
+                    <th>Qty</th>
+                    <th>SQM</th>
+                    <th>Total SQM</th>
+                    <th>Customer Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
                     <tr>
-                        <th>Item Name</th>
-                        <th>Width</th>
-                        <th>Height</th>
-                        <th>Qty</th>
-                        <th>SQM</th>
-                        <th>Total SQM</th>
-                        <th>Customer Reference</th>
+                        <td>@item.CustomerReference</td>
+                        <td>@item.Width</td>
+                        <td>@item.Height</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.SQM</td>
+                        <td>@item.TotalLM</td>
+                        <td>@item.CustomerReference</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr>
-                            <td>@item.ItemName</td>
-                            <td>@item.Width</td>
-                            <td>@item.Height</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.SQM</td>
-                            @* <td>@item.TotalSQM</td> *@
-                            <td>@item.CustomerReference</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     }
     else
     {
-        <p class="text-muted text-center mt-3">No items available for this order.</p>
+        <p class="no-items">No items available for this order.</p>
     }
 
-    <div class="card-footer text-center">
-        <a asp-action="Index" class="btn btn-outline-primary px-4">Back to List</a>
-        <a onclick="window.print()" class="btn btn-outline-success px-4">Print</a>
+    <div class="footer no-print text-center d-print-none">
+        <button onclick="window.print()" class="btn btn-success">Print</button>
     </div>
 </div>
