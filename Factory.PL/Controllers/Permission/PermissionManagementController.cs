@@ -175,51 +175,58 @@ namespace Factory.PL.Controllers.Permission
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "Permission Management_Create")]
-
         public async Task<IActionResult> AssignPermissions(PermissionManagementViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                TempData["Error"] = "Invalid data submitted. Errors: " + string.Join(", ", errors);
+                TempData["Error"] = "Invalid data submitted: " + string.Join(", ", errors);
                 return RedirectToAction(nameof(Index));
             }
 
             try
             {
-                var existingRolePermissions = await _unitOfWork.GetRepository<RolePermission>().GetAllAsync();
-                await _unitOfWork.GetRepository<RolePermission>().RemoveRangeAsync(existingRolePermissions);
-
                 foreach (var rolePermissionViewModel in model.RolePermissions)
                 {
+                    var roleId = rolePermissionViewModel.RoleId;
+
+                    var existingRolePermissions = await _unitOfWork
+                        .GetRepository<RolePermission>()
+                        .GetAllAsync(rp => rp.RoleId == roleId);
+                    await _unitOfWork.GetRepository<RolePermission>().RemoveRangeAsync(existingRolePermissions);
+
+                    var newPermissions = new List<RolePermission>();
+
                     foreach (var permissionViewModel in rolePermissionViewModel.Permissions)
                     {
-                        foreach (var moduleViewModel in permissionViewModel.Modules)
+                        foreach (var moduleViewModel in permissionViewModel.Modules.Where(m => m.IsSelected))
                         {
-                            if (moduleViewModel.IsSelected)
+                            newPermissions.Add(new RolePermission
                             {
-                                await _unitOfWork.GetRepository<RolePermission>().AddAsync(new RolePermission
-                                {
-                                    RoleId = rolePermissionViewModel.RoleId,
-                                    PermissionId = permissionViewModel.PermissionId,
-                                    ModuleId = moduleViewModel.ModuleId
-                                });
-                            }
+                                RoleId = roleId,
+                                PermissionId = permissionViewModel.PermissionId,
+                                ModuleId = moduleViewModel.ModuleId
+                            });
                         }
+                    }
+
+                    if (newPermissions.Any())
+                    {
+                        await _unitOfWork.GetRepository<RolePermission>().AddRangeAsync(newPermissions);
                     }
                 }
 
                 await _unitOfWork.SaveChangesAsync();
-
                 TempData["Success"] = "Permissions updated successfully!";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                //_logger.LogError(ex, "Error updating permissions.");
                 TempData["Error"] = "An error occurred while updating permissions. Please try again.";
             }
 
             return RedirectToAction(nameof(Index));
         }
-    
+
     }
 }

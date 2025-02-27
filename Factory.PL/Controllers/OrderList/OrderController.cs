@@ -97,7 +97,8 @@ namespace Factory.Controllers
                     Quantity = i.Quantity,
                     SQM = i.SQM,
                     TotalLM = i.TotalLM,
-                    CustomerReference = i.CustomerReference
+                    CustomerReference = i.CustomerReference,
+                    Description = i.Description
                 }).ToList();
 
             return order;
@@ -231,7 +232,8 @@ var model = new OrderViewModel
                 Width = i.Width,
                 Height = i.Height,
                 Quantity = i.Quantity,
-                CustomerReference = i.CustomerReference
+                CustomerReference = i.CustomerReference,
+                Description = i.Description
             }).ToList()
         };
 

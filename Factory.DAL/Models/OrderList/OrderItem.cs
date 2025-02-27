@@ -12,6 +12,7 @@
         public double SQM { get; set; }
         public double TotalLM { get; set; }
         public string CustomerReference { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int OrderId { get; set; }
         public virtual Order Order { get; set; }
     }

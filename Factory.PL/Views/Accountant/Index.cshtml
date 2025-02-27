@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Factory.DAL.Models.Finance.FinancialRecord>
+
+@{
+    ViewData["Title"] = "Financial Records";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+<p>
+        <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<div class="table-responsive">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Transaction Type</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.Amount.ToString("N2")</td>
+                <td>@item.TransactionType</td>
+                <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+    </div>
+</div>

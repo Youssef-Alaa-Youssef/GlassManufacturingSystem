@@ -1,0 +1,41 @@
+﻿@model Factory.PL.ViewModels.Finance.FinancialRecordViewModel
+
+@{
+    ViewData["Title"] = "Edit Financial Record";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Amount" class="control-label"></label>
+        <input asp-for="Amount" class="form-control" />
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TransactionType" class="control-label"></label>
+        <select asp-for="TransactionType" class="form-control">
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+        </select>
+        <span asp-validation-for="TransactionType" class="text-danger"></span>
+    </div>
+        <div class="card-footer text-center mt-2">
+            <input type="submit" value="Save" class="btn btn-outline-primary" />
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+    </div>
+</form>
+
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

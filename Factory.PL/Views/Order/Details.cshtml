@@ -4,122 +4,76 @@
     Layout = "_LogedUser";
 }
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    .invoice-container {
-        max-width: 800px;
-        margin: auto;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-        .header img {
-            max-width: 120px;
-        }
-
-    .info-container {
-        margin-bottom: 20px;
-    }
-
-    .info-item {
-        margin-bottom: 5px;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-        .table th, .table td {
-            padding: 8px;
-            text-align: left;
-        }
-
-
-    .no-items {
-        text-align: center;
-        font-style: italic;
-    }
-    @@media print {
-        .no-print
-
-    {
-        display: none;
-    }
-
-    }
-</style>
-
-<div class="invoice-container">
-    <div class="header">
-        <div>
-            <h2>شركة الزجاج العالمية</h2>
-            <h2>Global Glass Factory</h2>
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h2 class="fw-bold">شركة الزجاج العالمية</h2>
+                <h2 class="fw-bold">Global Glass Factory</h2>
+            </div>
+            <div class="col-md-4 text-end">
+                <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" class="img-fluid" style="max-width: 120px;">
+            </div>
         </div>
-        <div>
-            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo">
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Customer Name:</strong> @Model.CustomerName</li>
+                <li class="list-group-item"><strong>Customer Reference:</strong> @Model.CustomerReference</li>
+                <li class="list-group-item"><strong>Project Name:</strong> @Model.ProjectName, @Model.Address</li>
+                <li class="list-group-item"><strong>Delivery Date:</strong> @(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</li>
+            </ul>
+        </div>
+        <div class="col-md-6 mb-4">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</li>
+                <li class="list-group-item"><strong>Job No:</strong> @Model.JobNo</li>
+            </ul>
         </div>
     </div>
 
-    <div class="text-center">
-        <h1>@ViewData["Title"]</h1>
-    </div>
 
-    <div class="info-container">
-        <div class="info-item"><strong>Customer Name:</strong> @Model.CustomerName</div>
-        <div class="info-item"><strong>Customer Reference:</strong> @Model.CustomerReference</div>
-        <div class="info-item"><strong>Project Name:</strong> @Model.ProjectName , @Model.Address</div>
-        <div class="info-item"><strong>Delivery Date:</strong> @(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</div>
-        <div class="info-item"><strong>Date:</strong> @Model.Date.ToString("yyyy-MM-dd")</div>
-        <div class="info-item"><strong>Job No:</strong> @Model.JobNo</div>
-    </div>
+        @if (Model.Items?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Glass Description</th>
+                            <th>Width</th>
+                            <th>Height</th>
+                            <th>Qty</th>
+                            <th>SQM</th>
+                            <th>Total SQM</th>
+                            <th>Customer Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                        <tr>
+                            <td>@(item.Description ?? "N/A")</td>
+                            <td>@(item.Width.ToString() ?? "0")</td>
+                            <td>@(item.Height.ToString() ?? "0")</td>
+                            <td>@(item.Quantity.ToString() ?? "0")</td>
+                            <td>@(item.SQM.ToString() ?? "0.00")</td>
+                            <td>@(item.TotalLM.ToString() ?? "0.00")</td>
+                            <td>@(item.CustomerReference ?? "No Reference")</td>
+                        </tr>
 
-    @if (Model.Items?.Any() == true)
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Glass Description</th>
-                    <th>Width</th>
-                    <th>Height</th>
-                    <th>Qty</th>
-                    <th>SQM</th>
-                    <th>Total SQM</th>
-                    <th>Customer Reference</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Items)
-                {
-                    <tr>
-                        <td>@item.CustomerReference</td>
-                        <td>@item.Width</td>
-                        <td>@item.Height</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.SQM</td>
-                        <td>@item.TotalLM</td>
-                        <td>@item.CustomerReference</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p class="no-items">No items available for this order.</p>
-    }
-
-    <div class="footer no-print text-center d-print-none">
-        <button onclick="window.print()" class="btn btn-success">Print</button>
-    </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted fst-italic">No items available for this order.</p>
+        }
+        <div class="card-footer text-center mt-2 d-print-none">
+            <button onclick="window.print()" class="btn btn-outline-success">Print</button>
+        </div>
 </div>

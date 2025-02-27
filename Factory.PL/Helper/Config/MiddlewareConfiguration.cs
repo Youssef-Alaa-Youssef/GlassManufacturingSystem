@@ -1,5 +1,5 @@
-﻿using Factory.DAL.Configurations;
-using Factory.DAL;
+﻿using Factory.DAL;
+using Factory.DAL.Configurations;
 using Factory.PL.Helper;
 using Factory.PL.Middleware;
 using Microsoft.AspNetCore.Diagnostics;
@@ -9,40 +9,15 @@ public static class MiddlewareConfiguration
 {
     public static void ConfigureMiddleware(WebApplication app, IWebHostEnvironment env)
     {
+        app.UseMiddleware<ExceptionMiddleware>();
 
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            try
-            {
-                var dbContext = services.GetRequiredService<FactDdContext>();
-                dbContext.Database.MigrateAsync().Wait();
-            }
-            catch (Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occurred while migrating the database.");
-            }
-        }
+        ApplyDatabaseMigrations(app);
 
         if (!env.IsDevelopment())
         {
-            app.UseMiddleware<ExceptionMiddleware>();
-
-            app.UseStatusCodePagesWithReExecute("/Home/ErrorProd");
             app.UseHsts();
-
-            app.UseExceptionHandler(errorApp =>
-            {
-                errorApp.Run(async context =>
-                {
-                    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-                    var exception = exceptionHandlerPathFeature?.Error;
-                    context.Response.Redirect("/Home/ErrorProd");
-                    await Task.CompletedTask;
-                });
-            });
         }
+
         app.UseMiddleware<ContractExpirationMiddleware>();
 
         app.UseHttpsRedirection();
@@ -50,6 +25,42 @@ public static class MiddlewareConfiguration
         app.UseRouting();
         app.UseSession();
 
+        ConfigureLocalization(app);
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseMiddleware<PermissionPolicyMiddleware>();
+
+        ConfigureRoutes(app);
+
+        SeedDatabase(app);
+    }
+
+    /// <summary>
+    /// Applies pending migrations to the database.
+    /// </summary>
+    private static void ApplyDatabaseMigrations(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var dbContext = services.GetRequiredService<FactDdContext>();
+            dbContext.Database.MigrateAsync().Wait();
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while migrating the database.");
+        }
+    }
+
+    /// <summary>
+    /// Configures supported cultures and localization settings.
+    /// </summary>
+    private static void ConfigureLocalization(WebApplication app)
+    {
         var supportedCultures = new[] { "ar_EG", "en_US" };
         var localizationOptions = new RequestLocalizationOptions()
             .SetDefaultCulture(supportedCultures[0])
@@ -57,21 +68,25 @@ public static class MiddlewareConfiguration
             .AddSupportedUICultures(supportedCultures);
 
         app.UseRequestLocalization(localizationOptions);
+    }
 
-
-        app.UseAuthentication();
-        app.UseMiddleware<PermissionPolicyMiddleware>();
-
-        app.UseAuthorization();
-
+    /// <summary>
+    /// Configures default routes.
+    /// </summary>
+    private static void ConfigureRoutes(WebApplication app)
+    {
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+    }
 
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            DataSeeder.Initialize(services).Wait();
-        }
+    /// <summary>
+    /// Seeds the database with initial data.
+    /// </summary>
+    private static void SeedDatabase(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        DataSeeder.Initialize(services).Wait();
     }
 }

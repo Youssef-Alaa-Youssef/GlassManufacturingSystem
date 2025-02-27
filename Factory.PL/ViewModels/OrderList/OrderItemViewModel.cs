@@ -9,7 +9,7 @@ namespace Factory.PL.ViewModels.OrderList
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Item name is required")]
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Width is required")]
         [Range(1, 6000, ErrorMessage = "Width must be between 1 and 3200 mm")]
@@ -37,7 +37,10 @@ namespace Factory.PL.ViewModels.OrderList
 
         [Required(ErrorMessage = "Customer reference is required")]
         [StringLength(50, ErrorMessage = "Customer reference cannot exceed 50 characters")]
-        public string CustomerReference { get; set; }
-        public string Description { get; set; }
+        public string CustomerReference { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Description is required")]
+        [StringLength(150, ErrorMessage = "Description cannot exceed 150 characters")]
+        public string Description { get; set; } = string.Empty;
     }
 }

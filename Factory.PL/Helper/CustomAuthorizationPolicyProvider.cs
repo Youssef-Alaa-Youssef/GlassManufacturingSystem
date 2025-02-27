@@ -1,29 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
+
 
 namespace Factory.PL.Helper
 {
-    public class CustomAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
+    public class CustomAuthorizationPolicyProvider : IAuthorizationPolicyProvider
     {
         private readonly Dictionary<string, AuthorizationPolicy> _policies = new Dictionary<string, AuthorizationPolicy>();
 
-        public CustomAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) : base(options)
-        {
-        }
+        public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => Task.FromResult(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
-        public void AddPolicy(string name, AuthorizationPolicy policy)
-        {
-            _policies[name] = policy;
-        }
+        public Task<AuthorizationPolicy> GetFallbackPolicyAsync() => Task.FromResult<AuthorizationPolicy>(null);
 
-        public override Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
+        public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
             if (_policies.TryGetValue(policyName, out var policy))
             {
                 return Task.FromResult(policy);
             }
 
-            return base.GetPolicyAsync(policyName);
+            return Task.FromResult<AuthorizationPolicy>(null);
+        }
+
+        public void AddPolicy(string policyName, AuthorizationPolicy policy)
+        {
+            _policies[policyName] = policy;
         }
     }
 }

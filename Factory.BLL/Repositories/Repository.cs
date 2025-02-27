@@ -76,13 +76,23 @@ namespace Factory.BLL.Repositories
         {
             return await _dbSet.Where(predicate).ToListAsync();
         }
-
         public async Task<TEntity> AddAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
+
+        public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities)
+        {
+            if (entities == null || !entities.Any())
+                return Enumerable.Empty<TEntity>();
+
+            await _dbSet.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+            return entities;
+        }
+
 
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {

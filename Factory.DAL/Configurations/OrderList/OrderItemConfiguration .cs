@@ -13,7 +13,10 @@ namespace Factory.DAL.Configurations
             builder.Property(oi => oi.ItemName)
                    .IsRequired()
                    .HasMaxLength(255);
-
+            builder.Property(oi => oi.Description)
+                   .IsRequired()
+                   .HasMaxLength(255);
+            
             builder.Property(oi => oi.Width)
                    .HasPrecision(18, 2)
                    .IsRequired();
