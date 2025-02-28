@@ -6,6 +6,7 @@ using Factory.DAL.Models.Warehouses;
 using Factory.DAL.Models.OrderList;
 using ZXing;
 using ZXing.Common;
+
 namespace Factory.Controllers
 {
     public class OrderController : Controller

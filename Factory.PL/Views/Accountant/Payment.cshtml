@@ -1,0 +1,594 @@
+﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
+@{
+    ViewData["Title"] = "Delivery Invoice";
+    Layout = "_LogedUser";
+}
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=SAR"></script>
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">شركة الزجاج العالمية</h2>
+            <h2 class="fw-bold">Global Glass Factory</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" class="img-fluid" style="max-width: 120px;">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            @{
+                bool showAlert = Model.SelectedMachines.Any(m => m.ToString().Contains("Cutting"));
+            }
+
+            @if (showAlert)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <strong>Attention:</strong> A Cutting machine has been detected.
+                    <a class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="collapse" href="#cuttingMachineDetails" role="button" aria-expanded="false" aria-controls="cuttingMachineDetails">
+                        View Details
+                    </a>
+                </div>
+
+                <div class="collapse mb-4" id="cuttingMachineDetails">
+                    <div class="card card-body border-warning">
+                        <ul class="mb-0">
+                            <li><strong>System Update:</strong> The system automatically renames 'Cutting' machines to 'Allowance' for consistency.</li>
+                            <li><strong>Safety Precautions:</strong> Ensure proper handling procedures and follow safety measures.</li>
+                            <li><strong>Compliance:</strong> Verify that all necessary approvals are in place for machines labeled as 'Allowance'.</li>
+                            <li><strong>Maintenance:</strong> Regular maintenance checks are recommended to prevent operational hazards.</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card border-0">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Customer Name:</span>
+                            <span class="badge rounded-pill">@Model.CustomerName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Customer Reference:</span>
+                            <span class="badge rounded-pill">@Model.CustomerReference</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Project Name & Location:</span>
+                            <span class="badge rounded-pill">@Model.ProjectName, @Model.Address</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Delivery Date:</span>
+                            <span class="badge rounded-pill">@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Invoice Details</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Invoice Date:</span>
+                            <span class="badge rounded-pill">@Model.Date.ToString("yyyy-MM-dd")</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Job Number:</span>
+                            <span class="badge rounded-pill">@Model.JobNo</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Payment Status:</span>
+                            <span class="badge text-dark rounded-pill">Pending Payment</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Invoice Number:</span>
+                            <span class="badge text-dark rounded-pill">INV-@Model.JobNo</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Items?.Any() == true)
+    {
+        <div class="card border-0 mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Order Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Glass Description</th>
+                                <th>Width</th>
+                                <th>Height</th>
+                                <th>Qty</th>
+                                <th>SQM</th>
+                                <th>Total SQM</th>
+                                <th>Customer Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
+                                    <td>@(string.IsNullOrEmpty(item.Width.ToString()) ? "0" : item.Width)</td>
+                                    <td>@(string.IsNullOrEmpty(item.Height.ToString()) ? "0" : item.Height)</td>
+                                    <td>@(item.Quantity)</td>
+                                    <td>@(item.SQM)</td>
+                                    <td>@(item.TotalLM)</td>
+                                    <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Total:</td>
+                                <td>@Model.Items.Sum(i => i.Quantity)</td>
+                                <td>-</td>
+                                <td>@Model.Items.Sum(i => i.TotalLM)</td>
+                                <td>-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span class="fw-bold">12000 SAR</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (15%):</span>
+                            <span class="fw-bold">@((12000 * 0.15).ToString("N2")) SAR</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span class="fw-bold">0.00 SAR</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span class="fs-5">Total:</span>
+                            <span class="fs-5 text-primary">@((12000 * 1.15).ToString("N2")) SAR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 mb-4">
+                <form id="payment-form" method="post" action="/Payment/Process">
+                    <input type="hidden" name="InvoiceId" value="@Model.JobNo" />
+                    <input type="hidden" name="Amount" value="@(12000 * 1.15)" />
+                    <input type="hidden" name="Currency" value="SAR" />
+                    <input type="hidden" name="Description" value="Payment for Order #@Model.JobNo" />
+                    <input type="hidden" name="CustomerEmail" value="youssef@shareedu.net" />
+
+                    <div class="card border-0">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Method</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs mb-4" id="paymentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="credit-card-tab" data-bs-toggle="tab" data-bs-target="#credit-card" type="button" role="tab" aria-controls="credit-card" aria-selected="true">
+                                        <i class="fas fa-credit-card me-2"></i>Credit Card
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="paypal-tab" data-bs-toggle="tab" data-bs-target="#paypal" type="button" role="tab" aria-controls="paypal" aria-selected="false">
+                                        <i class="fab fa-paypal me-2"></i>PayPal
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="stripe-tab" data-bs-toggle="tab" data-bs-target="#stripe" type="button" role="tab" aria-controls="stripe" aria-selected="false">
+                                        <i class="fab fa-stripe me-2"></i>Stripe
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="bank-transfer-tab" data-bs-toggle="tab" data-bs-target="#bank-transfer" type="button" role="tab" aria-controls="bank-transfer" aria-selected="false">
+                                        <i class="fas fa-university me-2"></i>Bank Transfer
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="paymentTabsContent">
+                                <div class="tab-pane fade show active" id="credit-card" role="tabpanel" aria-labelledby="credit-card-tab">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="cardName" class="form-label">Cardholder Name</label>
+                                            <input type="text" class="form-control" id="cardName" name="cardName" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="cardNumber" class="form-label">Card Number</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="XXXX XXXX XXXX XXXX" required>
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-cc-visa me-1"></i>
+                                                    <i class="fab fa-cc-mastercard me-1"></i>
+                                                    <i class="fab fa-cc-amex"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="expiryMonth" class="form-label">Expiry Month</label>
+                                            <select class="form-select" id="expiryMonth" name="expiryMonth" required>
+                                                <option value="">Month</option>
+                                                @for (int i = 1; i <= 12; i++)
+                                                {
+                                                    <option value="@i.ToString("D2")">@i.ToString("D2")</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="expiryYear" class="form-label">Expiry Year</label>
+                                            <select class="form-select" id="expiryYear" name="expiryYear" required>
+                                                <option value="">Year</option>
+                                                @for (int i = DateTime.Now.Year; i <= DateTime.Now.Year + 10; i++)
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="cvv" class="form-label">CVV</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="XXX" required>
+                                                <span class="input-group-text" title="3-digit code on the back of your card">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="saveCardInfo">
+                                        <label class="form-check-label" for="saveCardInfo">
+                                            Save card information for future payments
+                                        </label>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" id="creditCardPayButton" class="btn btn-outline-primary">
+                                            <i class="fas fa-lock me-2"></i>Pay @((12000 * 1.15).ToString("N2")) SAR Securely
+                                        </button>
+                                    </div>
+                                    <div class="mt-3 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-shield-alt me-1"></i>Your payment information is encrypted and secure.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="paypal" role="tabpanel" aria-labelledby="paypal-tab">
+                                    <div class="text-center mb-4">
+                                        <img src="~/assets/images/paypal-logo.png" alt="PayPal" class="img-fluid mb-3" style="max-width: 200px;">
+                                        <p>Click the button below to pay securely with PayPal.</p>
+                                    </div>
+                                    <div id="paypal-button-container" class="d-grid gap-2 col-md-8 mx-auto">
+                                    </div>
+                                    <div class="mt-4 text-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>You will be redirected to PayPal to complete your payment.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Stripe Payment Form -->
+                                <div class="tab-pane fade" id="stripe" role="tabpanel" aria-labelledby="stripe-tab">
+                                    <div class="text-center mb-4">
+                                        <img src="~/assets/images/stripe-logo.png" alt="Stripe" class="img-fluid mb-3" style="max-width: 180px;">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="stripe-email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="stripe-email" name="email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="stripe-card-element" class="form-label">Card Information</label>
+                                        <div id="stripe-card-element" class="form-control p-3" style="min-height: 100px;">
+                                            <!-- Stripe Elements will be inserted here -->
+                                        </div>
+                                        <div id="stripe-card-errors" class="invalid-feedback d-block"></div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" id="stripePayButton" class="btn btn-outline-primary">
+                                            <i class="fab fa-stripe me-2"></i>Pay @((12000 * 1.15).ToString("N2")) SAR with Stripe
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Bank Transfer Information -->
+                                <div class="tab-pane fade" id="bank-transfer" role="tabpanel" aria-labelledby="bank-transfer-tab">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>Please transfer the total amount of <strong>@((12000 * 1.15).ToString("N2")) SAR</strong> to the following bank account:
+                                    </div>
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <table class="table table-borderless mb-0">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row" width="40%">Bank Name:</th>
+                                                        <td><strong>Global Bank</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Account Holder:</th>
+                                                        <td><strong>Global Glass Factory</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Account Number:</th>
+                                                        <td><strong>1234567890</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">IBAN:</th>
+                                                        <td><strong>SA01 2345 6789 1234 5678 90</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">SWIFT/BIC:</th>
+                                                        <td><strong>GLBKSAMM</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Reference:</th>
+                                                        <td><strong>INV-@Model.JobNo</strong> (Important: Include this reference)</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transferDate" class="form-label">Transfer Date</label>
+                                        <input type="date" class="form-control" id="transferDate" name="transferDate">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transferReference" class="form-label">Transfer Reference Number</label>
+                                        <input type="text" class="form-control" id="transferReference" name="transferReference" placeholder="Optional: Enter your bank reference number">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transferReceipt" class="form-label">Upload Transfer Receipt (Optional)</label>
+                                        <input type="file" class="form-control" id="transferReceipt" name="transferReceipt">
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" id="confirmTransferButton" class="btn btn-outline-success">
+                                            <i class="fas fa-check-circle me-2"></i>I've Completed the Transfer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted">
+                                    <small><i class="fas fa-lock me-1"></i>Secure Payment Processing</small>
+                                </div>
+                                <div>
+                                    <img src="~/assets/images/payment-methods.png" alt="Accepted Payment Methods" class="img-fluid" style="max-height: 30px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>No Items Available</h4>
+            <p class="mb-0">There are no items available for this order. Please contact support if you believe this is an error.</p>
+        </div>
+    }
+
+    <div class="card-footer text-center mt-4 d-print-none">
+        <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-print me-1"></i> Print Invoice
+        </button>
+        <a href="@Url.Action("Index", "Accountant")" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Orders
+        </a>
+        <a href="@Url.Action("Download", "Invoice", new { id = Model.Id })" class="btn btn-outline-success me-2">
+            <i class="fas fa-file-pdf me-1"></i> Download PDF
+        </a>
+        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
+            <i class="fas fa-share-alt me-1"></i> Share
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="recipientEmail" class="form-label">Recipient Email</label>
+                    <input type="email" class="form-control" id="recipientEmail" placeholder="customer@example.com">
+                </div>
+                <div class="mb-3">
+                    <label for="emailSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="emailSubject" value="Invoice #@Model.JobNo from Global Glass Factory">
+                </div>
+                <div class="mb-3">
+                    <label for="emailMessage" class="form-label">Message (Optional)</label>
+                    <textarea class="form-control" id="emailMessage" rows="3" placeholder="Add a personalized message..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary" id="sendInvoiceButton">Send Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section  scripts{
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        const creditCardPayButton = document.getElementById('creditCardPayButton');
+        if (creditCardPayButton) {
+            creditCardPayButton.addEventListener('click', function() {
+                const cardName = document.getElementById('cardName').value;
+                const cardNumber = document.getElementById('cardNumber').value;
+                const expiryMonth = document.getElementById('expiryMonth').value;
+                const expiryYear = document.getElementById('expiryYear').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (!cardName || !cardNumber || !expiryMonth || !expiryYear || !cvv) {
+                    alert('Please fill all required fields');
+                    return;
+                }
+
+                creditCardPayButton.disabled = true;
+                creditCardPayButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+
+                setTimeout(function() {
+                    showPaymentSuccess();
+                    window.location.href = '/Payment/Success?reference=' + '@Model.JobNo';
+                }, 2000);
+            });
+        }
+
+        // Initialize PayPal
+        if (document.getElementById('paypal-button-container')) {
+            // This is a simplified example. In production, use the actual PayPal SDK
+            // Replace with actual PayPal button rendering
+            const paypalButtonContainer = document.getElementById('paypal-button-container');
+            const paypalButton = document.createElement('button');
+            paypalButton.className = 'btn btn-outline-primary btn-lg w-100';
+            paypalButton.innerHTML = '<i class="fab fa-paypal me-2"></i>Pay with PayPal';
+            paypalButton.addEventListener('click', function() {
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Redirecting to PayPal...';
+
+                setTimeout(function() {
+                    showPaymentSuccess();
+                }, 2000);
+            });
+            paypalButtonContainer.appendChild(paypalButton);
+
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '@(12000 * 1.15)'
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        window.location.href = '/Payment/Success?reference=' + '@Model.JobNo';
+                    });
+                }
+            }).render('#paypal-button-container');
+        }
+
+        // Initialize Stripe
+        if (document.getElementById('stripe-card-element')) {
+            // This is a simplified example. In production, use the actual Stripe Elements
+            const stripeCardElement = document.getElementById('stripe-card-element');
+            stripeCardElement.innerHTML = `
+                <div class="p-3 text-center">
+                    <div class="mb-3">
+                        <div class="form-control mb-2" style="height: 40px; display: flex; align-items: center; justify-content: space-between;">
+                            <span>●●●● ●●●● ●●●● 4242</span>
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/icons/credit-card.svg" alt="Credit Card" width="24" height="24">
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-control" style="height: 40px; display: flex; align-items: center;">12/25</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-control" style="height: 40px; display: flex; align-items: center;">●●●</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            const stripePayButton = document.getElementById('stripePayButton');
+            if (stripePayButton) {
+                stripePayButton.addEventListener('click', function() {
+                    const email = document.getElementById('stripe-email').value;
+
+                    if (!email) {
+                        alert('Please enter your email address');
+                        return;
+                    }
+
+                    // Show processing state
+                    stripePayButton.disabled = true;
+                    stripePayButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+
+                    // Simulate Stripe payment processing
+                    setTimeout(function() {
+                        showPaymentSuccess();
+                    }, 2000);
+                });
+            }
+
+            const stripe = Stripe('YOUR_STRIPE_PUBLISHABLE_KEY');
+            const elements = stripe.elements();
+            const cardElement = elements.create('card');
+            cardElement.mount('#stripe-card-element');
+
+            const stripePayButton = document.getElementById('stripePayButton');
+    stripePayButton.addEventListener('click', async function () {
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+        });
+
+        if (error) {
+            console.error('Payment method creation failed:', error);
+            alert(error.message);
+        } else {
+            console.log('Payment method created:', paymentMethod);
+
+            const response = await fetch('/process-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentMethodId: paymentMethod.id })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Payment successful!');
+            } else {
+                alert('Payment failed: ' + result.message);
+            }
+        }
+    });
+</script>
+}

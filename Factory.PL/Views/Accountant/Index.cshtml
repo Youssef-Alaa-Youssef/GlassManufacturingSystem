@@ -1,45 +1,250 @@
-﻿@model IEnumerable<Factory.DAL.Models.Finance.FinancialRecord>
-
+﻿@model List<Factory.PL.ViewModels.OrderList.OrderViewModel>
 @{
-    ViewData["Title"] = "Financial Records";
+    ViewData["Title"] = "Payment Processing";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-1 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
-<p>
-        <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
-</p>
-<div class="table-responsive">
-    <table class="table">
-    <thead>
-        <tr>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Transaction Type</th>
-            <th>Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Description</td>
-                <td>@item.Amount.ToString("N2")</td>
-                <td>@item.TransactionType</td>
-                <td>@item.Date.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div class="d-flex flex-wrap gap-2">
+            <button id="exportExcelBtn" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-excel"></i> Export to Excel
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search by Customer Name..." aria-label="Search orders">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped text-center align-middle" id="orderTable" aria-label="Orders Table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Customer Ref</th>
+                    <th scope="col">Project Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Job No</th>
+                    <th scope="col">Priority</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" style="width:140px">Rank</th>
+                    <th scope="col" style="width:140px">Is Accepted</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        <tr data-order-id="@order.Id">
+                            <td>@order.Id</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.CustomerReference</td>
+                            <td>@order.ProjectName</td>
+                            <td>@order.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@order.JobNo</td>
+                            <td>
+                                <span class="badge @(order.Priority == "High" ? "bg-danger" : "bg-warning")">
+                                    @order.Priority
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(order.IsAccepted ? "bg-success" : "bg-secondary")">
+                                    @(order.IsAccepted ? "Accepted" : "Pending")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" class="form-control rank-input"
+                                           min="1" value="@(order.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0")"
+                                           placeholder="Rank" aria-label="Rank"
+                                    @(order.IsAccepted ? "" : "disabled")>
+                                    <button class="btn btn-outline-primary save-rank-btn" type="button" style="display: none;" aria-label="Save Rank">
+                                        <i class="bi bi-save"></i>
+                                    </button>
+                                </div>
+                                <div class="rank-status mt-1" style="display: none;" aria-live="polite"></div>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm acceptance-dropdown"
+                                        aria-label="Acceptance Status"
+                                        data-order-id="@order.Id"
+                                @(order.IsAccepted ? "disabled='disabled'" : "")>
+                                    <option value="true" selected="@(order.IsAccepted ? "selected" : "")">Yes</option>
+                                    <option value="false" selected="@(!order.IsAccepted ? "selected" : null)">No</option>
+                                </select>
+                                <div class="acceptance-status mt-1" style="display: none;" aria-live="polite"></div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    <a asp-action="Payment" asp-controller="Accountant" asp-route-id="@order.Id" class="btn btn-outline-success btn-sm w-100 w-md-auto @(!order.IsAccepted ? "disabled" : "")" aria-label="Finance">
+                                        <i class="bi bi-cash-stack"></i> Finance
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11" class="text-center text-muted">No orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Search functionality
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("keyup", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#tableBody tr");
+
+            rows.forEach(row => {
+                const customerName = row.children[1].textContent.toLowerCase();
+                row.style.display = customerName.includes(filter) ? "" : "none";
+            });
+        });
+
+        // Excel export functionality
+        const exportExcelBtn = document.getElementById("exportExcelBtn");
+        exportExcelBtn.addEventListener("click", function () {
+            const table = document.getElementById("orderTable");
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Orders" });
+            XLSX.writeFile(workbook, "Orders.xlsx");
+        });
+
+        // Rank input change detection
+        const rankInputs = document.querySelectorAll('.rank-input');
+        rankInputs.forEach(input => {
+            input.setAttribute('data-original-value', input.value || 0);
+
+            input.addEventListener('input', function () {
+                const row = this.closest('tr');
+                const saveBtn = row.querySelector('.save-rank-btn');
+                const originalValue = parseFloat(this.getAttribute('data-original-value')) || 0;
+                const currentValue = isNaN(parseFloat(this.value)) ? 0 : parseFloat(this.value);
+
+                saveBtn.style.display = originalValue !== currentValue ? 'block' : 'none';
+            });
+        });
+
+        const saveButtons = document.querySelectorAll('.save-rank-btn');
+        saveButtons.forEach(button => {
+            button.addEventListener('click', async function () {
+                const row = this.closest('tr');
+                const orderId = row.getAttribute('data-order-id');
+                const rankInput = row.querySelector('.rank-input');
+                const rankValue = parseFloat(rankInput.value) || 0;
+                const statusElement = row.querySelector('.rank-status');
+
+                rankInput.disabled = true;
+                this.disabled = true;
+
+                statusElement.innerHTML = '<span class="text-info"><small><i class="bi bi-hourglass-split"></i> Saving...</small></span>';
+                statusElement.style.display = 'block';
+
+                try {
+                    const response = await fetch('/Accountant/UpdateOrderRank', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({
+                            orderId: orderId,
+                            rank: rankValue
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        statusElement.innerHTML = '<span class="text-success"><small><i class="bi bi-check-circle"></i> Saved</small></span>';
+                        rankInput.setAttribute('data-original-value', rankValue);
+                        this.style.display = 'none';
+
+                        setTimeout(() => {
+                            statusElement.style.display = 'none';
+                        }, 3000);
+                    } else {
+                        statusElement.innerHTML = `<span class="text-danger"><small><i class="bi bi-exclamation-triangle"></i> ${data.message || 'Failed to save'}</small></span>`;
+                    }
+                } catch (error) {
+                    statusElement.innerHTML = '<span class="text-danger"><small><i class="bi bi-exclamation-triangle"></i> Error saving rank</small></span>';
+                    console.error('Error:', error);
+                } finally {
+                    rankInput.disabled = false;
+                    this.disabled = false;
+                }
+            });
+        });
+
+        const acceptanceDropdowns = document.querySelectorAll('.acceptance-dropdown');
+        acceptanceDropdowns.forEach(dropdown => {
+            dropdown.addEventListener('change', async function () {
+                const row = this.closest('tr');
+                const orderId = this.getAttribute('data-order-id');
+                const isAccepted = this.value === "true";
+                const statusElement = row.querySelector('.acceptance-status');
+
+                this.disabled = true;
+
+                statusElement.innerHTML = '<span class="text-info"><small><i class="bi bi-hourglass-split"></i> Saving...</small></span>';
+                statusElement.style.display = 'block';
+
+                try {
+                    const response = await fetch('/Accountant/UpdateOrderAcceptance', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({
+                            orderId: orderId,
+                            IsAccepted: isAccepted
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        statusElement.innerHTML = '<span class="text-success"><small><i class="bi bi-check-circle"></i> Saved</small></span>';
+
+                        const statusBadge = row.querySelector('.badge.bg-success, .badge.bg-secondary');
+                        statusBadge.className = isAccepted ? 'badge bg-success' : 'badge bg-secondary';
+                        statusBadge.textContent = isAccepted ? 'Accepted' : 'Pending';
+
+                        setTimeout(() => {
+                            statusElement.style.display = 'none';
+                        }, 3000);
+                    } else {
+                        statusElement.innerHTML = `<span class="text-danger"><small><i class="bi bi-exclamation-triangle"></i> ${data.message || 'Failed to save'}</small></span>`;
+                    }
+                } catch (error) {
+                    statusElement.innerHTML = '<span class="text-danger"><small><i class="bi bi-exclamation-triangle"></i> Error saving acceptance status</small></span>';
+                    console.error('Error:', error);
+                } finally {
+                    this.disabled = false;
+                }
+            });
+        });
+    });
+</script>

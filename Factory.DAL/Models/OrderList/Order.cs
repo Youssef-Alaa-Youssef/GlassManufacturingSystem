@@ -21,5 +21,7 @@ namespace Factory.DAL.Models.OrderList
         public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
+        public double? Rank { get; set; }
+
     }
 }

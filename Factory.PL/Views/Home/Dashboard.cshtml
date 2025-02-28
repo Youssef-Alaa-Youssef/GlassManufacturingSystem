@@ -1,42 +1,49 @@
 ﻿@model Factory.PL.ViewModels.Home.AdminDashboardViewModel
 
 @{
-    ViewData["Title"] = "Admin Dashboard";
     Layout = "_LogedUser";
+    if (User.IsInRole("Owner") || User.IsInRole("GM"))
+    {
+        ViewData["Title"] = "Admin Dashboard";
+    }
+    else
+    {
+        ViewData["Title"] = "Accountant Dashboard";
+    }
 }
 
-
-<div class="container-fluid card  shadow mt-3 p-3 content-body" data-bs-theme="auto">
+<div class="container-fluid card shadow mt-1 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
-    @if (User.IsInRole("Owner") || User.IsInRole("GM"))
-    {
-        <!-- Header Section -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-            @await Html.PartialAsync("_PageTitle")
-
-            <div class="d-flex flex-column flex-md-row align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-center">
+            @if (User.IsInRole("Owner") || User.IsInRole("GM"))
+            {
                 <a class="btn btn-outline-primary mb-2 mb-md-0 me-md-2" asp-action="Add" asp-controller="Auth">
                     <i class="bi bi-plus-circle"></i> Add New
                 </a>
                 <button class="btn btn-outline-primary" asp-action="Index" asp-controller="setting">
                     <i class="bi bi-gear"></i> Settings
                 </button>
-            </div>
+            }
         </div>
+    </div>
 
-
+    <!-- Role-Specific Content -->
+    @if (User.IsInRole("Owner") || User.IsInRole("GM"))
+    {
         <!-- Stats Cards -->
         <div class="row g-4 mb-4">
             <!-- Users Card -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header text-bg-primary d-flex align-items-center">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
                         <i class="bi bi-people-fill me-2"></i>
                         <span>Users</span>
                     </div>
                     <div class="card-body text-center">
-                        <div class="display-6 text-primary-emphasis mb-2"
+                        <div class="display-6 text-secondary-emphasis mb-2"
                              style="cursor: pointer;"
                              onclick="openChartModal('UserCount', 'Users Over Time')">
                             @Model.UserCount
@@ -54,12 +61,12 @@
             <!-- Team Members Card -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header text-bg-success d-flex align-items-center">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
                         <i class="bi bi-person-badge-fill me-2"></i>
                         <span>Team Members</span>
                     </div>
                     <div class="card-body text-center">
-                        <div class="display-6 text-success-emphasis mb-2"
+                        <div class="display-6 text-secondary-emphasis mb-2"
                              style="cursor: pointer;"
                              onclick="openChartModal('TeamMemberCount', 'Team Members Over Time')">
                             @Model.TeamMemberCount
@@ -77,12 +84,12 @@
             <!-- Contacts Card -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header text-bg-info d-flex align-items-center">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
                         <i class="bi bi-envelope-fill me-2"></i>
                         <span>Contacts</span>
                     </div>
                     <div class="card-body text-center">
-                        <div class="display-6 text-info-emphasis mb-2"
+                        <div class="display-6 text-secondary-emphasis mb-2"
                              style="cursor: pointer;"
                              onclick="openChartModal('ContactCount', 'Contacts Over Time')">
                             @Model.ContactCount
@@ -100,12 +107,12 @@
             <!-- Roles Card -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header text-bg-warning d-flex align-items-center">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
                         <i class="bi bi-shield-lock-fill me-2"></i>
                         <span>Roles</span>
                     </div>
                     <div class="card-body text-center">
-                        <div class="display-6 text-warning-emphasis mb-2"
+                        <div class="display-6 text-secondary-emphasis mb-2"
                              style="cursor: pointer;"
                              onclick="openChartModal('RoleCount', 'Roles Over Time')">
                             @Model.RoleCount
@@ -176,6 +183,157 @@
                             </button>
                             <button class="btn btn-outline-warning text-start">
                                 <i class="bi bi-gear me-2"></i> System Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (User.IsInRole("Accountant"))
+    {
+        <!-- Accountant Specific Content -->
+        <div class="row g-4 mb-4">
+            <!-- Financial Summary Card -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
+                        <i class="bi bi-cash-coin me-2"></i>
+                        <span>Financial Summary</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-6 text-secondary-emphasis mb-2">
+                            $@Model.FinancialSummary
+                        </div>
+                        <p class="text-muted mb-0">Total revenue this month</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-success">
+                            <i class="bi bi-arrow-up"></i> 10% from last month
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Card -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
+                        <i class="bi bi-receipt me-2"></i>
+                        <span>Invoices</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-6 text-secondary-emphasis mb-2">
+                            @Model.InvoiceCount
+                        </div>
+                        <p class="text-muted mb-0">Invoices generated this month</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-danger">
+                            <i class="bi bi-arrow-down"></i> 5% from last month
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Card -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
+                        <i class="bi bi-currency-dollar me-2"></i>
+                        <span>Expenses</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-6 text-secondary-emphasis mb-2">
+                            $@Model.Expenses
+                        </div>
+                        <p class="text-muted mb-0">Total expenses this month</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-success">
+                            <i class="bi bi-arrow-up"></i> 8% from last month
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit Card -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary d-flex align-items-center">
+                        <i class="bi bi-graph-up me-2"></i>
+                        <span>Profit</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-6 text-secondary-emphasis mb-2">
+                            $@Model.Profit
+                        </div>
+                        <p class="text-muted mb-0">Net profit this month</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-success">
+                            <i class="bi bi-arrow-up"></i> 15% from last month
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Rich Content for Accountant -->
+        <div class="row g-4">
+            <!-- Recent Transactions -->
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary">
+                        <i class="bi bi-clock-history me-2"></i> Recent Transactions
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Invoice Paid</h6>
+                                    <small>2 mins ago</small>
+                                </div>
+                                <p class="mb-1">Invoice #1234 paid by John Doe</p>
+                            </div>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Expense Recorded</h6>
+                                    <small>15 mins ago</small>
+                                </div>
+                                <p class="mb-1">Office supplies purchase recorded</p>
+                            </div>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">New Invoice Generated</h6>
+                                    <small>1 hour ago</small>
+                                </div>
+                                <p class="mb-1">Invoice #1235 generated for Client A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions for Accountant -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header text-bg-secondary">
+                        <i class="bi bi-lightning-fill me-2"></i> Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="bi bi-file-earmark-plus me-2"></i> Create Invoice
+                            </button>
+                            <button class="btn btn-outline-success text-start">
+                                <i class="bi bi-cash-coin me-2"></i> Record Payment
+                            </button>
+                            <button class="btn btn-outline-info text-start">
+                                <i class="bi bi-receipt me-2"></i> View Reports
+                            </button>
+                            <button class="btn btn-outline-warning text-start">
+                                <i class="bi bi-gear me-2"></i> Financial Settings
                             </button>
                         </div>
                     </div>

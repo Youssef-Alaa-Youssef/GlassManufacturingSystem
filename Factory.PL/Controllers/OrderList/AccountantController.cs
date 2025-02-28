@@ -3,8 +3,9 @@ using Factory.DAL.Models.Finance;
 using Factory.BLL.InterFaces;
 using Factory.PL.ViewModels.Finance;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Factory.DAL.Models.OrderList;
+using Factory.PL.ViewModels.OrderList;
 
 namespace Factory.Controllers
 {
@@ -20,8 +21,9 @@ namespace Factory.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var financialRecords = await _unitOfWork.GetRepository<FinancialRecord>().GetAllAsync();
-            return View(financialRecords);
+            var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
+            var orderViewModels = orders.Select(MapToViewModel).ToList();
+            return View(orderViewModels);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -183,5 +185,104 @@ namespace Factory.Controllers
 
             return View(report);
         }
+
+        public async Task<IActionResult> Payment(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+            return View(MapToViewModel(order));
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderRank([FromBody] OrderRankUpdateModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { success = false, message = "Invalid input data" });
+            }
+
+            try
+            {
+                var orderRepository = _unitOfWork.GetRepository<Order>();
+                var order = await orderRepository.GetByIdAsync(model.OrderId);
+
+                if (order == null)
+                {
+                    return NotFound(new { success = false, message = "Order not found" });
+                }
+
+                if (model.Rank < 0)
+                {
+                    return BadRequest(new { success = false, message = "Invalid rank value" });
+                }
+
+                order.Rank = model.Rank;
+                await orderRepository.UpdateAsync(order);
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating order rank: {ex.Message}");
+                return StatusCode(500, new { success = false, message = "An error occurred while updating rank" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderAcceptance([FromBody] UpdateOrderAcceptance model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { success = false, message = "Invalid input data" });
+            }
+
+            try
+            {
+                var orderRepository = _unitOfWork.GetRepository<Order>();
+                var order = await orderRepository.GetByIdAsync(model.OrderId);
+
+                if (order == null)
+                {
+                    return NotFound(new { success = false, message = "Order not found" });
+                }
+                order.IsAccepted = model.IsAccepted;
+                await orderRepository.UpdateAsync(order);
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating order rank: {ex.Message}");
+                return StatusCode(500, new { success = false, message = "An error occurred while updating rank" });
+            }
+        }
+
+        public static OrderViewModel MapToViewModel(Order order) => new()
+        {
+            Rank = order.Rank,
+            Id = order.Id,
+            CustomerName = order.CustomerName,
+            CustomerReference = order.CustomerReference,
+            ProjectName = order.ProjectName,
+            Date = order.Date,
+            JobNo = order.JobNo,
+            Address = order.Address,
+            Priority = order.Priority,
+            FinishDate = order.FinishDate,
+            IsAccepted = order.IsAccepted,
+            SelectedMachines = order.SelectedMachines,
+            TotalSQM = order.TotalSQM,
+            TotalLM = order.TotalLM,
+            Items = order.Items?.Select(i => new OrderItemViewModel
+            {
+                Id = i.Id,
+                ItemName = i.ItemName,
+                Width = i.Width,
+                Height = i.Height,
+                Quantity = i.Quantity,
+                CustomerReference = i.CustomerReference,
+                Description = i.Description
+            }).ToList() ?? new List<OrderItemViewModel>()
+        };
     }
 }

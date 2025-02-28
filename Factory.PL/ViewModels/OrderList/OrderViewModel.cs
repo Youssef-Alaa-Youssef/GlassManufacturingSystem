@@ -54,6 +54,7 @@ namespace Factory.PL.ViewModels.OrderList
         [ModelBinder(BinderType = typeof(InvariantDecimalModelBinder))]
 
         public double TotalLM { get; set; }
+        public double? Rank { get; set; }
 
         public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
     }

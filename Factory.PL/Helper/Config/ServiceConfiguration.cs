@@ -6,6 +6,7 @@ using Factory.PL.Services;
 using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
+using Factory.PL.Services.Order;
 using Factory.PL.Services.Permssions;
 using Factory.PL.Services.Setting;
 using Factory.PL.Services.UploadFile;
@@ -68,6 +69,7 @@ public static class ServiceConfiguration
         services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<IVideoService, VideoService>();

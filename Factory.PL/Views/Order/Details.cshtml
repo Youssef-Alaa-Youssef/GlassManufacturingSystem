@@ -55,13 +55,13 @@
                         @foreach (var item in Model.Items)
                         {
                         <tr>
-                            <td>@(item.Description ?? "N/A")</td>
-                            <td>@(item.Width.ToString() ?? "0")</td>
-                            <td>@(item.Height.ToString() ?? "0")</td>
-                            <td>@(item.Quantity.ToString() ?? "0")</td>
-                            <td>@(item.SQM.ToString() ?? "0.00")</td>
-                            <td>@(item.TotalLM.ToString() ?? "0.00")</td>
-                            <td>@(item.CustomerReference ?? "No Reference")</td>
+                            <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
+                            <td>@(string.IsNullOrEmpty(item.Width.ToString()) ? "0" : item.Width)</td>
+                            <td>@(string.IsNullOrEmpty(item.Height.ToString()) ? "0" : item.Height)</td>
+                            <td>@(string.IsNullOrEmpty(item.Quantity.ToString()) ? "0" : item.Quantity)</td>
+                            <td>@(string.IsNullOrEmpty(item.SQM.ToString()) ? "0.00" : item.SQM)</td>
+                            <td>@(string.IsNullOrEmpty(item.TotalLM.ToString()) ? "0.00" : item.TotalLM)</td>
+                            <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
                         </tr>
 
                         }
