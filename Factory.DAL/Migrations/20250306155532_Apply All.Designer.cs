@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250306092735_apply all")]
-    partial class applyall
+    [Migration("20250306155532_Apply All")]
+    partial class ApplyAll
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,55 +234,6 @@ namespace Factory.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContactUs");
-                });
-
-            modelBuilder.Entity("Factory.DAL.Models.Home.FAQS", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime?>("ArchivedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FAQs", (string)null);
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Home.Partner", b =>
@@ -743,6 +694,97 @@ namespace Factory.DAL.Migrations
                             IconClass = "bi bi-gear",
                             Name = "Settings",
                             Url = "/Settings/Index"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IconClass = "bi bi-cash-stack",
+                            Name = "Financial",
+                            Url = "/Accountant/Index"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            IconClass = "bi bi-person-plus",
+                            Name = "Onboarding",
+                            Url = "/Onboarding/Index"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            IconClass = "bi bi-person-dash",
+                            Name = "Offboarding",
+                            Url = "/Offboarding/Index"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            IconClass = "bi bi-briefcase",
+                            Name = "HR Management",
+                            Url = "/HR/Index"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            IconClass = "bi bi-graph-up",
+                            Name = "Performance Management",
+                            Url = "/Performance/Index"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            IconClass = "bi bi-person-circle",
+                            Name = "Employee Self-Service",
+                            Url = "/ESS/Index"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            IconClass = "bi bi-laptop",
+                            Name = "IT Service Desk",
+                            Url = "/ITService/Index"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            IconClass = "bi bi-key",
+                            Name = "Access Control",
+                            Url = "/AccessControl/Index"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            IconClass = "bi bi-kanban",
+                            Name = "Project Management",
+                            Url = "/Project/Index"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            IconClass = "bi bi-lightning",
+                            Name = "Workflow Automation",
+                            Url = "/Workflow/Index"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            IconClass = "bi bi-headset",
+                            Name = "Customer Support",
+                            Url = "/Support/Index"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            IconClass = "bi bi-person-lines-fill",
+                            Name = "CRM",
+                            Url = "/CRM/Index"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            IconClass = "bi bi-bar-chart-line",
+                            Name = "Analytics & Reporting",
+                            Url = "/Reports/Index"
                         });
                 });
 
@@ -1044,6 +1086,213 @@ namespace Factory.DAL.Migrations
                             ModuleId = 6,
                             Name = "Payroll History",
                             Title = "Payroll History"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Action = "Index",
+                            Controller = "Accountant",
+                            ModuleId = 8,
+                            Name = "Financial Orders",
+                            Title = "Financial History"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Action = "PreOnboarding",
+                            Controller = "Onboarding",
+                            ModuleId = 9,
+                            Name = "Pre-Onboarding",
+                            Title = "Pre-Onboarding Process"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Action = "ITSetup",
+                            Controller = "Onboarding",
+                            ModuleId = 9,
+                            Name = "IT Setup",
+                            Title = "IT System & Equipment Setup"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Action = "Training",
+                            Controller = "Onboarding",
+                            ModuleId = 9,
+                            Name = "Training & Orientation",
+                            Title = "Employee Training and Orientation"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Action = "Clearance",
+                            Controller = "Offboarding",
+                            ModuleId = 10,
+                            Name = "Exit Clearance",
+                            Title = "Employee Exit Clearance"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Action = "RevokeAccess",
+                            Controller = "Offboarding",
+                            ModuleId = 10,
+                            Name = "Access Revocation",
+                            Title = "Revoke IT & System Access"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Action = "FinalPayroll",
+                            Controller = "Offboarding",
+                            ModuleId = 10,
+                            Name = "Final Payroll & Documents",
+                            Title = "Final Payroll & Document Handling"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Action = "Records",
+                            Controller = "HR",
+                            ModuleId = 11,
+                            Name = "Employee Records",
+                            Title = "Manage Employee Records"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Action = "Leave",
+                            Controller = "HR",
+                            ModuleId = 11,
+                            Name = "Leave Management",
+                            Title = "Manage Leaves & Absences"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Action = "Payroll",
+                            Controller = "HR",
+                            ModuleId = 11,
+                            Name = "Payroll Processing",
+                            Title = "Automate Payroll Processing"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Action = "Reviews",
+                            Controller = "Performance",
+                            ModuleId = 12,
+                            Name = "Performance Reviews",
+                            Title = "Employee Performance Reviews"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Action = "KPIs",
+                            Controller = "Performance",
+                            ModuleId = 12,
+                            Name = "KPI Tracking",
+                            Title = "Track KPIs & Goals"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Action = "Feedback",
+                            Controller = "Performance",
+                            ModuleId = 12,
+                            Name = "Feedback & Recognition",
+                            Title = "360 Feedback & Recognition"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Action = "Tickets",
+                            Controller = "ITService",
+                            ModuleId = 14,
+                            Name = "Ticket Management",
+                            Title = "Manage IT Support Tickets"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Action = "Monitoring",
+                            Controller = "ITService",
+                            ModuleId = 14,
+                            Name = "System Monitoring",
+                            Title = "Monitor IT Infrastructure"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Action = "Inventory",
+                            Controller = "ITService",
+                            ModuleId = 14,
+                            Name = "Hardware Inventory",
+                            Title = "Manage IT Assets"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Action = "Tickets",
+                            Controller = "Support",
+                            ModuleId = 18,
+                            Name = "Support Tickets",
+                            Title = "Manage Customer Tickets"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Action = "Chat",
+                            Controller = "Support",
+                            ModuleId = 18,
+                            Name = "Live Chat",
+                            Title = "Provide Live Chat Support"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Action = "FAQ",
+                            Controller = "Support",
+                            ModuleId = 18,
+                            Name = "FAQ & Help Center",
+                            Title = "Manage Help Center Articles"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Action = "Finance",
+                            Controller = "Reports",
+                            ModuleId = 20,
+                            Name = "Financial Reports",
+                            Title = "View Financial Reports"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Action = "Employees",
+                            Controller = "Reports",
+                            ModuleId = 20,
+                            Name = "Employee Insights",
+                            Title = "Analyze Employee Performance"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Action = "Sales",
+                            Controller = "Reports",
+                            ModuleId = 20,
+                            Name = "Sales & Revenue",
+                            Title = "Track Sales & Revenue"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Action = "Index",
+                            Controller = "Support",
+                            ModuleId = 18,
+                            Name = "Support Dashboard",
+                            Title = "View Support Overview"
                         });
                 });
 
@@ -1290,6 +1539,180 @@ namespace Factory.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Settings", (string)null);
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.FAQS", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HelpfulVotes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("UnhelpfulVotes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Views")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FAQS");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.SupportResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("RespondedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ResponseText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RespondedByUserId");
+
+                    b.HasIndex("SupportTicketId");
+
+                    b.ToTable("SupportResponse");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.SupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Medium");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Open");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("General");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToUserId");
+
+                    b.ToTable("SupportTicket");
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Warehouses.Item", b =>
@@ -1619,17 +2042,6 @@ namespace Factory.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Factory.DAL.Models.Home.FAQS", b =>
-                {
-                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Factory.DAL.Models.OrderList.OrderItem", b =>
                 {
                     b.HasOne("Factory.DAL.Models.OrderList.Order", "Order")
@@ -1677,6 +2089,47 @@ namespace Factory.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.FAQS", b =>
+                {
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.SupportResponse", b =>
+                {
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "RespondedByUser")
+                        .WithMany()
+                        .HasForeignKey("RespondedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Factory.DAL.Models.Support.SupportTicket", "SupportTicket")
+                        .WithMany("Responses")
+                        .HasForeignKey("SupportTicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RespondedByUser");
+
+                    b.Navigation("SupportTicket");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.SupportTicket", b =>
+                {
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "AssignedToUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssignedToUser");
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Warehouses.Item", b =>
@@ -1775,6 +2228,11 @@ namespace Factory.DAL.Migrations
             modelBuilder.Entity("Factory.DAL.Models.Permission.PermissionTyepe", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Support.SupportTicket", b =>
+                {
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Warehouses.MainWarehouse", b =>

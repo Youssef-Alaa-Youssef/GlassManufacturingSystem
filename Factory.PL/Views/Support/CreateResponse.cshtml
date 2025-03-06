@@ -1,0 +1,31 @@
+﻿@model Factory.DAL.ViewModels.Support.SupportResponseViewModel
+
+@{
+    ViewData["Title"] = "Create Response";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="CreateResponse" method="post">
+        <input type="hidden" asp-for="SupportTicketId" />
+
+        <div class="form-group mb-3">
+            <label asp-for="ResponseText" class="form-label"></label>
+            <textarea asp-for="ResponseText" class="form-control" rows="5" placeholder="Enter your response"></textarea>
+            <span asp-validation-for="ResponseText" class="text-danger"></span>
+        </div>
+        <div class="card-footer text-center mt-2">
+
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="fas fa-paper-plane me-2"></i>Submit Response
+        </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

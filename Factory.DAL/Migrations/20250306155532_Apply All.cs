@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Factory.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class applyall : Migration
+    public partial class ApplyAll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -458,30 +458,64 @@ namespace Factory.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FAQs",
+                name: "FAQS",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Question = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Answer = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Question = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
-                    ArchivedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    ArchivedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Views = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    HelpfulVotes = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    UnhelpfulVotes = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FAQs", x => x.Id);
+                    table.PrimaryKey("PK_FAQS", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FAQs_AspNetUsers_UserId",
+                        name: "FK_FAQS_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportTicket",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Open"),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Medium"),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "General"),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AssignedToUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportTicket", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupportTicket_AspNetUsers_AssignedToUserId",
+                        column: x => x.AssignedToUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -593,6 +627,36 @@ namespace Factory.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SupportResponse",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ResponseText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    SupportTicketId = table.Column<int>(type: "int", nullable: false),
+                    RespondedByUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportResponse", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupportResponse_AspNetUsers_RespondedByUserId",
+                        column: x => x.RespondedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SupportResponse_SupportTicket_SupportTicketId",
+                        column: x => x.SupportTicketId,
+                        principalTable: "SupportTicket",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
@@ -647,7 +711,20 @@ namespace Factory.DAL.Migrations
                     { 4, "bi bi-box-seam", "Warehouse Management", "/Warehouse/Index" },
                     { 5, "bi bi-cart", "Orders", "/Order/Index" },
                     { 6, "bi bi-cash", "Payroll", "/Payroll/Index" },
-                    { 7, "bi bi-gear", "Settings", "/Settings/Index" }
+                    { 7, "bi bi-gear", "Settings", "/Settings/Index" },
+                    { 8, "bi bi-cash-stack", "Financial", "/Accountant/Index" },
+                    { 9, "bi bi-person-plus", "Onboarding", "/Onboarding/Index" },
+                    { 10, "bi bi-person-dash", "Offboarding", "/Offboarding/Index" },
+                    { 11, "bi bi-briefcase", "HR Management", "/HR/Index" },
+                    { 12, "bi bi-graph-up", "Performance Management", "/Performance/Index" },
+                    { 13, "bi bi-person-circle", "Employee Self-Service", "/ESS/Index" },
+                    { 14, "bi bi-laptop", "IT Service Desk", "/ITService/Index" },
+                    { 15, "bi bi-key", "Access Control", "/AccessControl/Index" },
+                    { 16, "bi bi-kanban", "Project Management", "/Project/Index" },
+                    { 17, "bi bi-lightning", "Workflow Automation", "/Workflow/Index" },
+                    { 18, "bi bi-headset", "Customer Support", "/Support/Index" },
+                    { 19, "bi bi-person-lines-fill", "CRM", "/CRM/Index" },
+                    { 20, "bi bi-bar-chart-line", "Analytics & Reporting", "/Reports/Index" }
                 });
 
             migrationBuilder.InsertData(
@@ -687,7 +764,30 @@ namespace Factory.DAL.Migrations
                     { 19, "Tax", "Payroll", 6, "Tax Calculations", "Tax Calculations" },
                     { 20, "GeneratePayslip", "Payroll", 6, "Payslip Generation", "Payslip Generation" },
                     { 21, "Overtime", "Payroll", 6, "Overtime Payments", "Overtime Payments" },
-                    { 22, "History", "Payroll", 6, "Payroll History", "Payroll History" }
+                    { 22, "History", "Payroll", 6, "Payroll History", "Payroll History" },
+                    { 23, "Index", "Accountant", 8, "Financial Orders", "Financial History" },
+                    { 24, "PreOnboarding", "Onboarding", 9, "Pre-Onboarding", "Pre-Onboarding Process" },
+                    { 25, "ITSetup", "Onboarding", 9, "IT Setup", "IT System & Equipment Setup" },
+                    { 26, "Training", "Onboarding", 9, "Training & Orientation", "Employee Training and Orientation" },
+                    { 27, "Clearance", "Offboarding", 10, "Exit Clearance", "Employee Exit Clearance" },
+                    { 28, "RevokeAccess", "Offboarding", 10, "Access Revocation", "Revoke IT & System Access" },
+                    { 29, "FinalPayroll", "Offboarding", 10, "Final Payroll & Documents", "Final Payroll & Document Handling" },
+                    { 30, "Records", "HR", 11, "Employee Records", "Manage Employee Records" },
+                    { 31, "Leave", "HR", 11, "Leave Management", "Manage Leaves & Absences" },
+                    { 32, "Payroll", "HR", 11, "Payroll Processing", "Automate Payroll Processing" },
+                    { 33, "Reviews", "Performance", 12, "Performance Reviews", "Employee Performance Reviews" },
+                    { 34, "KPIs", "Performance", 12, "KPI Tracking", "Track KPIs & Goals" },
+                    { 35, "Feedback", "Performance", 12, "Feedback & Recognition", "360 Feedback & Recognition" },
+                    { 36, "Tickets", "ITService", 14, "Ticket Management", "Manage IT Support Tickets" },
+                    { 37, "Monitoring", "ITService", 14, "System Monitoring", "Monitor IT Infrastructure" },
+                    { 38, "Inventory", "ITService", 14, "Hardware Inventory", "Manage IT Assets" },
+                    { 39, "Tickets", "Support", 18, "Support Tickets", "Manage Customer Tickets" },
+                    { 40, "Chat", "Support", 18, "Live Chat", "Provide Live Chat Support" },
+                    { 41, "FAQ", "Support", 18, "FAQ & Help Center", "Manage Help Center Articles" },
+                    { 42, "Finance", "Reports", 20, "Financial Reports", "View Financial Reports" },
+                    { 43, "Employees", "Reports", 20, "Employee Insights", "Analyze Employee Performance" },
+                    { 44, "Sales", "Reports", 20, "Sales & Revenue", "Track Sales & Revenue" },
+                    { 45, "Index", "Support", 18, "Support Dashboard", "View Support Overview" }
                 });
 
             migrationBuilder.InsertData(
@@ -739,13 +839,8 @@ namespace Factory.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FAQs_IsDeleted",
-                table: "FAQs",
-                column: "IsDeleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FAQs_UserId",
-                table: "FAQs",
+                name: "IX_FAQS_UserId",
+                table: "FAQS",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -823,6 +918,21 @@ namespace Factory.DAL.Migrations
                 table: "SubWarehouses",
                 column: "NameEn",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportResponse_RespondedByUserId",
+                table: "SupportResponse",
+                column: "RespondedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportResponse_SupportTicketId",
+                table: "SupportResponse",
+                column: "SupportTicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportTicket_AssignedToUserId",
+                table: "SupportTicket",
+                column: "AssignedToUserId");
         }
 
         /// <inheritdoc />
@@ -853,7 +963,7 @@ namespace Factory.DAL.Migrations
                 name: "Documentation");
 
             migrationBuilder.DropTable(
-                name: "FAQs");
+                name: "FAQS");
 
             migrationBuilder.DropTable(
                 name: "FinancialRecords");
@@ -883,10 +993,10 @@ namespace Factory.DAL.Migrations
                 name: "SubModules");
 
             migrationBuilder.DropTable(
-                name: "TeamMember");
+                name: "SupportResponse");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "TeamMember");
 
             migrationBuilder.DropTable(
                 name: "SubWarehouses");
@@ -904,7 +1014,13 @@ namespace Factory.DAL.Migrations
                 name: "Modules");
 
             migrationBuilder.DropTable(
+                name: "SupportTicket");
+
+            migrationBuilder.DropTable(
                 name: "MainWarehouses");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

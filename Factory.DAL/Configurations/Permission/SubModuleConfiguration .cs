@@ -69,15 +69,41 @@ namespace Factory.DAL.Configurations.Permission
                 new SubModule { Id = 20, Name = "Payslip Generation", Controller = "Payroll", Action = "GeneratePayslip", Title = "Payslip Generation", ModuleId = 6 },
                 new SubModule { Id = 21, Name = "Overtime Payments", Controller = "Payroll", Action = "Overtime", Title = "Overtime Payments", ModuleId = 6 },
                 new SubModule { Id = 22, Name = "Payroll History", Controller = "Payroll", Action = "History", Title = "Payroll History", ModuleId = 6 },
-                new SubModule
-                {
-                    Id = 23,
-                    Name = "Financial Orders",  
-                    Controller = "Accountant",
-                    Action = "Index",
-                    Title = "Financial History", 
-                    ModuleId = 8
-                }
+                new SubModule { Id = 23,Name = "Financial Orders",  Controller = "Accountant",Action = "Index",Title = "Financial History", ModuleId = 8},
+                new SubModule { Id = 24, Name = "Pre-Onboarding", Controller = "Onboarding", Action = "PreOnboarding", Title = "Pre-Onboarding Process", ModuleId = 9 },
+                new SubModule { Id = 25, Name = "IT Setup", Controller = "Onboarding", Action = "ITSetup", Title = "IT System & Equipment Setup", ModuleId = 9 },
+                new SubModule { Id = 26, Name = "Training & Orientation", Controller = "Onboarding", Action = "Training", Title = "Employee Training and Orientation", ModuleId = 9 },
+
+                // Offboarding
+                new SubModule { Id = 27, Name = "Exit Clearance", Controller = "Offboarding", Action = "Clearance", Title = "Employee Exit Clearance", ModuleId = 10 },
+                new SubModule { Id = 28, Name = "Access Revocation", Controller = "Offboarding", Action = "RevokeAccess", Title = "Revoke IT & System Access", ModuleId = 10 },
+                new SubModule { Id = 29, Name = "Final Payroll & Documents", Controller = "Offboarding", Action = "FinalPayroll", Title = "Final Payroll & Document Handling", ModuleId = 10 },
+
+                // HR Management
+                new SubModule { Id = 30, Name = "Employee Records", Controller = "HR", Action = "Records", Title = "Manage Employee Records", ModuleId = 11 },
+                new SubModule { Id = 31, Name = "Leave Management", Controller = "HR", Action = "Leave", Title = "Manage Leaves & Absences", ModuleId = 11 },
+                new SubModule { Id = 32, Name = "Payroll Processing", Controller = "HR", Action = "Payroll", Title = "Automate Payroll Processing", ModuleId = 11 },
+
+                // Performance Management
+                new SubModule { Id = 33, Name = "Performance Reviews", Controller = "Performance", Action = "Reviews", Title = "Employee Performance Reviews", ModuleId = 12 },
+                new SubModule { Id = 34, Name = "KPI Tracking", Controller = "Performance", Action = "KPIs", Title = "Track KPIs & Goals", ModuleId = 12 },
+                new SubModule { Id = 35, Name = "Feedback & Recognition", Controller = "Performance", Action = "Feedback", Title = "360 Feedback & Recognition", ModuleId = 12 },
+
+                // IT Service Desk
+                new SubModule { Id = 36, Name = "Ticket Management", Controller = "ITService", Action = "Tickets", Title = "Manage IT Support Tickets", ModuleId = 14 },
+                new SubModule { Id = 37, Name = "System Monitoring", Controller = "ITService", Action = "Monitoring", Title = "Monitor IT Infrastructure", ModuleId = 14 },
+                new SubModule { Id = 38, Name = "Hardware Inventory", Controller = "ITService", Action = "Inventory", Title = "Manage IT Assets", ModuleId = 14 },
+
+                // Customer Support
+                new SubModule { Id = 39, Name = "Support Tickets", Controller = "Support", Action = "Tickets", Title = "Manage Customer Tickets", ModuleId = 18 },
+                new SubModule { Id = 40, Name = "Live Chat", Controller = "Support", Action = "Chat", Title = "Provide Live Chat Support", ModuleId = 18 },
+                new SubModule { Id = 41, Name = "FAQ & Help Center", Controller = "Support", Action = "FAQ", Title = "Manage Help Center Articles", ModuleId = 18 },
+
+                // Analytics & Reporting
+                new SubModule { Id = 42, Name = "Financial Reports", Controller = "Reports", Action = "Finance", Title = "View Financial Reports", ModuleId = 20 },
+                new SubModule { Id = 43, Name = "Employee Insights", Controller = "Reports", Action = "Employees", Title = "Analyze Employee Performance", ModuleId = 20 },
+                new SubModule { Id = 44, Name = "Sales & Revenue", Controller = "Reports", Action = "Sales", Title = "Track Sales & Revenue", ModuleId = 20 },
+                new SubModule { Id = 45, Name = "Support Dashboard", Controller = "Support", Action = "Index", Title = "View Support Overview", ModuleId = 18 }
                 );
 
         }

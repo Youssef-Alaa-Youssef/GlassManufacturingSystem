@@ -1,0 +1,60 @@
+﻿@model Factory.DAL.ViewModels.Support.SupportChatViewModel
+
+@{
+    ViewData["Title"] = "Ticket Chat";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-ticket-alt me-2"></i>@Model.Ticket.Title
+            </h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">@Model.Ticket.Description</p>
+            <p class="text-muted">Created by: @Model.Ticket.CustomerName (@Model.Ticket.CustomerEmail)</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Responses</h4>
+    @if (Model.Responses.Any())
+    {
+        <div class="list-group">
+            @foreach (var response in Model.Responses)
+            {
+                <div class="list-group-item">
+                    <p class="mb-1">@response.ResponseText</p>
+                    <small class="text-muted">Responded by: @response.RespondedByUser?.UserName on @response.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i>No responses found.
+        </div>
+    }
+    <div class="card">
+    <h4 class="mt-4 mb-3">Add Response</h4>
+    <form asp-action="CreateResponse" method="post">
+        <input type="hidden" asp-for="NewResponse.SupportTicketId" />
+        <div class="form-group">
+            <textarea asp-for="NewResponse.ResponseText" class="form-control" rows="3" placeholder="Enter your response..."></textarea>
+            <span asp-validation-for="NewResponse.ResponseText" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-outline-primary mt-3">
+            <i class="fas fa-paper-plane me-2"></i>Submit Response
+        </button>
+    </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,81 @@
+﻿@model Factory.DAL.ViewModels.Support.SupportManagementViewModel
+
+@{
+    ViewData["Title"] = "Support Management";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row">
+        <!-- Tickets Summary -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-ticket-alt me-2"></i>Support Tickets
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Open Tickets</h5>
+                                    <p class="card-text display-4">@Model.OpenTicketsCount</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Resolved Tickets</h5>
+                                    <p class="card-text display-4">@Model.ResolvedTicketsCount</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a asp-action="Tickets" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-list me-2"></i>View All Tickets
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQs Summary -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-question-circle me-2"></i>FAQs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card  mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Active FAQs</h5>
+                                    <p class="card-text display-4">@Model.ActiveFAQsCount</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Archived FAQs</h5>
+                                    <p class="card-text display-4">@Model.ArchivedFAQsCount</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a asp-action="FAQ" class="btn btn-outline-success w-100">
+                        <i class="fas fa-list me-2"></i>View All FAQs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

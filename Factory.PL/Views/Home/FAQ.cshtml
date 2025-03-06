@@ -1,47 +1,47 @@
-﻿@model IEnumerable<Factory.DAL.Models.Home.FAQS>
+﻿@* @model IEnumerable<FAQS> *@
 
-@{
-    ViewData["Title"] = "FAQs";
-}
+@* @{ *@
+@*     ViewData["Title"] = "FAQs"; *@
+@* } *@
 
-<!-- page-title -->
-<section class="page__title p_relative" style="margin:0px">
-    <div class="container">
-        <div class="content-box p_relative">
-            <h1 class="title">FAQs</h1>
-        </div>
-    </div>
-</section>
-<!-- faq-section -->
-<section class="faq__section p_relative">
-    <div class="container" style="margin-top:50px;margin-bottom:50px;">
-        <div class="row clearfix">
-            <div class="col-lg-12 col-md-12 col-sm-12 content-column">
-                <div class="content_block_faq">
-                    <div class="accordian-boxed">
-                        <!--Accordion Box-->
-                        <ul class="accordion-box alt">
-                            @foreach (var faq in Model)
-                            {
-                                <li class="accordion block">
-                                    <div class="acc-btn">
-                                        <div class="icon-outer">
-                                            <span class="icon-icon-38"></span>
-                                            <span class="icon-icon-11"></span>
-                                        </div>
-                                        <span class="body__one">@faq.Question</span>
-                                    </div>
-                                    <div class="acc-content" style="display: none;">
-                                        <div class="content">
-                                            <p>@faq.Answer</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@* <!-- page-title --> *@
+@* <section class="page__title p_relative" style="margin:0px"> *@
+@*     <div class="container"> *@
+@*         <div class="content-box p_relative"> *@
+@*             <h1 class="title">FAQs</h1> *@
+@*         </div> *@
+@*     </div> *@
+@* </section> *@
+@* <!-- faq-section --> *@
+@* <section class="faq__section p_relative"> *@
+@*     <div class="container" style="margin-top:50px;margin-bottom:50px;"> *@
+@*         <div class="row clearfix"> *@
+@*             <div class="col-lg-12 col-md-12 col-sm-12 content-column"> *@
+@*                 <div class="content_block_faq"> *@
+@*                     <div class="accordian-boxed"> *@
+@*                         <!--Accordion Box--> *@
+@*                         <ul class="accordion-box alt"> *@
+@*                             @foreach (var faq in Model) *@
+@*                             { *@
+@*                                 <li class="accordion block"> *@
+@*                                     <div class="acc-btn"> *@
+@*                                         <div class="icon-outer"> *@
+@*                                             <span class="icon-icon-38"></span> *@
+@*                                             <span class="icon-icon-11"></span> *@
+@*                                         </div> *@
+@*                                         <span class="body__one">@faq.Question</span> *@
+@*                                     </div> *@
+@*                                     <div class="acc-content" style="display: none;"> *@
+@*                                         <div class="content"> *@
+@*                                             <p>@faq.Answer</p> *@
+@*                                         </div> *@
+@*                                     </div> *@
+@*                                 </li> *@
+@*                             } *@
+@*                         </ul> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </section> *@

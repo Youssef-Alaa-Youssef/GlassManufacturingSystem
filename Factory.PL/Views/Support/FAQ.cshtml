@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Factory.DAL.Models.Support.FAQS>
+
+@{
+    ViewData["Title"] = "FAQs";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="mb-3">
+        <a asp-action="CreateFAQ" class="btn btn-outline-success">
+            <i class="fas fa-plus-circle me-2"></i>Create New FAQ
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="accordion" id="faqAccordion">
+            @foreach (var faq in Model)
+            {
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-@faq.Id">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@faq.Id" aria-expanded="true" aria-controls="collapse-@faq.Id">
+                            @faq.Question
+                        </button>
+                    </h2>
+                    <div id="collapse-@faq.Id" class="accordion-collapse collapse" aria-labelledby="heading-@faq.Id" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            @faq.Answer
+                            <div class="mt-3">
+                                <a asp-action="EditFAQ" asp-route-id="@faq.Id" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                </a>
+                                <a asp-action="DeleteFAQ" asp-route-id="@faq.Id" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i>No FAQs found.
+        </div>
+    }
+</div>
