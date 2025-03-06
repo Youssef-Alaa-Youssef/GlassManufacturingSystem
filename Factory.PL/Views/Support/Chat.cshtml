@@ -1,60 +1,237 @@
 ﻿@model Factory.DAL.ViewModels.Support.SupportChatViewModel
-
 @{
-    ViewData["Title"] = "Ticket Chat";
+    ViewData["Title"] = "Support Ticket Details";
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3 fade-in">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
+    <div class="card mb-4 ticket-details-card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">
                 <i class="fas fa-ticket-alt me-2"></i>@Model.Ticket.Title
             </h5>
+            <span class="badge bg-light text-primary">Ticket #@Model.Ticket.Id</span>
         </div>
         <div class="card-body">
-            <p class="card-text">@Model.Ticket.Description</p>
-            <p class="text-muted">Created by: @Model.Ticket.CustomerName (@Model.Ticket.CustomerEmail)</p>
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="card-text">@Model.Ticket.Description</p>
+                </div>
+                <div class="col-md-4 border-start">
+                    <div class="d-flex flex-column">
+                        <small class="text-muted mb-2">
+                            <i class="fas fa-user me-1"></i> Created by: <strong>@Model.Ticket.CustomerName</strong>
+                        </small>
+                        <small class="text-muted mb-2">
+                            <i class="fas fa-envelope me-1"></i> Email: <strong>@Model.Ticket.CustomerEmail</strong>
+                        </small>
+                        <small class="text-muted mb-2">
+                            <i class="fas fa-tag me-1"></i> Status: <strong>@Model.Ticket.Status</strong>
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i> Created: <strong>@Model.Ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <h4 class="mb-3">Responses</h4>
-    @if (Model.Responses.Any())
-    {
-        <div class="list-group">
-            @foreach (var response in Model.Responses)
-            {
-                <div class="list-group-item">
-                    <p class="mb-1">@response.ResponseText</p>
-                    <small class="text-muted">Responded by: @response.RespondedByUser?.UserName on @response.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4><i class="fas fa-comments me-2"></i>Conversation History</h4>
+        <div>
+            <button id="refreshResponses" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+        </div>
+    </div>
+
+    <div id="responsesContainer" class="mb-4">
+        @if (Model.Responses.Any())
+        {
+            <div class="list-group responses-list">
+                @foreach (var response in Model.Responses)
+                {
+                    <div class="list-group-item response-item @(response.RespondedByUserId == ViewBag.CurrentUserId ? "border-start border-primary border-3" : "")">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <strong class="@(response.RespondedByUserId == ViewBag.CurrentUserId ? "text-primary" : "")">
+                                @(response.RespondedByUser?.UserName ?? "System")
+                            </strong>
+                            <small class="text-muted">@response.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                        </div>
+                        <p class="mb-1 response-text">@response.ResponseText</p>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center fade-in" role="alert">
+                <i class="fas fa-info-circle me-2"></i>No responses yet. Be the first to respond!
+            </div>
+        }
+    </div>
+
+    <div class="card response-form-card mb-3">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-reply me-2"></i>Add Response</h5>
+        </div>
+        <div class="card-body">
+            <form id="responseForm" data-ticket-id="@Model.Ticket.Id">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="supportTicketId" name="SupportTicketId" value="@Model.Ticket.Id" />
+                <div class="form-group mb-3">
+                    <textarea id="responseText" name="ResponseText" class="form-control" rows="3" placeholder="Enter your response..." required></textarea>
+                    <div class="invalid-feedback">Please provide a response</div>
                 </div>
-            }
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="button" id="submitResponse" class="btn btn-outline-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Response
+                    </button>
+                    <span id="responseStatus" class="text-success" style="display: none;">
+                        <i class="fas fa-check-circle me-1"></i>Response submitted successfully
+                    </span>
+                </div>
+            </form>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-info text-center" role="alert">
-            <i class="fas fa-info-circle me-2"></i>No responses found.
-        </div>
-    }
-    <div class="card">
-    <h4 class="mt-4 mb-3">Add Response</h4>
-    <form asp-action="CreateResponse" method="post">
-        <input type="hidden" asp-for="NewResponse.SupportTicketId" />
-        <div class="form-group">
-            <textarea asp-for="NewResponse.ResponseText" class="form-control" rows="3" placeholder="Enter your response..."></textarea>
-            <span asp-validation-for="NewResponse.ResponseText" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-outline-primary mt-3">
-            <i class="fas fa-paper-plane me-2"></i>Submit Response
-        </button>
-    </form>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+<script>
+            $(document).ready(function () {
+            $(".fade-in").addClass("show");
+
+            function scrollToLatestResponse() {
+                const responsesContainer = document.querySelector('.responses-list');
+                if (responsesContainer) {
+                    responsesContainer.scrollTop = responsesContainer.scrollHeight;
+                }
+            }
+
+            scrollToLatestResponse();
+
+            const antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
+            if (!antiForgeryToken) {
+                const tokenInput = '<input name="__RequestVerificationToken" type="hidden" value="' +
+                    $('input:hidden[name="__RequestVerificationToken"]:first').val() + '" />';
+                $('#responseForm').prepend(tokenInput);
+            }
+
+            $("#submitResponse").click(function() {
+                const responseText = $("#responseText").val().trim();
+                const ticketId = $("#supportTicketId").val();
+
+                if (!responseText) {
+                    $("#responseText").addClass("is-invalid");
+                    return;
+                }
+
+                $("#responseText").removeClass("is-invalid");
+                $(this).prop("disabled", true).html('<i class="fas fa-spinner fa-spin me-2"></i>Submitting...');
+
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("CreateResponse", "Support")',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    data: {
+                        'SupportTicketId': ticketId,
+                        'ResponseText': responseText
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.success) {
+                            $("#responseStatus").fadeIn().delay(3000).fadeOut();
+                            $("#responseText").val('');
+                            refreshResponses();
+                        } else {
+                            showErrorAlert(data.message || "There was an error submitting your response.");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        let errorMessage = "There was an error submitting your response. Please try again.";
+
+                        try {
+                            if (xhr.responseText) {
+                                const response = JSON.parse(xhr.responseText);
+                                if (response.message) {
+                                    errorMessage = response.message;
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Error parsing error response:", e);
+                        }
+
+                        showErrorAlert(errorMessage);
+                    },
+                    complete: function() {
+                        $("#submitResponse").prop("disabled", false).html('<i class="fas fa-paper-plane me-2"></i>Submit Response');
+                    }
+                });
+            });
+
+            function showErrorAlert(message) {
+                $(".alert-danger").remove();
+
+                const alertHtml = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+
+                $(".response-form-card .card-body").prepend(alertHtml);
+
+                setTimeout(function() {
+                    $(".alert-danger").fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+            }
+
+            function refreshResponses() {
+                const ticketId = $("#responseForm").data("ticket-id");
+
+                $.ajax({
+                    url: '@Url.Action("GetResponses", "Support")',
+                    type: 'GET',
+                    data: { id: ticketId },
+                    success: function(data) {
+                        $("#responsesContainer").html(data);
+
+                        $(".response-item").addClass("new-response");
+                        setTimeout(function() {
+                            $(".response-item").removeClass("new-response");
+                        }, 1000);
+
+                        scrollToLatestResponse();
+                    },
+                    error: function(xhr, status, error) {
+                        showErrorAlert("Failed to refresh responses. Please try again.");
+                    }
+                });
+            }
+
+            $("#refreshResponses").click(function() {
+                $(this).html('<i class="fas fa-spinner fa-spin me-1"></i>Refreshing...');
+                refreshResponses();
+                setTimeout(() => {
+                    $(this).html('<i class="fas fa-sync-alt me-1"></i>Refresh');
+                }, 1000);
+            });
+
+            $("#responseText").keydown(function(e) {
+                if (e.ctrlKey && e.keyCode === 13) {
+                    $("#submitResponse").click();
+                }
+            });
+        });
+</script>
 }

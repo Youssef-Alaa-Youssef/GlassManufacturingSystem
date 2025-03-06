@@ -4,74 +4,71 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Factory.BLL.InterFaces;
 using Factory.DAL.ViewModels.Support;
+using Factory.DAL.Models.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace Factory.Controllers
 {
+    [Authorize]
     public class SupportController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<SupportController> _logger;
 
-        public SupportController(IUnitOfWork unitOfWork)
+        public SupportController(IUnitOfWork unitOfWork, ILogger<SupportController> logger, UserManager<ApplicationUser> userManager)
         {
-            _unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
-        // Index: Management dashboard for support tickets and FAQs
-        [Authorize]
+        #region Dashboard & Overview
+
         public async Task<IActionResult> Index()
         {
-            var tickets = await _unitOfWork.GetRepository<SupportTicket>().GetAllAsync();
-            var faqs = await _unitOfWork.GetRepository<FAQS>().GetAllAsync();
-
-            var viewModel = new SupportManagementViewModel
+            try
             {
-                Tickets = tickets,
-                FAQs = faqs
-            };
+                var tickets = await _unitOfWork.GetRepository<SupportTicket>().GetAllAsync();
+                var faqs = await _unitOfWork.GetRepository<FAQS>().GetAllAsync();
 
-            return View(viewModel);
+                var viewModel = new SupportManagementViewModel
+                {
+                    Tickets = tickets,
+                    FAQs = faqs
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving support dashboard data");
+                TempData["Error"] = "An error occurred while loading the support dashboard.";
+                return View(new SupportManagementViewModel());
+            }
         }
 
-        // Tickets: List all support tickets
-        [Authorize]
+        #endregion
+
+        #region Ticket Management
+
         public async Task<IActionResult> Tickets()
         {
-            var tickets = await _unitOfWork.GetRepository<SupportTicket>().GetAllAsync();
-            return View(tickets);
-        }
-
-        // Chat: List all responses for a specific ticket
-        [Authorize]
-        public async Task<IActionResult> Chat(int id)
-        {
-            var ticket = await _unitOfWork.GetRepository<SupportTicket>().GetByIdAsync(id);
-            if (ticket == null)
+            try
             {
-                return NotFound();
+                var tickets = await _unitOfWork.GetRepository<SupportTicket>()
+                    .GetAllAsync(includeProperties: "Responses");
+
+                return View(tickets);
             }
-
-            var responses = await _unitOfWork.GetRepository<SupportResponse>()
-                .GetAllAsync(r => r.SupportTicketId == id);
-
-            var viewModel = new SupportChatViewModel
+            catch (Exception ex)
             {
-                Ticket = ticket,
-                Responses = responses
-            };
-
-            return View(viewModel);
+                _logger.LogError(ex, "Error retrieving tickets");
+                TempData["Error"] = "An error occurred while retrieving tickets.";
+                return View(Enumerable.Empty<SupportTicket>());
+            }
         }
 
-        // FAQ: List all FAQs
-        [Authorize]
-        public async Task<IActionResult> FAQ()
-        {
-            var faqs = await _unitOfWork.GetRepository<FAQS>().GetAllAsync();
-            return View(faqs);
-        }
-
-        // Create Ticket: Display form to create a new support ticket
-        [Authorize]
         public IActionResult CreateTicket()
         {
             return View();
@@ -81,7 +78,12 @@ namespace Factory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTicket(SupportTicketViewModel ticketViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return View(ticketViewModel);
+            }
+
+            try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -98,66 +100,140 @@ namespace Factory.Controllers
                     AssignedToUserId = userId ?? string.Empty
                 };
 
-                try
+                await _unitOfWork.GetRepository<SupportTicket>().AddAsync(ticket);
+
+                _logger.LogInformation("Ticket created successfully. Ticket ID: {TicketId}", ticket.Id);
+                TempData["Success"] = "Ticket created successfully!";
+                return RedirectToAction(nameof(Tickets));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating ticket");
+                TempData["Error"] = "An error occurred while creating the ticket.";
+                return View(ticketViewModel);
+            }
+        }
+
+        #endregion
+
+        #region Ticket Chat & Responses
+
+        public async Task<IActionResult> Chat(int id)
+        {
+            try
+            {
+                var ticket = await _unitOfWork.GetRepository<SupportTicket>().GetByIdAsync(id);
+                if (ticket == null)
                 {
-                    await _unitOfWork.GetRepository<SupportTicket>().AddAsync(ticket);
-                    TempData["Success"] = "Ticket created successfully!";
-                    return RedirectToAction(nameof(Tickets));
+                    _logger.LogWarning("Ticket not found. ID: {TicketId}", id);
+                    return NotFound();
                 }
-                catch (Exception ex)
+
+                var responses = await _unitOfWork.GetRepository<SupportResponse>()
+                    .GetAllAsync(r => r.SupportTicketId == id,
+                                includeProperties: "RespondedByUser");
+
+                var viewModel = new SupportChatViewModel
                 {
-                    TempData["Error"] = $"An error occurred while creating the ticket. Exception: {ex.Message}";
-                }
+                    Ticket = ticket,
+                    Responses = responses.OrderBy(r => r.CreatedAt).ToList(),
+                    NewResponse = new SupportResponseViewModel
+                    {
+                        SupportTicketId = id
+                    }
+                };
+
+                // Add current user ID to ViewBag for highlighting own responses
+                ViewBag.CurrentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving chat for ticket. ID: {TicketId}", id);
+                TempData["Error"] = "An error occurred while retrieving the ticket conversation.";
+                return RedirectToAction(nameof(Tickets));
+            }
+        }
+
+        public async Task<IActionResult> GetResponses(int id)
+        {
+            var responses = await _unitOfWork.GetRepository<SupportResponse>()
+                .GetAllAsync(r => r.SupportTicketId == id, includeProperties: "RespondedByUser");
+
+            return PartialView("_ResponsesPartial", responses);
+        }
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateResponse(SupportResponseViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { success = false, message = "Invalid model state." });
             }
 
-            return View(ticketViewModel);
-        }
-
-        // Create Response: Display form to create a new response for a ticket
-        [Authorize]
-        public IActionResult CreateResponse(int ticketId)
-        {
-            var viewModel = new SupportResponseViewModel
-            {
-                SupportTicketId = ticketId
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateResponse(SupportResponseViewModel responseViewModel)
-        {
-            if (ModelState.IsValid)
+            try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { success = false, message = "User not authenticated." });
+                }
+
+                var ticket = await _unitOfWork.GetRepository<SupportTicket>()
+                    .GetByIdAsync(model.SupportTicketId);
+
+                if (ticket == null)
+                {
+                    return NotFound(new { success = false, message = "Ticket not found." });
+                }
 
                 var response = new SupportResponse
                 {
-                    ResponseText = responseViewModel.ResponseText,
+                    ResponseText = model.ResponseText,
                     CreatedAt = DateTime.UtcNow,
-                    SupportTicketId = responseViewModel.SupportTicketId,
-                    RespondedByUserId = userId ?? string.Empty
+                    SupportTicketId = model.SupportTicketId,
+                    RespondedByUserId = userId
                 };
 
-                try
-                {
-                    await _unitOfWork.GetRepository<SupportResponse>().AddAsync(response);
-                    TempData["Success"] = "Response added successfully!";
-                    return RedirectToAction(nameof(Chat), new { id = responseViewModel.SupportTicketId });
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while adding the response. Exception: {ex.Message}";
-                }
-            }
+                await _unitOfWork.GetRepository<SupportResponse>().AddAsync(response);
 
-            return View(responseViewModel);
+                if (ticket.Status == "Open")
+                {
+                    ticket.Status = "InProgress";
+                    await _unitOfWork.GetRepository<SupportTicket>().UpdateAsync(ticket);
+                }
+
+                _logger.LogInformation("Response added to ticket. Ticket ID: {TicketId}, Response ID: {ResponseId}",
+                    model.SupportTicketId, response.Id);
+
+                return Json(new { success = true, message = "Response submitted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding response to ticket. ID: {TicketId}", model.SupportTicketId);
+                return StatusCode(500, new { success = false, message = "An error occurred while submitting your response." });
+            }
+        }
+        #endregion
+
+        #region FAQ Management
+
+        public async Task<IActionResult> FAQ()
+        {
+            try
+            {
+                var faqs = await _unitOfWork.GetRepository<FAQS>().GetAllAsync(includeProperties: "User");
+                return View(faqs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving FAQs");
+                TempData["Error"] = "An error occurred while retrieving FAQs.";
+                return View(Enumerable.Empty<FAQS>());
+            }
         }
 
-        // Create FAQ: Display form to create a new FAQ
-        [Authorize]
         public IActionResult CreateFAQ()
         {
             return View();
@@ -167,7 +243,12 @@ namespace Factory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFAQ(FAQSViewModel faqViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return View(faqViewModel);
+            }
+
+            try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -180,40 +261,47 @@ namespace Factory.Controllers
                     UserId = userId ?? string.Empty
                 };
 
-                try
-                {
-                    await _unitOfWork.GetRepository<FAQS>().AddAsync(faq);
-                    TempData["Success"] = "FAQ created successfully!";
-                    return RedirectToAction(nameof(FAQ));
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while creating the FAQ. Exception: {ex.Message}";
-                }
-            }
+                await _unitOfWork.GetRepository<FAQS>().AddAsync(faq);
 
-            return View(faqViewModel);
+                _logger.LogInformation("FAQ created successfully. FAQ ID: {FaqId}", faq.Id);
+                TempData["Success"] = "FAQ created successfully!";
+                return RedirectToAction(nameof(FAQ));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating FAQ");
+                TempData["Error"] = "An error occurred while creating the FAQ.";
+                return View(faqViewModel);
+            }
         }
 
-        // Edit FAQ: Display form to edit an existing FAQ
-        [Authorize]
         public async Task<IActionResult> EditFAQ(int id)
         {
-            var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
-            if (faq == null)
+            try
             {
-                return NotFound();
+                var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
+                if (faq == null)
+                {
+                    _logger.LogWarning("FAQ not found. ID: {FaqId}", id);
+                    return NotFound();
+                }
+
+                var viewModel = new FAQSViewModel
+                {
+                    Id = faq.Id,
+                    Question = faq.Question,
+                    Answer = faq.Answer,
+                    Category = faq.Category
+                };
+
+                return View(viewModel);
             }
-
-            var viewModel = new FAQSViewModel
+            catch (Exception ex)
             {
-                Id = faq.Id,
-                Question = faq.Question,
-                Answer = faq.Answer,
-                Category = faq.Category
-            };
-
-            return View(viewModel);
+                _logger.LogError(ex, "Error retrieving FAQ for editing. ID: {FaqId}", id);
+                TempData["Error"] = "An error occurred while retrieving the FAQ.";
+                return RedirectToAction(nameof(FAQ));
+            }
         }
 
         [HttpPost]
@@ -225,11 +313,17 @@ namespace Factory.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return View(faqViewModel);
+            }
+
+            try
             {
                 var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
                 if (faq == null)
                 {
+                    _logger.LogWarning("FAQ not found for update. ID: {FaqId}", id);
                     return NotFound();
                 }
 
@@ -238,57 +332,71 @@ namespace Factory.Controllers
                 faq.Category = faqViewModel.Category;
                 faq.UpdatedAt = DateTime.UtcNow;
 
-                try
-                {
-                    await _unitOfWork.GetRepository<FAQS>().UpdateAsync(faq);
-                    TempData["Success"] = "FAQ updated successfully!";
-                    return RedirectToAction(nameof(FAQ));
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while updating the FAQ. Exception: {ex.Message}";
-                }
-            }
+                await _unitOfWork.GetRepository<FAQS>().UpdateAsync(faq);
 
-            return View(faqViewModel);
+                _logger.LogInformation("FAQ updated successfully. FAQ ID: {FaqId}", faq.Id);
+                TempData["Success"] = "FAQ updated successfully!";
+                return RedirectToAction(nameof(FAQ));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating FAQ. ID: {FaqId}", id);
+                TempData["Error"] = "An error occurred while updating the FAQ.";
+                return View(faqViewModel);
+            }
         }
 
-        // Delete FAQ: Display confirmation page to delete an FAQ
-        [Authorize(Policy = "Delete")]
+        [Authorize(Policy = "CustomerSupport_Delete")]
         public async Task<IActionResult> DeleteFAQ(int id)
         {
-            var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
-            if (faq == null)
+            try
             {
-                return NotFound();
-            }
+                var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
+                if (faq == null)
+                {
+                    _logger.LogWarning("FAQ not found for deletion. ID: {FaqId}", id);
+                    return NotFound();
+                }
 
-            return View(faq);
+                return View(faq);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving FAQ for deletion. ID: {FaqId}", id);
+                TempData["Error"] = "An error occurred while retrieving the FAQ.";
+                return RedirectToAction(nameof(FAQ));
+            }
         }
 
-        [HttpPost, ActionName("DeleteFAQ")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "CustomerSupport_Delete")]
         public async Task<IActionResult> DeleteFAQConfirmed(int id)
         {
-            var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
-            if (faq != null)
+            try
             {
-                try
+                var faq = await _unitOfWork.GetRepository<FAQS>().GetByIdAsync(id);
+                if (faq == null)
                 {
-                    await _unitOfWork.GetRepository<FAQS>().RemoveAsync(faq);
-                    TempData["Success"] = "FAQ deleted successfully!";
+                    _logger.LogWarning("FAQ not found for deletion confirmation. ID: {FaqId}", id);
+                    TempData["Error"] = "FAQ not found.";
+                    return RedirectToAction(nameof(FAQ));
                 }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred while deleting the FAQ. Exception: {ex.Message}";
-                }
-            }
-            else
-            {
-                TempData["Error"] = "FAQ not found.";
-            }
 
-            return RedirectToAction(nameof(FAQ));
+                await _unitOfWork.GetRepository<FAQS>().RemoveAsync(faq);
+
+                _logger.LogInformation("FAQ deleted successfully. FAQ ID: {FaqId}", id);
+                TempData["Success"] = "FAQ deleted successfully!";
+                return RedirectToAction(nameof(FAQ));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting FAQ. ID: {FaqId}", id);
+                TempData["Error"] = "An error occurred while deleting the FAQ.";
+                return RedirectToAction(nameof(FAQ));
+            }
         }
+
+        #endregion
     }
 }

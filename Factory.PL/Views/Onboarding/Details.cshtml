@@ -1,0 +1,100 @@
+﻿@using Factory.DAL.Enums
+@model Factory.PL.ViewModels.OnBoarding.OnboardingDetailsViewModel
+
+@{
+    ViewData["Title"] = "Onboarding Details";
+    Layout = "_LogedUser";
+
+}
+
+<div class="container-fluid card shadow mt-3 p-3 fade-in">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Onboarding Process</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Employee Name</dt>
+                <dd class="col-sm-9">@Model.OnboardingProcess.EmployeeName</dd>
+
+                <dt class="col-sm-3">Start Date</dt>
+                <dd class="col-sm-9">@Model.OnboardingProcess.StartDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @GetStatusBadgeClass(Model.OnboardingProcess.Status)">
+                        @Model.OnboardingProcess.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="card-title mb-0">Module Completion</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="moduleCompletionChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const moduleCompletionCtx = document.getElementById('moduleCompletionChart').getContext('2d');
+        const moduleCompletionChart = new Chart(moduleCompletionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Preboarding', 'IT Setup', 'Training', 'Orientation'],
+                datasets: [{
+                    label: 'Completion Status',
+                    data: [
+        @Model.OnboardingProcess.Preboarding.CompletionDate.HasValue ? 100 : 0,
+        @Model.OnboardingProcess.ITSetup.CompletionDate.HasValue ? 100 : 0,
+        @Model.OnboardingProcess.Training.CompletionDate.HasValue ? 100 : 0,
+        @Model.OnboardingProcess.Orientation.CompletionDate.HasValue ? 100 : 0
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Module Completion Status'
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+@functions {
+    public string GetStatusBadgeClass(OnboardingStatus status)
+    {
+        return status switch
+        {
+            OnboardingStatus.NotStarted => "bg-danger",
+            OnboardingStatus.InProgress => "bg-warning",
+            OnboardingStatus.Completed => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}

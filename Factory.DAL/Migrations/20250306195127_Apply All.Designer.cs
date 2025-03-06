@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250306155532_Apply All")]
+    [Migration("20250306195127_Apply All")]
     partial class ApplyAll
     {
         /// <inheritdoc />
@@ -1619,7 +1619,9 @@ namespace Factory.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1627,12 +1629,12 @@ namespace Factory.DAL.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("RespondedByUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ResponseText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("SupportTicketId")
                         .HasColumnType("int");
@@ -2107,8 +2109,7 @@ namespace Factory.DAL.Migrations
                     b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "RespondedByUser")
                         .WithMany()
                         .HasForeignKey("RespondedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Factory.DAL.Models.Support.SupportTicket", "SupportTicket")
                         .WithMany("Responses")

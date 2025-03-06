@@ -1,0 +1,43 @@
+﻿@model Factory.PL.ViewModels.OnBoarding.PreboardingViewModel
+
+@{
+    ViewData["Title"] = $"Preboarding for {Model.EmployeeName}";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3 fade-in">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form asp-action="UpdatePreboarding">
+                <input type="hidden" asp-for="OnboardingProcessId" />
+                <input type="hidden" asp-for="Module.Id" />
+                <div class="form-group">
+                    <label asp-for="Module.DocumentsReceived" class="control-label"></label>
+                    <input asp-for="Module.DocumentsReceived" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.ContractSigned" class="control-label"></label>
+                    <input asp-for="Module.ContractSigned" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.BackgroundCheckCompleted" class="control-label"></label>
+                    <input asp-for="Module.BackgroundCheckCompleted" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.WelcomeEmailSent" class="control-label"></label>
+                    <input asp-for="Module.WelcomeEmailSent" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

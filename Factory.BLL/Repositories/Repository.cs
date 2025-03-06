@@ -231,5 +231,9 @@ namespace Factory.BLL.Repositories
             return modules;
         }
 
+        public IQueryable<TEntity> Query()
+        {
+            return _dbSet.AsQueryable();
+        }
     }
 }

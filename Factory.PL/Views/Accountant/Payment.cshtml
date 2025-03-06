@@ -4,8 +4,6 @@
     Layout = "_LogedUser";
 }
 
-<script src="https://js.stripe.com/v3/"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=SAR"></script>
 
 <div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
@@ -116,9 +114,10 @@
                     <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
+                                <th>#</th> 
                                 <th>Glass Description</th>
-                                <th>Width</th>
-                                <th>Height</th>
+                                <th>Width (mm)</th>
+                                <th>Height (mm)</th>
                                 <th>Qty</th>
                                 <th>SQM</th>
                                 <th>Total SQM</th>
@@ -127,9 +126,14 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @{
+                                int counter = 1; 
+                                double totalRankSummation = 0; 
+                            }
                             @foreach (var item in Model.Items)
                             {
-                                <tr>
+                                <tr data-item-id="@item.Id">
+                                    <td>@counter</td> 
                                     <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
                                     <td>@(string.IsNullOrEmpty(item.Width.ToString()) ? "0" : item.Width)</td>
                                     <td>@(string.IsNullOrEmpty(item.Height.ToString()) ? "0" : item.Height)</td>
@@ -139,7 +143,9 @@
                                     <td>
                                         <div class="input-group input-group-sm">
                                             <input type="number" class="form-control rank-input"
-                                                   min="1" value="@(item.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "0")"
+                                                   min="1" value="@(item.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                       ?? Model.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                       ?? "0")"
                                                    placeholder="Rank" aria-label="Rank">
                                             <button class="btn btn-outline-primary save-rank-btn" type="button" style="display: none;" aria-label="Save Rank">
                                                 <i class="bi bi-save"></i>
@@ -147,17 +153,25 @@
                                         </div>
                                         <div class="rank-status mt-1" style="display: none;" aria-live="polite"></div>
                                     </td>
+                                        @{
+                                            double width = item.Width / 1000.0;
+                                            double height = item.Height / 1000.0;
+                                            double totalRankValue = (Model.Rank ?? item.Rank ?? 0) * (width * height);
+                                            totalRankSummation += totalRankValue;
+                                        }
                                     <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
                                 </tr>
+                                counter++; 
                             }
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="text-end fw-bold">Total:</td>
+                                <td colspan="4" class="text-end fw-bold">Total:</td>
                                 <td>@Model.Items.Sum(i => i.Quantity)</td>
-                                <td>-</td>
+                                <td>@Model.Items.Sum(i => i.SQM)</td>
                                 <td>@Model.Items.Sum(i => i.TotalLM)</td>
-                                <td>-</td>
+                                <td>Total Price</td>
+                                <td class="fw-bold">@totalRankSummation.ToString("N2")</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -210,16 +224,6 @@
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="credit-card-tab" data-bs-toggle="tab" data-bs-target="#credit-card" type="button" role="tab" aria-controls="credit-card" aria-selected="true">
                                         <i class="fas fa-credit-card me-2"></i>Credit Card
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="paypal-tab" data-bs-toggle="tab" data-bs-target="#paypal" type="button" role="tab" aria-controls="paypal" aria-selected="false">
-                                        <i class="fab fa-paypal me-2"></i>PayPal
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="stripe-tab" data-bs-toggle="tab" data-bs-target="#stripe" type="button" role="tab" aria-controls="stripe" aria-selected="false">
-                                        <i class="fab fa-stripe me-2"></i>Stripe
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -297,43 +301,7 @@
                                     </div>
                                 </div>
 
-                                <div class="tab-pane fade" id="paypal" role="tabpanel" aria-labelledby="paypal-tab">
-                                    <div class="text-center mb-4">
-                                        <img src="~/assets/images/paypal-logo.png" alt="PayPal" class="img-fluid mb-3" style="max-width: 200px;">
-                                        <p>Click the button below to pay securely with PayPal.</p>
-                                    </div>
-                                    <div id="paypal-button-container" class="d-grid gap-2 col-md-8 mx-auto">
-                                    </div>
-                                    <div class="mt-4 text-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-info-circle me-1"></i>You will be redirected to PayPal to complete your payment.
-                                        </small>
-                                    </div>
-                                </div>
-
-                                <!-- Stripe Payment Form -->
-                                <div class="tab-pane fade" id="stripe" role="tabpanel" aria-labelledby="stripe-tab">
-                                    <div class="text-center mb-4">
-                                        <img src="~/assets/images/stripe-logo.png" alt="Stripe" class="img-fluid mb-3" style="max-width: 180px;">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="stripe-email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="stripe-email" name="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="stripe-card-element" class="form-label">Card Information</label>
-                                        <div id="stripe-card-element" class="form-control p-3" style="min-height: 100px;">
-                                            <!-- Stripe Elements will be inserted here -->
-                                        </div>
-                                        <div id="stripe-card-errors" class="invalid-feedback d-block"></div>
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="button" id="stripePayButton" class="btn btn-outline-primary">
-                                            <i class="fab fa-stripe me-2"></i>Pay @((12000 * 1.15).ToString("N2")) SAR with Stripe
-                                        </button>
-                                    </div>
-                                </div>
-
+                                
                                 <!-- Bank Transfer Information -->
                                 <div class="tab-pane fade" id="bank-transfer" role="tabpanel" aria-labelledby="bank-transfer-tab">
                                     <div class="alert alert-info">

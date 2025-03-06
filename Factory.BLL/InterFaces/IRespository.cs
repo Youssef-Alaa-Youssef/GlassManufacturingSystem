@@ -43,6 +43,7 @@ namespace Factory.BLL.Interfaces
         Task RemoveRangeAsync(IEnumerable<TEntity> entities);
 
         Task<List<Module>> GetModulesForUserAsync(string userId);
+        IQueryable<TEntity> Query();
 
     }
 }

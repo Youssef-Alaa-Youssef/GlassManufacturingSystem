@@ -1,0 +1,41 @@
+﻿@model Factory.PL.ViewModels.OnBoarding.TrainingViewModel
+
+@{
+    ViewData["Title"] = $"Training for {Model.EmployeeName}";
+}
+
+<div class="container-fluid card shadow mt-3 p-3 fade-in">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form asp-action="UpdateTraining">
+                <input type="hidden" asp-for="OnboardingProcessId" />
+                <input type="hidden" asp-for="Module.Id" />
+                <div class="form-group">
+                    <label asp-for="Module.ComplianceTraining" class="control-label"></label>
+                    <input asp-for="Module.ComplianceTraining" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.SkillsTraining" class="control-label"></label>
+                    <input asp-for="Module.SkillsTraining" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.SystemsTraining" class="control-label"></label>
+                    <input asp-for="Module.SystemsTraining" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Module.SecurityTraining" class="control-label"></label>
+                    <input asp-for="Module.SecurityTraining" class="form-check-input" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
