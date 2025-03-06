@@ -72,6 +72,11 @@
                                     <a asp-action="Optimization" asp-route-id="@order.Id" class="btn btn-outline-secondary btn-sm w-100 w-md-auto">
                                         <i class="bi bi-pencil-square"></i> Optimized
                                     </a>
+                                    <a asp-action="GlassLabel" asp-route-id="@order.Id"
+                                       class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center w-100 w-md-auto">
+                                        <i class="bi bi-tags me-1"></i> Labels
+                                    </a>
+
                                     @if (authorizationResult.Succeeded)
                                     {
                                         <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">

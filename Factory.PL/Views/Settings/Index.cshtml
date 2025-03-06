@@ -4,132 +4,125 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+
+<div class="container-fluid card shadow p-4">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
-
-
-    <!-- User Information -->
-    <div class="mb-4 border rounded">
-        <div class="py-2 px-4 rounded-top">
-            <h4 class="mb-0">
-                <i class="bi bi-person-circle"></i> User Information
-            </h4>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-image me-2"></i>Profile Picture
+            </h5>
         </div>
-        <form method="post" class="p-4">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="FullName" class="form-label">
-                        <i class="bi bi-person"></i> Full Name
-                    </label>
-                    <input type="text" readonly class="form-control form-control-sm" id="FullName" name="FullName" value="@Model.FullName" required />
-                </div>
-                <div class="col-md-6">
-                    <label for="Email" class="form-label">
-                        <i class="bi bi-envelope"></i> Email
-                    </label>
-                    <input type="email" readonly class="form-control form-control-sm" id="Email" name="Email" value="@Model.Email" required />
-                </div>
-            </div>
-            <div class="card-footer text-center">
+        <div class="card-body text-center">
+            <img src="@Model.ProfilePictureUrl" alt="Profile Picture" class="rounded-circle mb-3" width="120" height="120">
+            <form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data">
+                <input type="file" class="form-control mb-3" name="profilePicture" accept="image/*" required>
+                <button type="submit" class="btn btn-outline-primary">Upload</button>
+            </form>
+        </div>
+    </div>
 
-                <button type="submit" disabled class="btn btn-outline-primary">
-                    <i class="bi bi-save"></i> Save Changes
+    <!-- Security Settings -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-shield-lock me-2"></i>Security Settings
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="EnableMFA" method="post">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="EnableMFA" name="EnableMFA" @(Model.IsMFAEnabled ? "checked" : "")>
+                    <label class="form-check-label" for="EnableMFA">
+                        Enable Two-Factor Authentication (MFA)
+                    </label>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-outline-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-moon-stars me-2"></i>Appearance Settings
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                <label class="form-check-label" for="darkModeToggle">Enable Dark Mode</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-database me-2"></i>Backup & Restore
+            </h5>
+        </div>
+        <div class="card-body text-center">
+            <a href="/Settings/Backup" class="btn btn-outline-primary">
+                <i class="bi bi-cloud-download me-2"></i>Download Backup
+            </a>
+            <form asp-action="RestoreBackup" method="post" enctype="multipart/form-data" class="mt-3">
+                <input type="file" class="form-control mb-2" name="backupFile" required>
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-cloud-upload me-2"></i>Restore Backup
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
-    <!-- General Settings -->
-    <div class="mb-4 border rounded">
-        <div class="py-2 px-4 rounded-top">
-            <h4 class="mb-0">
-                <i class="bi bi-cogs"></i> General Settings
-            </h4>
+    <!-- Delete Account Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-trash me-2"></i>Delete Account
+            </h5>
         </div>
-        <form asp-action="UpdateSettings" method="post" class="p-4">
-            <div class="row">
-                @foreach (var setting in Model.GeneralSettings)
-                {
-                    <div class="col-md-6 mb-3">
-                        <label for="@setting.Key" class="form-label">
-                            <i class="bi bi-sliders"></i> @setting.Key
-                        </label>
-                        <input type="text" class="form-control form-control-sm" id="@setting.Key" name="GeneralSettings[@setting.Key]" value="@setting.Value" />
-                    </div>
-                }
-            </div>
-            <div class="card-footer text-center">
-
-                <button type="submit" disabled class="btn btn-outline-secondary">
-                <i class="bi bi-save"></i> Save Changes
+        <div class="card-body text-center">
+            <p class="text-danger">This action is irreversible. All your data will be permanently deleted.</p>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                Delete My Account
             </button>
-            </div>
-        </form>
+        </div>
     </div>
-
-    <!-- Notification Preferences -->
-    <div class="mb-4 border rounded">
-        <div class="py-2 px-4 rounded-top">
-            <h4 class="mb-0">
-                <i class="bi bi-bell"></i> Notification Preferences
-            </h4>
+</div>
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Account Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">
+                    <strong>Warning!</strong> This action is irreversible. All your data will be permanently deleted.
+                </p>
+                <p>
+                    Are you sure you want to proceed with deleting your account?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-action="DeleteAccount" asp-controller="Auth" method="post">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-outline-danger">Delete My Account</button>
+                </form>
+            </div>
         </div>
-        <form asp-action="UpdateSettings" method="post" class="p-4">
-            @foreach (var preference in Model.NotificationPreferences)
-            {
-                <div class="form-check mb-2">
-                    <input type="checkbox" class="form-check-input" id="@preference.Key" name="NotificationPreferences[@preference.Key]" @(preference.Value ? "checked" : "") />
-                    <label class="form-check-label" for="@preference.Key">
-                        <i class="bi bi-check-circle"></i> @preference.Key
-                    </label>
-                </div>
-            }
-            <div class="card-footer text-center">
-
-                <button type="submit" disabled class="btn btn-outline-success">
-                <i class="bi bi-save"></i> Save Changes
-            </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Change Password -->
-    <div class="mb-4 border rounded">
-        <div class="py-2 px-4 rounded-top">
-            <h4 class="mb-0">
-                <i class="bi bi-lock"></i> Change Password
-            </h4>
-        </div>
-        <form asp-action="UpdateSettings" method="post" class="p-4">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label for="CurrentPassword" class="form-label">
-                        <i class="bi bi-key"></i> Current Password
-                    </label>
-                    <input type="password" class="form-control form-control-sm" id="CurrentPassword" name="ChangePasswordModel.CurrentPassword" required />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label for="NewPassword" class="form-label">
-                        <i class="bi bi-lock-fill"></i> New Password
-                    </label>
-                    <input type="password" class="form-control form-control-sm" id="NewPassword" name="ChangePasswordModel.NewPassword" required />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label for="ConfirmNewPassword" class="form-label">
-                        <i class="bi bi-lock-fill"></i> Confirm New Password
-                    </label>
-                    <input type="password" class="form-control form-control-sm" id="ConfirmNewPassword" name="ChangePasswordModel.ConfirmNewPassword" required />
-                </div>
-            </div>
-            <div class="card-footer text-center">
-
-                <button type="submit" disabled class="btn btn-outline-danger">
-                <i class="bi bi-save"></i> Change Password
-            </button>
-            </div>
-        </form>
     </div>
 </div>
 
+<script>
+    document.getElementById("darkModeToggle").addEventListener("change", function() {
+        document.body.classList.toggle("dark-mode");
+    });
+</script>

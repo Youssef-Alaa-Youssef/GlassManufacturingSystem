@@ -4,12 +4,17 @@
     {
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string ProfilePictureUrl { get; set; } = string.Empty;
 
-        public Dictionary<string, string> GeneralSettings { get; set; } = new Dictionary<string, string>();
+        public bool IsMFAEnabled { get; set; } 
 
-        public Dictionary<string, bool> NotificationPreferences { get; set; } = new Dictionary<string, bool>();
+        public bool IsDarkModeEnabled { get; set; }
 
-        public ChangePasswordViewModel? ChangePasswordModel { get; set; } 
+        public List<ActivityLogViewModel> RecentActivities { get; set; } = new();
+
+        public DateTime? LastBackupDate { get; set; }
+
+        public ChangePasswordViewModel? ChangePasswordModel { get; set; }
     }
 
     public class ChangePasswordViewModel
@@ -17,5 +22,11 @@
         public string CurrentPassword { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
         public string ConfirmNewPassword { get; set; } = string.Empty;
+    }
+
+    public class ActivityLogViewModel
+    {
+        public string Description { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
     }
 }

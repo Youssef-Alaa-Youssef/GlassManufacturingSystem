@@ -7,6 +7,7 @@ using Factory.PL.ViewModels.Home;
 using System.Diagnostics;
 using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
+using Factory.DAL.Models.Auth;
 
 namespace Factory.Controllers
 {
@@ -168,7 +169,7 @@ namespace Factory.Controllers
         [Authorize()]
         public async Task<IActionResult> DashBoard()
         {
-            var userCount = (await _unitOfWork.GetRepository<IdentityUser>().GetAllAsync()).Count();
+            var userCount = (await _unitOfWork.GetRepository<ApplicationUser>().GetAllAsync()).Count();
             var teamMemberCount = (await _unitOfWork.GetRepository<TeamMember>().GetAllAsync()).Count();
             var contactCount = (await _unitOfWork.GetRepository<ContactUs>().GetAllAsync()).Count();
             var roleCount = (await _unitOfWork.GetRepository<IdentityRole>().GetAllAsync()).Count();

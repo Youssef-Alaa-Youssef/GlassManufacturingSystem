@@ -27,12 +27,14 @@ namespace Factory.DAL.Configurations.OrderList
                        .HasMaxLength(255);
 
                 builder.Property(o => o.TotalSQM)
-                       .HasPrecision(18, 2) // Ensuring precision for double values
+                       .HasPrecision(18, 2) 
                        .IsRequired();
 
                 builder.Property(o => o.TotalLM)
                        .HasPrecision(18, 2)
                        .IsRequired();
+                builder.Property(o => o.Rank)
+                  .HasPrecision(18, 2);
 
                 builder.Property(o => o.CreatedAt)
                        .HasDefaultValueSql("GETDATE()");

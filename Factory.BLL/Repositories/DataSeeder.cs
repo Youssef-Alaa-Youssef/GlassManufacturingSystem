@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Factory.DAL.Enums;
 using Factory.DAL.Models.Permission;
 using Factory.BLL.InterFaces;
+using Factory.DAL.Models.Auth;
 
 namespace Factory.DAL.Configurations
 {
@@ -11,10 +12,9 @@ namespace Factory.DAL.Configurations
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
 
-            // Seed roles
             foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
             {
                 string roleName = role.ToString();
@@ -24,16 +24,16 @@ namespace Factory.DAL.Configurations
                 }
             }
 
-            // Seed default user
             var defaultUserEmail = "superadmin@gmail.com";
             var defaultUser = await userManager.FindByEmailAsync(defaultUserEmail);
 
             if (defaultUser == null)
             {
-                defaultUser = new IdentityUser
+                defaultUser = new ApplicationUser
                 {
                     UserName = defaultUserEmail,
-                    Email = defaultUserEmail
+                    Email = defaultUserEmail,
+                    EmailConfirmed = true
                 };
 
                 var result = await userManager.CreateAsync(defaultUser, "SuperAdmin@123");
@@ -41,39 +41,62 @@ namespace Factory.DAL.Configurations
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(defaultUser, UserRole.Owner.ToString());
-                    defaultUser.EmailConfirmed = true;
-                    await userManager.UpdateAsync(defaultUser);
                 }
             }
 
             var permissionRepository = unitOfWork.GetRepository<PermissionTyepe>();
-            
-            var superAdminRole = await roleManager.FindByNameAsync(UserRole.Owner.ToString());
-            var managePermissions = permissionRepository.GetAllAsync().Result.FirstOrDefault(p => p.Name == "ManagePermissions");
+            var existingPermissions = await permissionRepository.GetAllAsync();
 
-            if (superAdminRole != null && managePermissions != null)
+            var requiredPermissions = new List<string> { "Delete", "Read", "Create", "Update" };
+
+            var newPermissions = requiredPermissions
+                .Where(permissionName => !existingPermissions.Any(p => p.Name == permissionName))
+                .Select(permissionName => new PermissionTyepe { Name = permissionName })
+                .ToList();
+
+            if (newPermissions.Any())
             {
-                var rolePermissionRepository = unitOfWork.GetRepository<RolePermission>();
-                var rolePermission = new RolePermission
-                {
-                    RoleId = superAdminRole.Id,
-                    PermissionId = managePermissions.Id,
-                    ModuleId = 1 
-                };
-
-                var existingRolePermission = rolePermissionRepository.GetAllAsync()
-                    .Result.FirstOrDefault(rp =>
-                        rp.RoleId == rolePermission.RoleId &&
-                        rp.PermissionId == rolePermission.PermissionId &&
-                        rp.ModuleId == rolePermission.ModuleId);
-
-                if (existingRolePermission == null)
-                {
-                    await rolePermissionRepository.AddAsync(rolePermission);
-                }
+                await permissionRepository.AddRangeAsync(newPermissions);
+                await unitOfWork.SaveChangesAsync();
             }
 
-            await unitOfWork.SaveChangesAsync();
+            var moduleRepository = unitOfWork.GetRepository<Module>();
+            var allModules = await moduleRepository.GetAllAsync();
+
+            var superAdminRole = await roleManager.FindByNameAsync(UserRole.Owner.ToString());
+
+            if (superAdminRole != null && allModules.Any())
+            {
+                var rolePermissionRepository = unitOfWork.GetRepository<RolePermission>();
+                var allPermissions = await permissionRepository.GetAllAsync();
+                var existingRolePermissions = await rolePermissionRepository.GetAllAsync();
+
+                var newRolePermissions = new List<RolePermission>();
+
+                foreach (var module in allModules)
+                {
+                    foreach (var permission in allPermissions)
+                    {
+                        if (!existingRolePermissions.Any(rp => rp.RoleId == superAdminRole.Id &&
+                                                               rp.PermissionId == permission.Id &&
+                                                               rp.ModuleId == module.Id))
+                        {
+                            newRolePermissions.Add(new RolePermission
+                            {
+                                RoleId = superAdminRole.Id,
+                                PermissionId = permission.Id,
+                                ModuleId = module.Id
+                            });
+                        }
+                    }
+                }
+
+                if (newRolePermissions.Any())
+                {
+                    await rolePermissionRepository.AddRangeAsync(newRolePermissions);
+                    await unitOfWork.SaveChangesAsync();
+                }
+            }
         }
     }
 }

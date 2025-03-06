@@ -1,4 +1,5 @@
 ﻿using Factory.BLL.InterFaces;
+using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Permission;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +24,7 @@ namespace Factory.PL.Helper
             IUnitOfWork unitOfWork,
             IAuthorizationPolicyProvider policyProvider,
             RoleManager<IdentityRole> roleManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

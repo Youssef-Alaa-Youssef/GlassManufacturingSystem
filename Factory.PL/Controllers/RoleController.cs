@@ -8,14 +8,15 @@ using Factory.PL.ViewModels.Auth;
 
 namespace Factory.Controllers
 {
-    [Authorize(Roles = "Owner,GM")]
+    [Authorize(Policy = "Role Management_Create")]
+    [Authorize(Policy = "Role Management_Update")]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -50,7 +51,6 @@ namespace Factory.Controllers
             return View(userViewModels);
         }
 
-        // Action to list all roles with optional search
         public async Task<IActionResult> AllRoles(string query)
         {
             IQueryable<IdentityRole> rolesQuery = _roleManager.Roles;
@@ -115,7 +115,7 @@ namespace Factory.Controllers
 
             var rolesToAdd = model.Roles;
             var result = await _userManager.AddToRolesAsync(user, rolesToAdd);
-            await _signInManager.RefreshSignInAsync(user);
+            //await _signInManager.RefreshSignInAsync(user);
 
 
             if (result.Succeeded)

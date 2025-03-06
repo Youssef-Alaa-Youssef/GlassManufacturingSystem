@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250228135751_Add Ranl Column In Order Model")]
-    partial class AddRanlColumnInOrderModel
+    [Migration("20250306092735_apply all")]
+    partial class applyall
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,91 @@ namespace Factory.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Factory.DAL.Models.Auth.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteRequestedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDarkModeEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMFAEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastBackupDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
 
             modelBuilder.Entity("Factory.DAL.Models.Documentation.Documentation", b =>
                 {
@@ -492,7 +577,8 @@ namespace Factory.DAL.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<double?>("Rank")
-                        .HasColumnType("float");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
 
                     b.Property<string>("SelectedMachines")
                         .IsRequired()
@@ -551,6 +637,10 @@ namespace Factory.DAL.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<double?>("Rank")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("float(18)");
+
                     b.Property<double>("SQM")
                         .HasPrecision(18, 2)
                         .HasColumnType("float(18)");
@@ -608,37 +698,51 @@ namespace Factory.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            IconClass = "",
+                            IconClass = "bi bi-shield-lock",
                             Name = "Permission Management",
                             Url = "/Users/Index"
                         },
                         new
                         {
                             Id = 2,
-                            IconClass = "",
+                            IconClass = "bi bi-people",
                             Name = "User Management",
                             Url = "/Auth/Index"
                         },
                         new
                         {
                             Id = 3,
-                            IconClass = "",
+                            IconClass = "bi bi-person-badge",
                             Name = "Role Management",
                             Url = "/Role/Index"
                         },
                         new
                         {
                             Id = 4,
-                            IconClass = "",
+                            IconClass = "bi bi-box-seam",
                             Name = "Warehouse Management",
                             Url = "/Warehouse/Index"
                         },
                         new
                         {
                             Id = 5,
-                            IconClass = "",
-                            Name = "Order Management",
+                            IconClass = "bi bi-cart",
+                            Name = "Orders",
                             Url = "/Order/Index"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IconClass = "bi bi-cash",
+                            Name = "Payroll",
+                            Url = "/Payroll/Index"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IconClass = "bi bi-gear",
+                            Name = "Settings",
+                            Url = "/Settings/Index"
                         });
                 });
 
@@ -750,7 +854,7 @@ namespace Factory.DAL.Migrations
                             Controller = "PermissionManagement",
                             ModuleId = 1,
                             Name = "Permission Management",
-                            Title = "Mange Permssions"
+                            Title = "Manage Permissions"
                         },
                         new
                         {
@@ -759,7 +863,7 @@ namespace Factory.DAL.Migrations
                             Controller = "PermissionManagement",
                             ModuleId = 1,
                             Name = "Assign Permission",
-                            Title = "Assign Permssions"
+                            Title = "Assign Permissions"
                         },
                         new
                         {
@@ -821,8 +925,8 @@ namespace Factory.DAL.Migrations
                             Action = "Create",
                             Controller = "Order",
                             ModuleId = 5,
-                            Name = "Order Management",
-                            Title = "Order Management"
+                            Name = "Create Order",
+                            Title = "Order Creation"
                         },
                         new
                         {
@@ -830,8 +934,116 @@ namespace Factory.DAL.Migrations
                             Action = "index",
                             Controller = "Order",
                             ModuleId = 5,
-                            Name = "Order Management",
+                            Name = "View Orders",
                             Title = "Order Management"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Action = "General",
+                            Controller = "Settings",
+                            ModuleId = 7,
+                            Name = "General Settings",
+                            Title = "General Settings"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Action = "Security",
+                            Controller = "Settings",
+                            ModuleId = 7,
+                            Name = "Security Settings",
+                            Title = "Security Settings"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Action = "Index",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Payroll Dashboard",
+                            Title = "Payroll Dashboard"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Action = "EmployeeSalaries",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Employee Salaries",
+                            Title = "Employee Salaries"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Action = "ProcessSalaries",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Salary Processing",
+                            Title = "Salary Processing"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Action = "Reports",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Payroll Reports",
+                            Title = "Payroll Reports"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Action = "Bonuses",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Bonuses Management",
+                            Title = "Bonuses Management"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Action = "Deductions",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Deductions",
+                            Title = "Salary Deductions"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Action = "Tax",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Tax Calculations",
+                            Title = "Tax Calculations"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Action = "GeneratePayslip",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Payslip Generation",
+                            Title = "Payslip Generation"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Action = "Overtime",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Overtime Payments",
+                            Title = "Overtime Payments"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Action = "History",
+                            Controller = "Payroll",
+                            ModuleId = 6,
+                            Name = "Payroll History",
+                            Title = "Payroll History"
                         });
                 });
 
@@ -1326,71 +1538,6 @@ namespace Factory.DAL.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -1474,7 +1621,7 @@ namespace Factory.DAL.Migrations
 
             modelBuilder.Entity("Factory.DAL.Models.Home.FAQS", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1573,7 +1720,7 @@ namespace Factory.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1582,7 +1729,7 @@ namespace Factory.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1597,7 +1744,7 @@ namespace Factory.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1606,7 +1753,7 @@ namespace Factory.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Factory.DAL.Models.Auth.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

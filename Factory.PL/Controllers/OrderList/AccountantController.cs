@@ -6,6 +6,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Factory.DAL.Models.OrderList;
 using Factory.PL.ViewModels.OrderList;
+using Microsoft.EntityFrameworkCore;
+using Factory.DAL.Models.Warehouses;
 
 namespace Factory.Controllers
 {
@@ -284,5 +286,33 @@ namespace Factory.Controllers
                 Description = i.Description
             }).ToList() ?? new List<OrderItemViewModel>()
         };
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateRank([FromBody] RankUpdateModel model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return Json(new { success = false, message = "Invalid request data." });
+                }
+
+                var itemRepository = _unitOfWork.GetRepository<OrderItem>();
+                var item = await itemRepository.GetByIdAsync(model.ItemId);
+
+                if (item == null)
+                {
+                    return Json(new { success = false, message = "Item not found" });
+                }
+
+                item.Rank = model.Rank;
+
+                return Json(new { success = true, message = "Rank updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error updating rank" });
+            }
+        }
     }
 }

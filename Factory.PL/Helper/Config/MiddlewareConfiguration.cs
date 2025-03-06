@@ -9,12 +9,12 @@ public static class MiddlewareConfiguration
 {
     public static void ConfigureMiddleware(WebApplication app, IWebHostEnvironment env)
     {
-        app.UseMiddleware<ExceptionMiddleware>();
 
         ApplyDatabaseMigrations(app);
 
         if (!env.IsDevelopment())
         {
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseHsts();
         }
 

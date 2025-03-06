@@ -1,8 +1,10 @@
 ﻿using Factory.BLL;
 using Factory.BLL.InterFaces;
 using Factory.DAL;
+using Factory.DAL.Models.Auth;
 using Factory.PL.Helper;
 using Factory.PL.Services;
+using Factory.PL.Services.Background;
 using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
@@ -62,12 +64,12 @@ public static class ServiceConfiguration
 
     private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHostedService<AccountDeletionBackgroundService>();
         services.Configure<EmailConfiguration>(configuration.GetSection("MailConfigurations"));
         services.AddSingleton<EmailConfiguration>();
         services.Configure<CompanyDetails>(configuration.GetSection("CompanyDetails"));
         services.AddSingleton<CompanyDetails>();
         services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IFileService, FileService>();
@@ -105,7 +107,7 @@ public static class ServiceConfiguration
 
     private static void ConfigureIdentity(IServiceCollection services)
     {
-        services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+        services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<FactDdContext>()
             .AddDefaultTokenProviders();
     }

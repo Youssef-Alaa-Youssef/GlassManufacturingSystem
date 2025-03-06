@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Factory.PL.ViewModels.Permissions;
 using Factory.BLL.InterFaces;
 using Microsoft.EntityFrameworkCore;
+using Factory.DAL.Models.Auth;
 
 namespace Factory.PL.Controllers.Permission
 {
@@ -12,12 +13,12 @@ namespace Factory.PL.Controllers.Permission
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public PermissionManagementController(
             IUnitOfWork unitOfWork,
             RoleManager<IdentityRole> roleManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
@@ -27,7 +28,7 @@ namespace Factory.PL.Controllers.Permission
         [Authorize(Policy = "Permission Management_Read")]
         public async Task<IActionResult> Index()
         {
-            var users = await _unitOfWork.GetRepository<IdentityUser>().GetAllAsync();
+            var users = await _unitOfWork.GetRepository<ApplicationUser>().GetAllAsync();
             var roles = await _roleManager.Roles.ToListAsync();
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
             var permissions = await _unitOfWork.GetRepository<PermissionTyepe>().GetAllAsync();

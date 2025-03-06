@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Factory.DAL.Models.Auth;
 
 namespace Factory.DAL.Models.Home
 {
@@ -18,7 +18,7 @@ namespace Factory.DAL.Models.Home
         public DateTime? UpdatedAt { get; set; }
 
         public string UserId { get; set; } = string.Empty;
-        public virtual IdentityUser? User { get; set; } 
+        public virtual ApplicationUser? User { get; set; } 
     }
 }
 

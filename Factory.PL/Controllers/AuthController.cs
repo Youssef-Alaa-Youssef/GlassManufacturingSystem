@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Factory.DAL.Enums;
+using Factory.DAL.Models.Auth;
 namespace Factory.Controllers
 {
     public class AuthController : Controller
@@ -19,11 +20,11 @@ namespace Factory.Controllers
         private readonly EmailConfiguration _emailconfig;
         private readonly IWebHostEnvironment _environment;
         private readonly IEmailService _emailService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly CompanyDetails _companydetails;
 
-        public AuthController(EmailConfiguration emailconfig, IWebHostEnvironment environment, IEmailService EmailService, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IOptions<CompanyDetails> companydetails)
+        public AuthController(EmailConfiguration emailconfig, IWebHostEnvironment environment, IEmailService EmailService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<CompanyDetails> companydetails)
         {
             _emailconfig = emailconfig;
             _environment = environment;
@@ -169,7 +170,7 @@ namespace Factory.Controllers
                 return View(model);
             }
 
-            var newUser = new IdentityUser { PhoneNumber = model.PhoneNumber, UserName = model.UserName, Email = model.Email }; // Adjust this line based on your ApplicationUser model
+            var newUser = new ApplicationUser { PhoneNumber = model.PhoneNumber, UserName = model.UserName, Email = model.Email }; // Adjust this line based on your ApplicationUser model
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {
@@ -654,6 +655,7 @@ namespace Factory.Controllers
             {
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
+                ProfilePictureUrl = user.ProfilePictureUrl ?? string.Empty,
                 Roles = (await _userManager.GetRolesAsync(user)).ToList()
             };
 
@@ -732,7 +734,7 @@ namespace Factory.Controllers
                 return View(model);
             }
 
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 UserName = model.UserName,
                 Email = model.Email,
@@ -754,5 +756,52 @@ namespace Factory.Controllers
 
             return View(model);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.DeleteRequestedOn = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            await _userManager.UpdateSecurityStampAsync(user); // Invalidate the user's security stamp
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid request.");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var hasRole = await _userManager.IsInRoleAsync(user, model.Role);
+            if (!hasRole)
+            {
+                return BadRequest("User does not have the requested role.");
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return Ok("Role updated successfully.");
+        }
+
     }
 }

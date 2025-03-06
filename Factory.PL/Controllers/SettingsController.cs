@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Factory.PL.ViewModels.Auth;
+using Factory.DAL.Models.Auth;
 public class SettingsController : Controller
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public SettingsController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    public SettingsController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -17,20 +18,19 @@ public class SettingsController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
 
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
         var model = new SettingsViewModel
         {
-            FullName = user?.UserName ?? string.Empty,
-            Email = user?.Email ?? string.Empty,
-            GeneralSettings = new Dictionary<string, string>
-            {
-                { "Theme", "Light" }, 
-                { "Language", "English" }
-            },
-            NotificationPreferences = new Dictionary<string, bool>
-            {
-                { "EmailNotifications", true },
-                { "SmsNotifications", false }
-            },
+            FullName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            ProfilePictureUrl = user.ProfilePictureUrl ?? "/images/default-profile.png",
+            IsMFAEnabled = user.TwoFactorEnabled,
+            IsDarkModeEnabled = user.IsDarkModeEnabled, 
+            LastBackupDate = user.LastBackupDate, 
             ChangePasswordModel = new ChangePasswordViewModel()
         };
 

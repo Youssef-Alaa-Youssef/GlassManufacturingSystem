@@ -13,6 +13,8 @@
         public double TotalLM { get; set; }
         public string CustomerReference { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public double? Rank { get; set; }
+
         public int OrderId { get; set; }
         public virtual Order Order { get; set; }
     }

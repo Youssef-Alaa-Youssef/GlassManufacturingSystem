@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Factory.DAL.Models.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 namespace Factory.DAL
 {
-    public class FactDdContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class FactDdContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public FactDdContext(DbContextOptions<FactDdContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

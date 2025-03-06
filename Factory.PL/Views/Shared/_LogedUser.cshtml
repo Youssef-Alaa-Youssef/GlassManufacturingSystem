@@ -64,24 +64,20 @@
                     </li>
                 </ul>
 
-                <!-- Dropdowns -->
                 <div class="d-flex align-items-center">
-                    <!-- Logout Dropdown -->
                     <div class="dropdown me-2">
                         <a href="#" id="logoutDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i id="logoutIcon" class="bi bi-box-arrow-right me-2  fs-5 p-2 rounded"></i>
+                            <i id="logoutIcon" class="bi bi-box-arrow-right me-2 fs-5 p-2 rounded"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Auth" asp-action="LogOut">
+                                <a href="#" class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#logoutModal">
                                     <i class="bi bi-box-arrow-right fs-4 me-2"></i>
                                     <span>Logout</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
-
-                    <!-- Theme Dropdown -->
                     <div class="dropdown me-2">
                         <a href="#" id="themeDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i id="themeIcon" class="bi bi-sun me-2 fs-5 p-2 rounded"></i>
@@ -95,8 +91,6 @@
                             </li>
                         </ul>
                     </div>
-
-                    <!-- Language Dropdown -->
                     <div class="dropdown me-2">
                         <a href="#" id="languageDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-translate me-2 fs-5 p-2 rounded"></i>
@@ -120,8 +114,6 @@
                             }
                         </ul>
                     </div>
-
-                    <!-- Settings Dropdown -->
                     <div class="dropdown me-2">
                         <a href="#" id="settingsDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i id="settingsIcon" class="bi bi-gear me-2 fs-5 p-2 rounded"></i>
@@ -135,16 +127,14 @@
                             </li>
                         </ul>
                     </div>
-
-                    <!-- Roles Dropdown -->
                     <div class="dropdown me-2">
                         <a href="#" id="RolesDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i id="settingsIcon" class="bi bi-shield me-2 fs-5 p-2 rounded"></i>
                         </a>
+                        @{
+                            var currentRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                        }
                         <ul class="dropdown-menu dropdown-menu-end">
-                            @{
-                                var currentRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                            }
                             @foreach (var role in User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value))
                             {
                                 <li>
@@ -158,9 +148,30 @@
                                 </li>
                             }
                         </ul>
+                        @Html.AntiForgeryToken()
+                        <script>
+                            function selectRole(role) {
+                                fetch('/Auth/UpdateRole', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                                    },
+                                    body: JSON.stringify({ role: role })
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        window.location.reload();
+                                    } else {
+                                        alert('Failed to switch role.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                            }
+                        </script>
                     </div>
-
-                    <!-- Profile Dropdown -->
                     <div class="dropdown">
                         <a href="#" id="profileDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-2 fs-5 p-2 rounded"></i>
@@ -214,25 +225,48 @@
         </div>
 
     </nav>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" id="logoutModalLabel">
+                        <i class="bi bi-box-arrow-right text-danger me-2"></i> Confirm Logout
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <div class="modal-body text-center">
+                    <p class="text-muted small mb-3">Are you sure you want to log out? Your session will be securely closed.</p>
+                </div>
+
+                <div class="modal-footer border-0 justify-content-center">
+                    <form asp-controller="Auth" asp-action="ActualLogOut" method="post">
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-box-arrow-right me-2"></i> Log Out
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
  
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
         @RenderBody()
     </main>
 
     <script src="~/assets/js/bootstrap.min.js"></script>
     <script>
-        // Sidebar toggle functionality
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("overlay");
         const mainContent = document.getElementById("mainContent");
         const sidebarToggler = document.getElementById("sidebarToggler");
 
-        // Toggle sidebar on navbar toggler click
         if (sidebarToggler) {
             sidebarToggler.addEventListener("click", function (e) {
                 e.preventDefault(); // Prevent default navbar collapse behavior
@@ -242,7 +276,6 @@
             });
         }
 
-        // Close sidebar when clicking outside (on overlay)
         if (overlay) {
             overlay.addEventListener("click", function () {
                 sidebar.classList.remove("active");
@@ -251,7 +284,6 @@
             });
         }
 
-        // Dark/Light Mode Toggle
         function toggleDarkMode() {
             const body = document.body;
             const themeIcon = document.getElementById("themeIcon");
@@ -281,7 +313,6 @@
             }
         }
 
-        // Initialize theme based on saved preference or system preference
         function initializeTheme() {
             const savedTheme = localStorage.getItem("theme");
             const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;

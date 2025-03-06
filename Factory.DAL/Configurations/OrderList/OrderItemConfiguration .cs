@@ -30,6 +30,8 @@ namespace Factory.DAL.Configurations
 
             builder.Property(oi => oi.StepHeight)
                    .HasPrecision(18, 2);
+            builder.Property(o => o.Rank)
+                 .HasPrecision(18, 2);
 
             builder.Property(oi => oi.SQM)
                    .HasPrecision(18, 2)

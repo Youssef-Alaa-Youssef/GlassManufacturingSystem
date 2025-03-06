@@ -26,12 +26,15 @@ namespace Factory.DAL.Configurations.Permission
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasData(
-                new Module { Id = 1, Name = "Permission Management", Url = "/Users/Index" },
-                new Module { Id = 2, Name = "User Management", Url = "/Auth/Index" },
-                new Module { Id = 3, Name = "Role Management", Url = "/Role/Index" },
-                new Module { Id = 4, Name = "Warehouse Management", Url = "/Warehouse/Index" },
-                new Module { Id = 5, Name = "Order Management", Url = "/Order/Index" }
-            );
+                 new Module { Id = 1, Name = "Permission Management", Url = "/Users/Index", IconClass = "bi bi-shield-lock" },
+                 new Module { Id = 2, Name = "User Management", Url = "/Auth/Index", IconClass = "bi bi-people" },
+                 new Module { Id = 3, Name = "Role Management", Url = "/Role/Index", IconClass = "bi bi-person-badge" },
+                 new Module { Id = 4, Name = "Warehouse Management", Url = "/Warehouse/Index", IconClass = "bi bi-box-seam" },
+                 new Module { Id = 5, Name = "Orders", Url = "/Order/Index", IconClass = "bi bi-cart" },
+                 new Module { Id = 6, Name = "Payroll", Url = "/Payroll/Index", IconClass = "bi bi-cash" },  
+                 new Module { Id = 7, Name = "Settings", Url = "/Settings/Index", IconClass = "bi bi-gear" } ,
+                 new Module { Id = 8, Name = "Financial", Url = "/Accountant/Index", IconClass = "bi bi-cash-stack" } 
+             );
         }
     }
 }

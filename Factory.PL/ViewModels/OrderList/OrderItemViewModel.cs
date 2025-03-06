@@ -18,6 +18,7 @@ namespace Factory.PL.ViewModels.OrderList
         [Required(ErrorMessage = "Height is required")]
         [Range(1, 6000, ErrorMessage = "Height must be between 1 and 5000 mm")]
         public double Height { get; set; }
+        public double? Rank { get; set; }
 
         public double? StepWidth { get; set; }
 
