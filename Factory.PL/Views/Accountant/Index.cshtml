@@ -1,6 +1,6 @@
 ﻿@model List<Factory.PL.ViewModels.OrderList.OrderViewModel>
 @{
-    ViewData["Title"] = "Payment Processing";
+    ViewData["Title"] = "Orders Index";
     Layout = "_LogedUser";
 }
 
@@ -32,7 +32,7 @@
                     <th scope="col">Job No</th>
                     <th scope="col">Priority</th>
                     <th scope="col">Status</th>
-                    <th scope="col" style="width:140px">Rank</th>
+                    <th scope="col" style="width:140px">Price Rate</th>
                     <th scope="col" style="width:140px">Is Accepted</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -83,8 +83,13 @@
                             </td>
                             <td>
                                 <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    <a asp-action="Delivery" asp-controller="Accountant" asp-route-id="@order.Id" class="btn btn-outline-success btn-sm w-100 w-md-auto @(!order.IsAccepted ? "disabled" : "")" aria-label="Finance">
+                                        <i class="bi bi-cash-stack"></i> Delivery Invoice
+                                    </a>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
                                     <a asp-action="Payment" asp-controller="Accountant" asp-route-id="@order.Id" class="btn btn-outline-success btn-sm w-100 w-md-auto @(!order.IsAccepted ? "disabled" : "")" aria-label="Finance">
-                                        <i class="bi bi-cash-stack"></i> Finance
+                                        <i class="bi bi-cash-stack"></i> Payment Invoice
                                     </a>
                                 </div>
                             </td>

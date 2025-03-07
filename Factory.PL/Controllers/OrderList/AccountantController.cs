@@ -188,13 +188,19 @@ namespace Factory.Controllers
             return View(report);
         }
 
+        public async Task<IActionResult> Delivery(int id)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null) return NotFound();
+            return View(MapToViewModel(order));
+        }
+
         public async Task<IActionResult> Payment(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
-        
         [HttpPost]
         public async Task<IActionResult> UpdateOrderRank([FromBody] OrderRankUpdateModel model)
         {
@@ -221,6 +227,15 @@ namespace Factory.Controllers
                 order.Rank = model.Rank;
                 await orderRepository.UpdateAsync(order);
 
+                var itemRepository = _unitOfWork.GetRepository<OrderItem>();
+                var items = await itemRepository.GetAllAsync(x => x.OrderId == model.OrderId);
+
+                foreach (var item in items)
+                {
+                    item.Rank = model.Rank;
+                    await itemRepository.UpdateAsync(item);
+                }
+
                 return Ok(new { success = true });
             }
             catch (Exception ex)
@@ -229,7 +244,6 @@ namespace Factory.Controllers
                 return StatusCode(500, new { success = false, message = "An error occurred while updating rank" });
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> UpdateOrderAcceptance([FromBody] UpdateOrderAcceptance model)
         {
@@ -283,35 +297,39 @@ namespace Factory.Controllers
                 Height = i.Height,
                 Quantity = i.Quantity,
                 CustomerReference = i.CustomerReference,
-                Description = i.Description
+                Description = i.Description,
+                Rank = i.Rank
             }).ToList() ?? new List<OrderItemViewModel>()
         };
-
         [HttpPost]
         public async Task<IActionResult> UpdateRank([FromBody] RankUpdateModel model)
         {
+            if (model == null)
+            {
+                return Json(new { success = false, message = "Invalid request data." });
+            }
+
             try
             {
-                if (model == null)
-                {
-                    return Json(new { success = false, message = "Invalid request data." });
-                }
-
                 var itemRepository = _unitOfWork.GetRepository<OrderItem>();
                 var item = await itemRepository.GetByIdAsync(model.ItemId);
 
                 if (item == null)
                 {
-                    return Json(new { success = false, message = "Item not found" });
+                    return Json(new { success = false, message = "Item not found." });
                 }
 
                 item.Rank = model.Rank;
 
-                return Json(new { success = true, message = "Rank updated successfully" });
+                await itemRepository.UpdateAsync(item);
+                await _unitOfWork.SaveChangesAsync(); 
+
+                return Json(new { success = true, message = "Rank updated successfully." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error updating rank" });
+                Console.WriteLine($"Error updating rank: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred while updating the rank." });
             }
         }
     }

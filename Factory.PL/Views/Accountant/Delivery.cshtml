@@ -1,0 +1,280 @@
+﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
+@{
+    ViewData["Title"] = "Delivery Invoice";
+    Layout = "_LogedUser";
+}
+
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">شركة الزجاج العالمية</h2>
+            <h2 class="fw-bold">Global Glass Factory</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" class="img-fluid" style="max-width: 120px;">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            @{
+                bool showAlert = Model.SelectedMachines.Any(m => m.ToString().Contains("Cutting"));
+            }
+
+            @if (showAlert)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <strong>Attention:</strong> A Cutting machine has been detected.
+                    <a class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="collapse" href="#cuttingMachineDetails" role="button" aria-expanded="false" aria-controls="cuttingMachineDetails">
+                        View Details
+                    </a>
+                </div>
+
+                <div class="collapse mb-4" id="cuttingMachineDetails">
+                    <div class="card card-body border-warning">
+                        <ul class="mb-0">
+                            <li><strong>System Update:</strong> The system automatically renames 'Cutting' machines to 'Allowance' for consistency.</li>
+                            <li><strong>Safety Precautions:</strong> Ensure proper handling procedures and follow safety measures.</li>
+                            <li><strong>Compliance:</strong> Verify that all necessary approvals are in place for machines labeled as 'Allowance'.</li>
+                            <li><strong>Maintenance:</strong> Regular maintenance checks are recommended to prevent operational hazards.</li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card border-0">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Customer Name:</span>
+                            <span class="badge rounded-pill">@Model.CustomerName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Customer Reference:</span>
+                            <span class="badge rounded-pill">@Model.CustomerReference</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Project Name & Location:</span>
+                            <span class="badge rounded-pill">@Model.ProjectName, @Model.Address</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Delivery Date:</span>
+                            <span class="badge rounded-pill">@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card border-0">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Invoice Details</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Invoice Date:</span>
+                            <span class="badge rounded-pill">@Model.Date.ToString("yyyy-MM-dd")</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Job Number:</span>
+                            <span class="badge rounded-pill">@Model.JobNo</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Payment Status:</span>
+                            <span class="badge text-dark rounded-pill">Pending Payment</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Invoice Number:</span>
+                            <span class="badge text-dark rounded-pill">INV-@Model.JobNo</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Items?.Any() == true)
+    {
+        <div class="card border-0 mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Order Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Glass Description</th>
+                                <th>Width (mm)</th>
+                                <th>Height (mm)</th>
+                                <th>Qty</th>
+                                <th>SQM</th>
+                                <th>Total SQM</th>
+                                <th>Customer Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int counter = 1;
+                            }
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr data-item-id="@item.Id">
+                                    <td>@counter</td>
+                                    <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
+                                    <td>@(string.IsNullOrEmpty(item.Width.ToString()) ? "0" : item.Width)</td>
+                                    <td>@(string.IsNullOrEmpty(item.Height.ToString()) ? "0" : item.Height)</td>
+                                    <td>@(item.Quantity)</td>
+                                    <td>@(item.SQM)</td>
+                                    <td>@(item.TotalLM)</td>
+                                    <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
+                                </tr>
+                                counter++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 mb-4">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="d-flex flex-column align-items-start border p-3 rounded">
+                        <span class="fw-bold mb-2">Signature</span>
+                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;">..........</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>No Items Available</h4>
+            <p class="mb-0">There are no items available for this order. Please contact support if you believe this is an error.</p>
+        </div>
+    }
+
+    <div class="card-footer text-center mt-4 d-print-none">
+        <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-print me-1"></i> Print Invoice
+        </button>
+        <a href="@Url.Action("Index", "Accountant")" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Orders
+        </a>
+     
+        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
+            <i class="fas fa-share-alt me-1"></i> Share
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="shareInvoiceModal" tabindex="-1" aria-labelledby="shareInvoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareInvoiceModalLabel">Share Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="recipientEmail" class="form-label">Recipient Email</label>
+                    <input type="email" class="form-control" id="recipientEmail" placeholder="customer@example.com">
+                </div>
+                <div class="mb-3">
+                    <label for="emailSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="emailSubject" value="Invoice #@Model.JobNo from Global Glass Factory">
+                </div>
+                <div class="mb-3">
+                    <label for="emailMessage" class="form-label">Message (Optional)</label>
+                    <textarea class="form-control" id="emailMessage" rows="3" placeholder="Add a personalized message..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary" id="sendInvoiceButton">Send Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section  scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rankInputs = document.querySelectorAll('.rank-input');
+
+            rankInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    const saveButton = this.parentElement.querySelector('.save-rank-btn');
+                    saveButton.style.display = 'inline-block';
+                });
+
+                const saveButton = input.parentElement.querySelector('.save-rank-btn');
+                saveButton.addEventListener('click', function () {
+                    const rankInput = this.parentElement.querySelector('.rank-input');
+                    const row = this.closest('tr');
+                    const itemId = row.dataset.itemId; // Ensure this is set correctly in your HTML
+
+                    const rankValue = parseFloat(rankInput.value);
+                    if (isNaN(rankValue)) {
+                        alert('Please enter a valid rank value.');
+                        return;
+                    }
+
+                    saveRank(itemId, rankValue);
+                });
+            });
+
+            function saveRank(itemId, rankValue) {
+                const data = {
+                    ItemId: parseInt(itemId), // Ensure this matches the backend model
+                    Rank: rankValue
+                };
+
+                fetch('/Accountant/UpdateRank', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
+                        statusDiv.textContent = 'Saved!';
+                        statusDiv.style.color = 'green';
+                        statusDiv.style.display = 'block';
+                        setTimeout(() => {
+                            statusDiv.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        throw new Error(data.message || 'Failed to save rank.');
+                    }
+                })
+                .catch(error => {
+                    const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
+                    statusDiv.textContent = 'Error: ' + error.message;
+                    statusDiv.style.color = 'red';
+                    statusDiv.style.display = 'block';
+                });
+            }
+        });
+    </script>
+}

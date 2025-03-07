@@ -1,6 +1,6 @@
 ﻿@model Factory.PL.ViewModels.OrderList.OrderViewModel
 @{
-    ViewData["Title"] = "Delivery Invoice";
+    ViewData["Title"] = "Payment Invoice";
     Layout = "_LogedUser";
 }
 
@@ -121,7 +121,7 @@
                                 <th>Qty</th>
                                 <th>SQM</th>
                                 <th>Total SQM</th>
-                                <th scope="col" style="width:140px">Rank</th>
+                                <th scope="col" style="width:140px">Price Rate</th>
                                 <th>Customer Reference</th>
                             </tr>
                         </thead>
@@ -142,11 +142,12 @@
                                     <td>@(item.TotalLM)</td>
                                     <td>
                                         <div class="input-group input-group-sm">
-                                            <input type="number" class="form-control rank-input"
-                                                   min="1" value="@(item.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                                       ?? Model.Rank?.ToString(System.Globalization.CultureInfo.InvariantCulture)
-                                       ?? "0")"
-                                                   placeholder="Rank" aria-label="Rank">
+                                            <input type="number"
+                                                   class="form-control rank-input"
+                                                   min="1"
+                                                   value="@(item.Rank ?? Model.Rank ?? 0)"
+                                                   placeholder="Rank"
+                                                   aria-label="Rank">
                                             <button class="btn btn-outline-primary save-rank-btn" type="button" style="display: none;" aria-label="Save Rank">
                                                 <i class="bi bi-save"></i>
                                             </button>
@@ -156,7 +157,7 @@
                                         @{
                                             double width = item.Width / 1000.0;
                                             double height = item.Height / 1000.0;
-                                            double totalRankValue = (Model.Rank ?? item.Rank ?? 0) * (width * height);
+                                            double totalRankValue = (item.Rank ?? Model.Rank ?? 0) * (width * height);
                                             totalRankSummation += totalRankValue;
                                         }
                                     <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
@@ -180,7 +181,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4 d-none">
                 <div class="card border-0">
                     <div class="card-header">
                         <h5 class="mb-0"><i class="fas fa-calculator me-2"></i>Order Summary</h5>
@@ -207,7 +208,7 @@
                 </div>
             </div>
 
-            <div class="col-md-8 mb-4">
+            <div class="col-md-8 mb-4 d-none">
                 <form id="payment-form" method="post" action="/Payment/Process">
                     <input type="hidden" name="InvoiceId" value="@Model.JobNo" />
                     <input type="hidden" name="Amount" value="@(12000 * 1.15)" />
@@ -372,6 +373,36 @@
                     </div>
                 </form>
             </div>
+            <div class="row g-3">
+                <!-- Signature and Accountance Section -->
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
+                        <span class="fw-bold mb-2">Signature</span>
+                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
+                        <span class="fw-bold mb-2">Accountance</span>
+                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
+                        <span class="fw-bold mb-2">C.Signature</span>
+                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
+                        <span class="fw-bold mb-2">C.Accountance</span>
+                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     }
     else
@@ -428,55 +459,35 @@
 </div>
 @section  scripts{
 <script>
-          document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const rankInputs = document.querySelectorAll('.rank-input');
 
             rankInputs.forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     const saveButton = this.parentElement.querySelector('.save-rank-btn');
                     saveButton.style.display = 'inline-block';
-
-                    let value = parseFloat(this.value);
-                    if (isNaN(value)) {
-                        value = 0;
-                        this.value = "0";
-                    }
-
-                    const row = this.closest('tr');
-                    const width = parseFloat(row.cells[1].textContent);
-                    const height = parseFloat(row.cells[2].textContent);
-
-                    if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
-                        const sqm = (width / 1000) * (height / 1000);
-                        const totalRankValue = value * sqm;
-                        const statusDiv = this.parentElement.nextElementSibling;
-                        statusDiv.textContent = `Calculated: ${totalRankValue.toFixed(2)} (${value} × ${sqm.toFixed(2)}m²)`;
-                        statusDiv.style.display = 'block';
-                    }
                 });
 
                 const saveButton = input.parentElement.querySelector('.save-rank-btn');
-                saveButton.addEventListener('click', function() {
+                saveButton.addEventListener('click', function () {
                     const rankInput = this.parentElement.querySelector('.rank-input');
                     const row = this.closest('tr');
-                    const itemId = row.dataset.itemId || row.rowIndex; // Use data-item-id if available, otherwise row index
+                    const itemId = row.dataset.itemId; // Ensure this is set correctly in your HTML
 
                     const rankValue = parseFloat(rankInput.value);
-                    const width = parseFloat(row.cells[1].textContent);
-                    const height = parseFloat(row.cells[2].textContent);
+                    if (isNaN(rankValue)) {
+                        alert('Please enter a valid rank value.');
+                        return;
+                    }
 
-                    saveRank(itemId, rankValue, width, height);
+                    saveRank(itemId, rankValue);
                 });
             });
 
-            function saveRank(itemId, rankValue, width, height) {
-                const sqm = (width * height) / 10000; 
-                const totalRankValue = rankValue * sqm;
-
+            function saveRank(itemId, rankValue) {
                 const data = {
-                    itemId: itemId,
-                    rank: rankValue,
-                    calculatedValue: totalRankValue
+                    ItemId: parseInt(itemId), // Ensure this matches the backend model
+                    Rank: rankValue
                 };
 
                 fetch('/Accountant/UpdateRank', {
@@ -494,19 +505,23 @@
                     return response.json();
                 })
                 .then(data => {
-                    const statusDiv = document.querySelector(`tr:nth-child(${itemId}) .rank-status`);
-                    statusDiv.textContent = 'Saved!';
-                    statusDiv.style.color = 'green';
-                    setTimeout(() => {
-                        statusDiv.style.display = 'none';
-                        const saveButton = document.querySelector(`tr:nth-child(${itemId}) .save-rank-btn`);
-                        saveButton.style.display = 'none';
-                    }, 2000);
+                    if (data.success) {
+                        const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
+                        statusDiv.textContent = 'Saved!';
+                        statusDiv.style.color = 'green';
+                        statusDiv.style.display = 'block';
+                        setTimeout(() => {
+                            statusDiv.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        throw new Error(data.message || 'Failed to save rank.');
+                    }
                 })
                 .catch(error => {
-                    const statusDiv = document.querySelector(`tr:nth-child(${itemId}) .rank-status`);
-                    statusDiv.textContent = 'Error saving!';
+                    const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
+                    statusDiv.textContent = 'Error: ' + error.message;
                     statusDiv.style.color = 'red';
+                    statusDiv.style.display = 'block';
                 });
             }
         });
