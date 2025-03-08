@@ -13,7 +13,6 @@
     <PackageReference Include="MimeKit" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="QuestPDF" />
-    <PackageReference Include="SixLabors.ImageSharp" />
     <PackageReference Include="System.Net.WebSockets.Client" />
     <PackageReference Include="ZXing.Net" />
   </ItemGroup>

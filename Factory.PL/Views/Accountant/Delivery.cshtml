@@ -4,21 +4,13 @@
     Layout = "_LogedUser";
 }
 
-
 <div class="container-fluid card shadow mt-3 p-3">
+    <!-- Error Summary and Page Title -->
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
+    @await Html.PartialAsync("_Header")
 
-    <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <h2 class="fw-bold">شركة الزجاج العالمية</h2>
-            <h2 class="fw-bold">Global Glass Factory</h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" class="img-fluid" style="max-width: 120px;">
-        </div>
-    </div>
-
+    <!-- Cutting Machine Alert -->
     <div class="row">
         <div class="col-md-12">
             @{
@@ -46,56 +38,60 @@
                 </div>
             }
         </div>
+    </div>
 
+    <!-- Customer and Invoice Information -->
+    <div class="row">
         <div class="col-md-6 mb-4">
-            <div class="card border-0">
-                <div class="card-header">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
                     <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Customer Name:</span>
-                            <span class="badge rounded-pill">@Model.CustomerName</span>
+                            <span>@Model.CustomerName</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Customer Reference:</span>
-                            <span class="badge rounded-pill">@Model.CustomerReference</span>
+                            <span>@Model.CustomerReference</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Project Name & Location:</span>
-                            <span class="badge rounded-pill">@Model.ProjectName, @Model.Address</span>
+                            <span>@Model.ProjectName, @Model.Address</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Delivery Date:</span>
-                            <span class="badge rounded-pill">@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</span>
+                            <span>@(Model.FinishDate.ToString("yyyy-MM-dd") ?? "N/A")</span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
+
         <div class="col-md-6 mb-4">
-            <div class="card border-0">
-                <div class="card-header">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
                     <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Invoice Details</h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Invoice Date:</span>
-                            <span class="badge rounded-pill">@Model.Date.ToString("yyyy-MM-dd")</span>
+                            <span>@Model.Date.ToString("yyyy-MM-dd")</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Job Number:</span>
-                            <span class="badge rounded-pill">@Model.JobNo</span>
+                            <span>@Model.JobNo</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Payment Status:</span>
-                            <span class="badge text-dark rounded-pill">Pending Payment</span>
+                            <span>Pending Payment</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>Invoice Number:</span>
-                            <span class="badge text-dark rounded-pill">INV-@Model.JobNo</span>
+                            <span>INV-@Model.JobNo</span>
                         </li>
                     </ul>
                 </div>
@@ -103,15 +99,16 @@
         </div>
     </div>
 
+    <!-- Order Details Table -->
     @if (Model.Items?.Any() == true)
     {
-        <div class="card border-0 mb-4">
-            <div class="card-header">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light">
                 <h5 class="mb-0"><i class="fas fa-table me-2"></i>Order Details</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -122,6 +119,10 @@
                                 <th>SQM</th>
                                 <th>Total SQM</th>
                                 <th>Customer Reference</th>
+                                <th>Delivered</th>
+                                <th>Delivery Date</th>
+                                <th>Delivered By</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -133,27 +134,33 @@
                                 <tr data-item-id="@item.Id">
                                     <td>@counter</td>
                                     <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
-                                    <td>@(string.IsNullOrEmpty(item.Width.ToString()) ? "0" : item.Width)</td>
-                                    <td>@(string.IsNullOrEmpty(item.Height.ToString()) ? "0" : item.Height)</td>
-                                    <td>@(item.Quantity)</td>
-                                    <td>@(item.SQM)</td>
-                                    <td>@(item.TotalLM)</td>
+                                    <td>@(item.Width == 0 ? "0" : item.Width)</td>
+                                    <td>@(item.Height == 0 ? "0" : item.Height)</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.SQM</td>
+                                    <td>@item.TotalLM</td>
                                     <td>@(string.IsNullOrEmpty(item.CustomerReference) ? "No Reference" : item.CustomerReference)</td>
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input delivery-checkbox" type="checkbox" data-item-id="@item.Id" @(item.IsDelivered ? "checked" : "") />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input class="form-control delivery-date" type="date" data-item-id="@item.Id" value="@(item.DeliveryDate?.ToString("yyyy-MM-dd") ?? "")" @(item.DeliveryDate == null ? "disabled" : "") />
+                                    </td>
+                                    <td>
+                                        <input class="form-control delivered-by" type="text" placeholder="Enter name" data-item-id="@item.Id" value="@item.DeliveredBy" @(string.IsNullOrWhiteSpace(item.DeliveredBy) ? "disabled" : "") />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-success save-delivery-btn" @(item.IsDelivered ? "" : "") data-item-id="@item.Id">
+                                            <i class="bi bi-save"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 counter++;
                             }
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 mb-4">
-            <div class="row">
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <div class="d-flex flex-column align-items-start border p-3 rounded">
-                        <span class="fw-bold mb-2">Signature</span>
-                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;">..........</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -166,6 +173,7 @@
         </div>
     }
 
+    <!-- Footer Buttons -->
     <div class="card-footer text-center mt-4 d-print-none">
         <button onclick="window.print()" class="btn btn-outline-secondary me-2">
             <i class="fas fa-print me-1"></i> Print Invoice
@@ -173,10 +181,26 @@
         <a href="@Url.Action("Index", "Accountant")" class="btn btn-outline-primary">
             <i class="fas fa-arrow-left me-1"></i> Back to Orders
         </a>
-     
         <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#shareInvoiceModal">
             <i class="fas fa-share-alt me-1"></i> Share
         </button>
+    </div>
+</div>
+
+<div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-labelledby="statusUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusUpdateModalLabel">Delivery Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="statusUpdateMessage"></p> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -208,40 +232,65 @@
         </div>
     </div>
 </div>
-@section  scripts {
+
+@section scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const rankInputs = document.querySelectorAll('.rank-input');
+            const deliveryCheckboxes = document.querySelectorAll('.delivery-checkbox');
+            const saveButtons = document.querySelectorAll('.save-delivery-btn');
+            function showStatusModal(message, type = 'success') {
+            const statusUpdateModal = new bootstrap.Modal(document.getElementById('statusUpdateModal'));
+            const statusUpdateMessage = document.getElementById('statusUpdateMessage');
 
-            rankInputs.forEach(input => {
-                input.addEventListener('input', function () {
-                    const saveButton = this.parentElement.querySelector('.save-rank-btn');
-                    saveButton.style.display = 'inline-block';
-                });
+            statusUpdateMessage.textContent = message;
 
-                const saveButton = input.parentElement.querySelector('.save-rank-btn');
-                saveButton.addEventListener('click', function () {
-                    const rankInput = this.parentElement.querySelector('.rank-input');
+            const modalContent = document.querySelector('#statusUpdateModal .modal-content');
+            modalContent.classList.remove('border-success', 'border-danger');
+            if (type === 'success') {
+                modalContent.classList.add('border-success');
+            } else if (type === 'error') {
+                modalContent.classList.add('border-danger');
+            }
+            statusUpdateModal.show();
+            setTimeout(() => {
+                statusUpdateModal.hide();
+            }, 5000);
+            }
+            deliveryCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
                     const row = this.closest('tr');
-                    const itemId = row.dataset.itemId; // Ensure this is set correctly in your HTML
+                    const deliveryDateInput = row.querySelector('.delivery-date');
+                    const deliveredByInput = row.querySelector('.delivered-by');
 
-                    const rankValue = parseFloat(rankInput.value);
-                    if (isNaN(rankValue)) {
-                        alert('Please enter a valid rank value.');
-                        return;
+                    if (this.checked) {
+                        deliveryDateInput.removeAttribute('disabled');
+                        deliveredByInput.removeAttribute('disabled');
+                    } else {
+                        deliveryDateInput.setAttribute('disabled', 'disabled');
+                        deliveredByInput.setAttribute('disabled', 'disabled');
                     }
-
-                    saveRank(itemId, rankValue);
                 });
             });
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const itemId = this.dataset.itemId;
+                    const row = this.closest('tr');
+                    const isDelivered = row.querySelector('.delivery-checkbox').checked;
+                    const deliveryDate = row.querySelector('.delivery-date').value;
+                    const deliveredBy = row.querySelector('.delivered-by').value;
 
-            function saveRank(itemId, rankValue) {
-                const data = {
-                    ItemId: parseInt(itemId), // Ensure this matches the backend model
-                    Rank: rankValue
-                };
+                    const data = {
+                        ItemId: parseInt(itemId),
+                        IsDelivered: isDelivered,
+                        DeliveryDate: deliveryDate,
+                        DeliveredBy: deliveredBy
+                    };
 
-                fetch('/Accountant/UpdateRank', {
+                    updateDeliveryStatus(data);
+                });
+            });
+            function updateDeliveryStatus(data) {
+                fetch('/Accountant/UpdateDeliveryStatus', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -257,22 +306,13 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
-                        statusDiv.textContent = 'Saved!';
-                        statusDiv.style.color = 'green';
-                        statusDiv.style.display = 'block';
-                        setTimeout(() => {
-                            statusDiv.style.display = 'none';
-                        }, 2000);
+                        showStatusModal('Delivery status updated successfully!', 'success');
                     } else {
-                        throw new Error(data.message || 'Failed to save rank.');
+                        throw new Error(data.message || 'Failed to update delivery status.');
                     }
                 })
                 .catch(error => {
-                    const statusDiv = document.querySelector(`tr[data-item-id="${itemId}"] .rank-status`);
-                    statusDiv.textContent = 'Error: ' + error.message;
-                    statusDiv.style.color = 'red';
-                    statusDiv.style.display = 'block';
+                    alert('Error: ' + error.message);
                 });
             }
         });

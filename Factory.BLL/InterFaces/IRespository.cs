@@ -36,10 +36,8 @@ namespace Factory.BLL.Interfaces
         Task<Module> UpdateModuleAsync(Module module);
         Task<Module> RemoveModuleAsync(Module module);
 
-        // Policy Registration
         Task RegisterPoliciesAsync(AuthorizationOptions options);
 
-        // Add RemoveRange method
         Task RemoveRangeAsync(IEnumerable<TEntity> entities);
 
         Task<List<Module>> GetModulesForUserAsync(string userId);

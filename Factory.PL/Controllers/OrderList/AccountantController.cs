@@ -8,6 +8,8 @@ using Factory.DAL.Models.OrderList;
 using Factory.PL.ViewModels.OrderList;
 using Microsoft.EntityFrameworkCore;
 using Factory.DAL.Models.Warehouses;
+using Factory.DAL.Enums;
+using Factory.PL.ViewModels.Accountant;
 
 namespace Factory.Controllers
 {
@@ -24,6 +26,11 @@ namespace Factory.Controllers
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
+            if (orders == null || !orders.Any())
+            {
+                return View(new List<OrderViewModel>()); 
+            }
+
             var orderViewModels = orders.Select(MapToViewModel).ToList();
             return View(orderViewModels);
         }
@@ -190,17 +197,42 @@ namespace Factory.Controllers
 
         public async Task<IActionResult> Delivery(int id)
         {
-            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
-            if (order == null) return NotFound();
-            return View(MapToViewModel(order));
+            try
+            {
+                var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound();
+                }
+
+                var viewModel = MapToViewModel(order);
+                return View(viewModel);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Index)); 
+            }
         }
 
         public async Task<IActionResult> Payment(int id)
         {
-            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
-            if (order == null) return NotFound();
-            return View(MapToViewModel(order));
+            try
+            {
+                var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+                if (order == null)
+                {
+                    return NotFound();
+                }
+
+                var viewModel = MapToViewModel(order);
+                return View(viewModel);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
+
         [HttpPost]
         public async Task<IActionResult> UpdateOrderRank([FromBody] OrderRankUpdateModel model)
         {
@@ -273,34 +305,46 @@ namespace Factory.Controllers
             }
         }
 
-        public static OrderViewModel MapToViewModel(Order order) => new()
+        public static OrderViewModel MapToViewModel(Order order)
         {
-            Rank = order.Rank,
-            Id = order.Id,
-            CustomerName = order.CustomerName,
-            CustomerReference = order.CustomerReference,
-            ProjectName = order.ProjectName,
-            Date = order.Date,
-            JobNo = order.JobNo,
-            Address = order.Address,
-            Priority = order.Priority,
-            FinishDate = order.FinishDate,
-            IsAccepted = order.IsAccepted,
-            SelectedMachines = order.SelectedMachines,
-            TotalSQM = order.TotalSQM,
-            TotalLM = order.TotalLM,
-            Items = order.Items?.Select(i => new OrderItemViewModel
+            if (order == null)
             {
-                Id = i.Id,
-                ItemName = i.ItemName,
-                Width = i.Width,
-                Height = i.Height,
-                Quantity = i.Quantity,
-                CustomerReference = i.CustomerReference,
-                Description = i.Description,
-                Rank = i.Rank
-            }).ToList() ?? new List<OrderItemViewModel>()
-        };
+                throw new ArgumentNullException(nameof(order), "Order cannot be null.");
+            }
+
+            return new OrderViewModel
+            {
+                Id = order.Id,
+                CustomerName = order.CustomerName,
+                CustomerReference = order.CustomerReference,
+                ProjectName = order.ProjectName,
+                Date = order.Date,
+                JobNo = order.JobNo,
+                Address = order.Address,
+                Priority = order.Priority,
+                FinishDate = order.FinishDate,
+                IsAccepted = order.IsAccepted,
+                SelectedMachines = order.SelectedMachines ?? new List<MachineType>(),
+                TotalSQM = order.TotalSQM,
+                TotalLM = order.TotalLM,
+                Rank = order.Rank,
+                Items = order.Items?.Select(i => new OrderItemViewModel
+                {
+                    Id = i.Id,
+                    ItemName = i.ItemName,
+                    Width = i.Width,
+                    Height = i.Height,
+                    Quantity = i.Quantity,
+                    CustomerReference = i.CustomerReference,
+                    Description = i.Description,
+                    Rank = i.Rank,
+                    DeliveredBy = i.DeliveredBy,
+                    DeliveryDate = i.DeliveryDate,
+                    IsDelivered = i.IsDelivered
+                }).ToList() ?? new List<OrderItemViewModel>(),
+                ItemCount = order.Items?.Count ?? 0
+            };
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateRank([FromBody] RankUpdateModel model)
         {
@@ -332,5 +376,29 @@ namespace Factory.Controllers
                 return Json(new { success = false, message = "An error occurred while updating the rank." });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDeliveryStatus([FromBody] DeliveryDataViewModel data)
+        {
+            try
+            {
+                var item = await _unitOfWork.GetRepository<OrderItem>().GetByIdAsync(data.ItemId);
+                if (item != null)
+                {
+                    item.IsDelivered = data.IsDelivered;
+                    item.DeliveryDate = data.IsDelivered ? DateTime.Parse(data.DeliveryDate) : (DateTime?)null;
+                    item.DeliveredBy = data.IsDelivered ? data.DeliveredBy : null;
+                    await _unitOfWork.GetRepository<OrderItem>().UpdateAsync(item);
+                    await _unitOfWork.SaveChangesAsync();
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false, message = "Item not found." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

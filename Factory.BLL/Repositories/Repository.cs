@@ -235,5 +235,6 @@ namespace Factory.BLL.Repositories
         {
             return _dbSet.AsQueryable();
         }
+
     }
 }

@@ -55,6 +55,7 @@ namespace Factory.PL.ViewModels.OrderList
 
         public double TotalLM { get; set; }
         public double? Rank { get; set; }
+        public int? ItemCount { get; set; }
 
         public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
     }

@@ -43,5 +43,9 @@ namespace Factory.PL.ViewModels.OrderList
         [Required(ErrorMessage = "Description is required")]
         [StringLength(150, ErrorMessage = "Description cannot exceed 150 characters")]
         public string Description { get; set; } = string.Empty;
+        public bool IsDelivered { get; set; }
+        public DateTime? DeliveryDate { get; set; }
+        public string DeliveredBy { get; set; } = string.Empty;
+
     }
 }

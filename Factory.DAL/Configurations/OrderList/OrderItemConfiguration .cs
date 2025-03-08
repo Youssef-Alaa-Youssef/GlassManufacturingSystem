@@ -45,6 +45,18 @@ namespace Factory.DAL.Configurations
                    .WithMany(o => o.Items)
                    .HasForeignKey(oi => oi.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(oi => oi.IsDelivered)
+                .IsRequired()
+                .HasDefaultValue(false); 
+
+            builder.Property(oi => oi.DeliveryDate)
+                   .HasColumnType("datetime")
+                   .IsRequired(false); 
+
+            builder.Property(oi => oi.DeliveredBy)
+                   .HasMaxLength(255)
+                   .IsRequired(false);
         }
     }
 }

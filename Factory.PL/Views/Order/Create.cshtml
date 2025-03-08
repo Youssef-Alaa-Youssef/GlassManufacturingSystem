@@ -6,24 +6,12 @@
 }
 
 <div class="container-fluid card shadow p-3">
-    <partial name="ErrorSummaryPartial" />
-    <partial name="_PageTitle" />
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-secondary">شركة الزجاج العالمية</h2>
-            <h2 class="text-secondary">Global Glass Factory</h2>
-        </div>
-        <div>
-            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" width="120">
-        </div>
-    </div>
-
-    <!-- Form Section -->
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+    @await Html.PartialAsync("_Header")
     <form asp-action="Create" method="post" class="needs-validation" novalidate>
         <input asp-for="@Model.Signature" type="hidden" value="@User.Identity?.Name">
 
-        <!-- Customer Information Section -->
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Customer Information</h5>

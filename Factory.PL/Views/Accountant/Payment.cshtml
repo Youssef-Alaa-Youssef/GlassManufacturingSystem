@@ -8,16 +8,7 @@
 <div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
-
-    <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <h2 class="fw-bold">شركة الزجاج العالمية</h2>
-            <h2 class="fw-bold">Global Glass Factory</h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <img src="~/assets/images/Login.png" alt="Global Glass Factory Logo" class="img-fluid" style="max-width: 120px;">
-        </div>
-    </div>
+    @await Html.PartialAsync("_Header")
 
     <div class="row">
         <div class="col-md-12">
@@ -374,35 +365,43 @@
                 </form>
             </div>
             <div class="row g-3">
-                <!-- Signature and Accountance Section -->
                 <div class="col-md-3">
-                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
-                        <span class="fw-bold mb-2">Signature</span>
-                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    <div class="card shadow-sm border rounded text-center">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Signature</h6>
+                            <div class="text-muted border-bottom border-dashed" style="height: 30px;"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
-                        <span class="fw-bold mb-2">Accountance</span>
-                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    <div class="card shadow-sm border rounded text-center">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Accountance</h6>
+                            <div class="text-muted border-bottom border-dashed" style="height: 30px;"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
-                        <span class="fw-bold mb-2">C.Signature</span>
-                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    <div class="card shadow-sm border rounded text-center">
+                        <div class="card-body">
+                            <h6 class="fw-bold">C. Signature</h6>
+                            <div class="text-muted border-bottom border-dashed" style="height: 30px;"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="d-flex flex-column align-items-start border p-3 rounded h-100">
-                        <span class="fw-bold mb-2">C.Accountance</span>
-                        <span class="text-muted" style="border-bottom: 1px dashed #000; width: 100%;"></span>
+                    <div class="card shadow-sm border rounded text-center">
+                        <div class="card-body">
+                            <h6 class="fw-bold">C. Accountance</h6>
+                            <div class="text-muted border-bottom border-dashed" style="height: 30px;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     }
     else
@@ -512,6 +511,7 @@
                         statusDiv.style.display = 'block';
                         setTimeout(() => {
                             statusDiv.style.display = 'none';
+                            window.location.reload();
                         }, 2000);
                     } else {
                         throw new Error(data.message || 'Failed to save rank.');
