@@ -33,6 +33,7 @@ public static class MiddlewareConfiguration
         ConfigureRoutes(app);
 
         SeedDatabase(app);
+        app.UseResponseCompression();
     }
 
     /// <summary>

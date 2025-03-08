@@ -10,6 +10,7 @@ namespace Factory.PL.ViewModels.Permission
         public string Action { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public int ModuleId { get; set; }
+        public string IconClass { get; set; } = string.Empty;
 
         public IEnumerable<SelectListItem> Modules { get; set; } = new List<SelectListItem>();
     }

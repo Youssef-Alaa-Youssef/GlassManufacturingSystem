@@ -7,6 +7,7 @@
         public string Controller { get; set; } = string.Empty;
         public string Action { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
         public int ModuleId { get; set; }
     }
 }

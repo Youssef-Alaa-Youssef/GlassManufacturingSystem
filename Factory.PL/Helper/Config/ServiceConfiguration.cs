@@ -9,12 +9,14 @@ using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
 using Factory.PL.Services.Order;
+using Factory.PL.Services.Permissions;
 using Factory.PL.Services.Permssions;
 using Factory.PL.Services.Setting;
 using Factory.PL.Services.UploadFile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
@@ -80,6 +82,17 @@ public static class ServiceConfiguration
         services.AddScoped<IEmailService, EmailSender>();
         services.AddAuthorization();
         services.AddSingleton<IAuthorizationPolicyProvider, CustomAuthorizationPolicyProvider>();
+        services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true; 
+            options.Providers.Add<GzipCompressionProvider>(); 
+        });
+
+        services.Configure<GzipCompressionProviderOptions>(options =>
+        {
+            options.Level = System.IO.Compression.CompressionLevel.Optimal; 
+        });
+
     }
 
     private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)

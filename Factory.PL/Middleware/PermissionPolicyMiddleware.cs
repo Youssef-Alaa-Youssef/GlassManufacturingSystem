@@ -1,10 +1,13 @@
-﻿using Factory.BLL.InterFaces;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Factory.BLL.Interfaces;
 using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Permission;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Collections.Concurrent;
+using Factory.BLL.InterFaces;
 
 namespace Factory.PL.Helper
 {
@@ -12,11 +15,25 @@ namespace Factory.PL.Helper
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<PermissionPolicyMiddleware> _logger;
+        private readonly IMemoryCache _memoryCache;
 
-        public PermissionPolicyMiddleware(RequestDelegate next, ILogger<PermissionPolicyMiddleware> logger)
+        // Cache key prefixes
+        private const string UserRolesCacheKeyPrefix = "UserRoles_";
+        private const string RolePermissionsCacheKey = "RolePermissions";
+        private const string PermissionsCacheKey = "Permissions";
+        private const string ModulesCacheKey = "Modules";
+
+        private static readonly TimeSpan CacheExpiration = TimeSpan.FromDays(10);
+        private static readonly ConcurrentDictionary<string, AuthorizationPolicy> PolicyCache = new();
+
+        public PermissionPolicyMiddleware(
+            RequestDelegate next,
+            ILogger<PermissionPolicyMiddleware> logger,
+            IMemoryCache memoryCache)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
         public async Task InvokeAsync(
@@ -32,32 +49,55 @@ namespace Factory.PL.Helper
             {
                 try
                 {
-                    var user = await userManager.FindByIdAsync(userId);
-                    if (user == null)
+                    var userRolesCacheKey = $"{UserRolesCacheKeyPrefix}{userId}";
+                    if (!_memoryCache.TryGetValue(userRolesCacheKey, out List<string> roleNames))
                     {
-                        _logger.LogWarning($"User with ID {userId} not found.");
-                        await _next(context);
-                        return;
+                        var user = await userManager.FindByIdAsync(userId);
+                        if (user == null)
+                        {
+                            _logger.LogWarning($"User with ID {userId} not found.");
+                            await _next(context);
+                            return;
+                        }
+
+                        roleNames = (await userManager.GetRolesAsync(user)).ToList();
+                        _memoryCache.Set(userRolesCacheKey, roleNames, CacheExpiration); // Use constant expiration
                     }
 
-                    var roleNames = await userManager.GetRolesAsync(user);
                     if (roleNames.Count == 0)
                     {
-                        _logger.LogWarning($"User {user.UserName} has no assigned roles.");
+                        _logger.LogWarning($"User {userId} has no assigned roles.");
                         await _next(context);
                         return;
                     }
 
-                    var roleIds = await roleManager.Roles
-                        .Where(r => roleNames.Contains(r.Name))
-                        .Select(r => r.Id)
-                        .ToListAsync();
+                    var roleIds = await _memoryCache.GetOrCreateAsync("RoleIds", async entry =>
+                    {
+                        entry.SlidingExpiration = CacheExpiration; 
+                        return await roleManager.Roles
+                            .Where(r => roleNames.Contains(r.Name))
+                            .Select(r => r.Id)
+                            .ToListAsync();
+                    });
 
-                    var userRolePermissions = await unitOfWork.GetRepository<RolePermission>()
-                        .FindAsync(rp => roleIds.Contains(rp.RoleId));
+                    var userRolePermissions = await _memoryCache.GetOrCreateAsync(RolePermissionsCacheKey, async entry =>
+                    {
+                        entry.SlidingExpiration = CacheExpiration; 
+                        return await unitOfWork.GetRepository<RolePermission>()
+                            .FindAsync(rp => roleIds.Contains(rp.RoleId));
+                    });
 
-                    var permissions = await unitOfWork.GetRepository<PermissionTyepe>().GetAllAsync();
-                    var modules = await unitOfWork.GetRepository<Module>().GetAllAsync();
+                    var permissions = await _memoryCache.GetOrCreateAsync(PermissionsCacheKey, async entry =>
+                    {
+                        entry.SlidingExpiration = CacheExpiration; 
+                        return await unitOfWork.GetRepository<PermissionTyepe>().GetAllAsync();
+                    });
+
+                    var modules = await _memoryCache.GetOrCreateAsync(ModulesCacheKey, async entry =>
+                    {
+                        entry.SlidingExpiration = CacheExpiration; 
+                        return await unitOfWork.GetRepository<Module>().GetAllAsync();
+                    });
 
                     if (policyProvider is CustomAuthorizationPolicyProvider customPolicyProvider)
                     {
@@ -67,9 +107,13 @@ namespace Factory.PL.Helper
                             {
                                 string policyName = $"{module.Name}_{permission.Name}";
 
-                                var policy = CreatePolicy(userRolePermissions, permission, module);
-                                customPolicyProvider.AddPolicy(policyName, policy);
+                                if (!PolicyCache.TryGetValue(policyName, out var policy))
+                                {
+                                    policy = CreatePolicy(userRolePermissions, permission, module);
+                                    PolicyCache.TryAdd(policyName, policy);
+                                }
 
+                                customPolicyProvider.AddPolicy(policyName, policy);
                             }
                         }
                     }

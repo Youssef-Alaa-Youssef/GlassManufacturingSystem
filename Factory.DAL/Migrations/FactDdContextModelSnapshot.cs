@@ -1105,6 +1105,11 @@ namespace Factory.DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("IconClass")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int>("ModuleId")
                         .HasColumnType("int");
 
@@ -1130,6 +1135,7 @@ namespace Factory.DAL.Migrations
                             Id = 1,
                             Action = "index",
                             Controller = "PermissionManagement",
+                            IconClass = "bi-shield-lock",
                             ModuleId = 1,
                             Name = "Permission Management",
                             Title = "Manage Permissions"
@@ -1139,6 +1145,7 @@ namespace Factory.DAL.Migrations
                             Id = 2,
                             Action = "AssignPermissions",
                             Controller = "PermissionManagement",
+                            IconClass = "bi-person-check",
                             ModuleId = 1,
                             Name = "Assign Permission",
                             Title = "Assign Permissions"
@@ -1148,6 +1155,7 @@ namespace Factory.DAL.Migrations
                             Id = 3,
                             Action = "index",
                             Controller = "Module",
+                            IconClass = "bi-puzzle",
                             ModuleId = 1,
                             Name = "Modules Management",
                             Title = "Modules Management"
@@ -1157,6 +1165,7 @@ namespace Factory.DAL.Migrations
                             Id = 4,
                             Action = "Index",
                             Controller = "SubModule",
+                            IconClass = "bi-puzzle-fill",
                             ModuleId = 1,
                             Name = "Sub Modules Management",
                             Title = "Sub Modules Management"
@@ -1166,6 +1175,7 @@ namespace Factory.DAL.Migrations
                             Id = 5,
                             Action = "index",
                             Controller = "Auth",
+                            IconClass = "bi-people",
                             ModuleId = 2,
                             Name = "User Management",
                             Title = "User Management"
@@ -1175,6 +1185,7 @@ namespace Factory.DAL.Migrations
                             Id = 6,
                             Action = "index",
                             Controller = "Role",
+                            IconClass = "bi-person-badge",
                             ModuleId = 3,
                             Name = "Role Management",
                             Title = "Role Management"
@@ -1184,6 +1195,7 @@ namespace Factory.DAL.Migrations
                             Id = 7,
                             Action = "index",
                             Controller = "Warehouse",
+                            IconClass = "bi-house-door",
                             ModuleId = 4,
                             Name = "Warehouse Management",
                             Title = "Warehouse Management"
@@ -1193,6 +1205,7 @@ namespace Factory.DAL.Migrations
                             Id = 8,
                             Action = "index",
                             Controller = "Item",
+                            IconClass = "bi-box-seam",
                             ModuleId = 4,
                             Name = "Item Management",
                             Title = "Item Management"
@@ -1202,6 +1215,7 @@ namespace Factory.DAL.Migrations
                             Id = 9,
                             Action = "Create",
                             Controller = "Order",
+                            IconClass = "bi-cart-plus",
                             ModuleId = 5,
                             Name = "Create Order",
                             Title = "Order Creation"
@@ -1211,6 +1225,7 @@ namespace Factory.DAL.Migrations
                             Id = 10,
                             Action = "index",
                             Controller = "Order",
+                            IconClass = "bi-cart-check",
                             ModuleId = 5,
                             Name = "View Orders",
                             Title = "Order Management"
@@ -1220,6 +1235,7 @@ namespace Factory.DAL.Migrations
                             Id = 11,
                             Action = "General",
                             Controller = "Settings",
+                            IconClass = "bi-gear",
                             ModuleId = 7,
                             Name = "General Settings",
                             Title = "General Settings"
@@ -1229,6 +1245,7 @@ namespace Factory.DAL.Migrations
                             Id = 12,
                             Action = "Security",
                             Controller = "Settings",
+                            IconClass = "bi-shield",
                             ModuleId = 7,
                             Name = "Security Settings",
                             Title = "Security Settings"
@@ -1238,6 +1255,7 @@ namespace Factory.DAL.Migrations
                             Id = 13,
                             Action = "Index",
                             Controller = "Payroll",
+                            IconClass = "bi-cash-stack",
                             ModuleId = 6,
                             Name = "Payroll Dashboard",
                             Title = "Payroll Dashboard"
@@ -1247,6 +1265,7 @@ namespace Factory.DAL.Migrations
                             Id = 14,
                             Action = "EmployeeSalaries",
                             Controller = "Payroll",
+                            IconClass = "bi-wallet",
                             ModuleId = 6,
                             Name = "Employee Salaries",
                             Title = "Employee Salaries"
@@ -1256,6 +1275,7 @@ namespace Factory.DAL.Migrations
                             Id = 15,
                             Action = "ProcessSalaries",
                             Controller = "Payroll",
+                            IconClass = "bi-calculator",
                             ModuleId = 6,
                             Name = "Salary Processing",
                             Title = "Salary Processing"
@@ -1265,6 +1285,7 @@ namespace Factory.DAL.Migrations
                             Id = 16,
                             Action = "Reports",
                             Controller = "Payroll",
+                            IconClass = "bi-file-earmark-bar-graph",
                             ModuleId = 6,
                             Name = "Payroll Reports",
                             Title = "Payroll Reports"
@@ -1274,6 +1295,7 @@ namespace Factory.DAL.Migrations
                             Id = 17,
                             Action = "Bonuses",
                             Controller = "Payroll",
+                            IconClass = "bi-gift",
                             ModuleId = 6,
                             Name = "Bonuses Management",
                             Title = "Bonuses Management"
@@ -1283,6 +1305,7 @@ namespace Factory.DAL.Migrations
                             Id = 18,
                             Action = "Deductions",
                             Controller = "Payroll",
+                            IconClass = "bi-dash-circle",
                             ModuleId = 6,
                             Name = "Deductions",
                             Title = "Salary Deductions"
@@ -1292,6 +1315,7 @@ namespace Factory.DAL.Migrations
                             Id = 19,
                             Action = "Tax",
                             Controller = "Payroll",
+                            IconClass = "bi-percent",
                             ModuleId = 6,
                             Name = "Tax Calculations",
                             Title = "Tax Calculations"
@@ -1301,6 +1325,7 @@ namespace Factory.DAL.Migrations
                             Id = 20,
                             Action = "GeneratePayslip",
                             Controller = "Payroll",
+                            IconClass = "bi-receipt",
                             ModuleId = 6,
                             Name = "Payslip Generation",
                             Title = "Payslip Generation"
@@ -1310,6 +1335,7 @@ namespace Factory.DAL.Migrations
                             Id = 21,
                             Action = "Overtime",
                             Controller = "Payroll",
+                            IconClass = "bi-clock-history",
                             ModuleId = 6,
                             Name = "Overtime Payments",
                             Title = "Overtime Payments"
@@ -1319,6 +1345,7 @@ namespace Factory.DAL.Migrations
                             Id = 22,
                             Action = "History",
                             Controller = "Payroll",
+                            IconClass = "bi-archive",
                             ModuleId = 6,
                             Name = "Payroll History",
                             Title = "Payroll History"
@@ -1328,6 +1355,7 @@ namespace Factory.DAL.Migrations
                             Id = 23,
                             Action = "Index",
                             Controller = "Accountant",
+                            IconClass = "bi-currency-dollar",
                             ModuleId = 8,
                             Name = "Financial Orders",
                             Title = "Financial History"
@@ -1337,6 +1365,7 @@ namespace Factory.DAL.Migrations
                             Id = 24,
                             Action = "PreOnboarding",
                             Controller = "Onboarding",
+                            IconClass = "bi-person-plus",
                             ModuleId = 9,
                             Name = "Pre-Onboarding",
                             Title = "Pre-Onboarding Process"
@@ -1346,6 +1375,7 @@ namespace Factory.DAL.Migrations
                             Id = 25,
                             Action = "ITSetup",
                             Controller = "Onboarding",
+                            IconClass = "bi-laptop",
                             ModuleId = 9,
                             Name = "IT Setup",
                             Title = "IT System & Equipment Setup"
@@ -1355,6 +1385,7 @@ namespace Factory.DAL.Migrations
                             Id = 26,
                             Action = "Training",
                             Controller = "Onboarding",
+                            IconClass = "bi-book",
                             ModuleId = 9,
                             Name = "Training & Orientation",
                             Title = "Employee Training and Orientation"
@@ -1364,6 +1395,7 @@ namespace Factory.DAL.Migrations
                             Id = 27,
                             Action = "Clearance",
                             Controller = "Offboarding",
+                            IconClass = "bi-door-open",
                             ModuleId = 10,
                             Name = "Exit Clearance",
                             Title = "Employee Exit Clearance"
@@ -1373,6 +1405,7 @@ namespace Factory.DAL.Migrations
                             Id = 28,
                             Action = "RevokeAccess",
                             Controller = "Offboarding",
+                            IconClass = "bi-lock",
                             ModuleId = 10,
                             Name = "Access Revocation",
                             Title = "Revoke IT & System Access"
@@ -1382,6 +1415,7 @@ namespace Factory.DAL.Migrations
                             Id = 29,
                             Action = "FinalPayroll",
                             Controller = "Offboarding",
+                            IconClass = "bi-file-earmark-text",
                             ModuleId = 10,
                             Name = "Final Payroll & Documents",
                             Title = "Final Payroll & Document Handling"
@@ -1391,6 +1425,7 @@ namespace Factory.DAL.Migrations
                             Id = 30,
                             Action = "Records",
                             Controller = "HR",
+                            IconClass = "bi-file-earmark-person",
                             ModuleId = 11,
                             Name = "Employee Records",
                             Title = "Manage Employee Records"
@@ -1400,6 +1435,7 @@ namespace Factory.DAL.Migrations
                             Id = 31,
                             Action = "Leave",
                             Controller = "HR",
+                            IconClass = "bi-calendar-event",
                             ModuleId = 11,
                             Name = "Leave Management",
                             Title = "Manage Leaves & Absences"
@@ -1409,6 +1445,7 @@ namespace Factory.DAL.Migrations
                             Id = 32,
                             Action = "Payroll",
                             Controller = "HR",
+                            IconClass = "bi-cash-coin",
                             ModuleId = 11,
                             Name = "Payroll Processing",
                             Title = "Automate Payroll Processing"
@@ -1418,6 +1455,7 @@ namespace Factory.DAL.Migrations
                             Id = 33,
                             Action = "Reviews",
                             Controller = "Performance",
+                            IconClass = "bi-graph-up",
                             ModuleId = 12,
                             Name = "Performance Reviews",
                             Title = "Employee Performance Reviews"
@@ -1427,6 +1465,7 @@ namespace Factory.DAL.Migrations
                             Id = 34,
                             Action = "KPIs",
                             Controller = "Performance",
+                            IconClass = "bi-bar-chart-line",
                             ModuleId = 12,
                             Name = "KPI Tracking",
                             Title = "Track KPIs & Goals"
@@ -1436,6 +1475,7 @@ namespace Factory.DAL.Migrations
                             Id = 35,
                             Action = "Feedback",
                             Controller = "Performance",
+                            IconClass = "bi-chat-left-text",
                             ModuleId = 12,
                             Name = "Feedback & Recognition",
                             Title = "360 Feedback & Recognition"
@@ -1445,6 +1485,7 @@ namespace Factory.DAL.Migrations
                             Id = 36,
                             Action = "Tickets",
                             Controller = "ITService",
+                            IconClass = "bi-ticket-detailed",
                             ModuleId = 14,
                             Name = "Ticket Management",
                             Title = "Manage IT Support Tickets"
@@ -1454,6 +1495,7 @@ namespace Factory.DAL.Migrations
                             Id = 37,
                             Action = "Monitoring",
                             Controller = "ITService",
+                            IconClass = "bi-speedometer",
                             ModuleId = 14,
                             Name = "System Monitoring",
                             Title = "Monitor IT Infrastructure"
@@ -1463,6 +1505,7 @@ namespace Factory.DAL.Migrations
                             Id = 38,
                             Action = "Inventory",
                             Controller = "ITService",
+                            IconClass = "bi-pc-display",
                             ModuleId = 14,
                             Name = "Hardware Inventory",
                             Title = "Manage IT Assets"
@@ -1472,6 +1515,7 @@ namespace Factory.DAL.Migrations
                             Id = 39,
                             Action = "Tickets",
                             Controller = "Support",
+                            IconClass = "bi-headset",
                             ModuleId = 18,
                             Name = "Support Tickets",
                             Title = "Manage Customer Tickets"
@@ -1481,6 +1525,7 @@ namespace Factory.DAL.Migrations
                             Id = 40,
                             Action = "Chat",
                             Controller = "Support",
+                            IconClass = "bi-chat-dots",
                             ModuleId = 18,
                             Name = "Live Chat",
                             Title = "Provide Live Chat Support"
@@ -1490,6 +1535,7 @@ namespace Factory.DAL.Migrations
                             Id = 41,
                             Action = "FAQ",
                             Controller = "Support",
+                            IconClass = "bi-question-circle",
                             ModuleId = 18,
                             Name = "FAQ & Help Center",
                             Title = "Manage Help Center Articles"
@@ -1499,6 +1545,7 @@ namespace Factory.DAL.Migrations
                             Id = 42,
                             Action = "Finance",
                             Controller = "Reports",
+                            IconClass = "bi-file-earmark-bar-graph",
                             ModuleId = 20,
                             Name = "Financial Reports",
                             Title = "View Financial Reports"
@@ -1508,6 +1555,7 @@ namespace Factory.DAL.Migrations
                             Id = 43,
                             Action = "Employees",
                             Controller = "Reports",
+                            IconClass = "bi-people",
                             ModuleId = 20,
                             Name = "Employee Insights",
                             Title = "Analyze Employee Performance"
@@ -1517,6 +1565,7 @@ namespace Factory.DAL.Migrations
                             Id = 44,
                             Action = "Sales",
                             Controller = "Reports",
+                            IconClass = "bi-graph-up",
                             ModuleId = 20,
                             Name = "Sales & Revenue",
                             Title = "Track Sales & Revenue"
@@ -1526,9 +1575,20 @@ namespace Factory.DAL.Migrations
                             Id = 45,
                             Action = "Index",
                             Controller = "Support",
+                            IconClass = "bi-speedometer2",
                             ModuleId = 18,
                             Name = "Support Dashboard",
                             Title = "View Support Overview"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Action = "Index",
+                            Controller = "OrderReport",
+                            IconClass = "bi-cart",
+                            ModuleId = 20,
+                            Name = "Orders Dashboard",
+                            Title = "View Orders Overview"
                         });
                 });
 

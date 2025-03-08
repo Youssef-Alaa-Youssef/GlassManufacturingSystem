@@ -1,0 +1,52 @@
+﻿@model string
+
+<div class="col-md-4 form-group">
+    <label for="iconSelect" class="control-label">Select Icon</label>
+    <div class="input-group">
+        <select class="form-control" id="iconSelect" name="IconClass">
+        </select>
+        <span class="input-group-text" id="iconPreview">
+            <i class="bi bi-question-circle"></i>
+        </span>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const icons = [
+            "bi-stack","bi-chevron-down","bi-dash", "bi-check", "bi-heart", "bi-star", "bi-gear", "bi-house",
+            "bi-person", "bi-envelope", "bi-trash", "bi-search", "bi-arrow-left",
+            "bi-arrow-right", "bi-plus", "bi-minus", "bi-x", "bi-list", "bi-grid",
+            "bi-bookmark", "bi-calendar", "bi-clock", "bi-cloud", "bi-download",
+            "bi-upload", "bi-pencil", "bi-save", "bi-lock", "bi-unlock", "bi-eye",
+            "bi-eye-slash", "bi-camera", "bi-image", "bi-music", "bi-film", "bi-mic",
+            "bi-volume-up", "bi-volume-mute", "bi-phone", "bi-link", "bi-share",
+            "bi-copy", "bi-printer"
+        ];
+
+        const selectElement = document.getElementById("iconSelect");
+        const iconPreview = document.getElementById("iconPreview");
+
+        icons.forEach(icon => {
+            const option = document.createElement("option");
+            option.value = `bi ${icon}`;
+            option.textContent = icon.replace("bi-", "");
+            selectElement.appendChild(option);
+        });
+
+        // Set selected icon if model has a value
+        if ("@Model" !== "") {
+            selectElement.value = "@Model";
+            iconPreview.innerHTML = `<i class="${"@Model"}"></i>`;
+        }
+
+        selectElement.addEventListener("change", function () {
+            const selectedIcon = this.value;
+            iconPreview.innerHTML = `<i class="${selectedIcon}"></i>`;
+        });
+
+        if (icons.length > 0 && selectElement.value === "") {
+            iconPreview.innerHTML = `<i class="bi ${icons[0]}"></i>`;
+        }
+    });
+</script>
