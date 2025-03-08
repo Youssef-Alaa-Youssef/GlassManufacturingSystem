@@ -22,6 +22,8 @@ namespace Factory.DAL.Models.OrderList
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public double? Rank { get; set; }
+        public string Status { get; set; } = string.Empty;
+
 
     }
 }

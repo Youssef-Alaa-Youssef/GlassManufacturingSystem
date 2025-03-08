@@ -1,0 +1,483 @@
+﻿@model Factory.PL.ViewModels.OrderList.OrderReportViewModel
+@{
+    ViewData["Title"] = "Order Dashboard";
+    Layout = "_LogedUser";
+}
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-muted small mt-2">
+                <i class="fas fa-sync-alt me-1"></i>Last updated: @DateTime.Now.ToString("yyyy-MM-dd HH-MM")
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-outline-primary">
+                <i class="fas fa-print me-1"></i> Print Report
+            </button>
+        </div>
+    </div>
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <!-- Total Orders Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-muted text-uppercase small mb-2">Total Orders</h5>
+                            <p class="h3 font-weight-bold mb-0">@Model.TotalOrders</p>
+                        </div>
+                        <div class="icon-circle bg-primary">
+                            <i class="fas fa-clipboard-list fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <span class="text-success"><i class="fas fa-arrow-up me-1"></i>5.2%</span> from last month
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Items Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-muted text-uppercase small mb-2">Total Items</h5>
+                            <p class="h3 font-weight-bold mb-0">@Model.TotalItemsData.Sum()</p>
+                        </div>
+                        <div class="icon-circle bg-success">
+                            <i class="fas fa-boxes fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <span class="text-danger"><i class="fas fa-arrow-down me-1"></i>3.8%</span> from last month
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total SQM Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-muted text-uppercase small mb-2">Total SQM</h5>
+                            <p class="h3 font-weight-bold mb-0">@Math.Round(Model.TotalSQMData.Sum(), 2)</p>
+                        </div>
+                        <div class="icon-circle bg-warning">
+                            <i class="fas fa-ruler-combined fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <span class="text-success"><i class="fas fa-arrow-up me-1"></i>8.7%</span> from last month
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total LM Card -->
+        <div class="col-md-3">
+            <div class="card h-100 border">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title text-muted text-uppercase small mb-2">Total LM</h5>
+                            <p class="h3 font-weight-bold mb-0">@Math.Round(Model.TotalLMData.Sum(), 2)</p>
+                        </div>
+                        <div class="icon-circle bg-danger">
+                            <i class="fas fa-ruler-horizontal fa-2x text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <span class="text-success"><i class="fas fa-arrow-up me-1"></i>6.4%</span> from last month
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Total SQM Chart (Line Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Total SQM Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="totalSQMChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total LM Chart (Line Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Total LM Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="totalLMChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Items Chart (Line Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Total Items Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="totalItemsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Order Status Distribution (Doughnut Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Order Status Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="orderStatusChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Delivery Trends (Line Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Monthly Delivery Trends</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyDeliveryTrendsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Customers (Stacked Bar Chart) -->
+        <div class="col-md-4">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Top Customers</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="topCustomersChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Size vs. Delivery Time (Scatter Plot) -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card border">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Order Size vs. Delivery Time</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="orderSizeVsDeliveryChart" width="800" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Table -->
+    <div class="card mb-4 border">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold">Order Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="orderTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Order ID</th>
+                            <th>Job No</th>
+                            <th>Customer</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Delivery Status</th>
+                            <th>Total Items</th>
+                            <th>Total SQM</th>
+                            <th>Total LM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int counter = 1;
+                        }
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr class="text-center">
+                                <td><strong>@counter</strong></td>
+                                <td>@order.OrderId</td>
+                                <td>@order.JobNum</td>
+                                <td>@order.CustomerName</td>
+                                <td>@order.OrderDate.ToString("yyyy-MM-dd HH-MM")</td>
+                                <td>
+                                    <span class="badge @(order.Status == "Delivered" ? "bg-success" : order.Status == "Pending" ? "bg-warning" : "bg-danger")">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @(order.DeliveryStatus == "Delivered" ? "bg-success" : "bg-secondary")">
+                                        @order.DeliveryStatus
+                                    </span>
+                                </td>
+                                <td>@order.TotalItems</td>
+                                <td>@Math.Round(order.TotalSQM, 2)</td>
+                                <td>@Math.Round(order.TotalLM, 2)</td>
+                            </tr>
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/lib/chart.js/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Total SQM Chart (Bar Chart)
+            const totalSQMChartCtx = document.getElementById('totalSQMChart').getContext('2d');
+            new Chart(totalSQMChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Json.Serialize(Model.Orders.Select(o => $"Order {o.OrderId}").ToList()),
+                    datasets: [{
+                        label: 'Total SQM',
+                        data: @Json.Serialize(Model.TotalSQMData),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'SQM'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Total LM Chart (Bar Chart)
+            const totalLMChartCtx = document.getElementById('totalLMChart').getContext('2d');
+            new Chart(totalLMChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Json.Serialize(Model.Orders.Select(o => $"Order {o.OrderId}").ToList()),
+                    datasets: [{
+                        label: 'Total LM',
+                        data: @Json.Serialize(Model.TotalLMData),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'LM'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Total Items Chart (Bar Chart)
+            const totalItemsChartCtx = document.getElementById('totalItemsChart').getContext('2d');
+            new Chart(totalItemsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Json.Serialize(Model.Orders.Select(o => $"Order {o.OrderId}").ToList()),
+                    datasets: [{
+                        label: 'Total Items',
+                        data: @Json.Serialize(Model.TotalItemsData),
+                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Items'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Order Status Distribution (Pie Chart)
+            const orderStatusChartCtx = document.getElementById('orderStatusChart').getContext('2d');
+            new Chart(orderStatusChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: @Json.Serialize(Model.OrderStatusDistribution.Keys.ToList()),
+                    datasets: [{
+                        data: @Json.Serialize(Model.OrderStatusDistribution.Values.ToList()),
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Monthly Delivery Trends (Line Chart)
+            const monthlyDeliveryTrendsChartCtx = document.getElementById('monthlyDeliveryTrendsChart').getContext('2d');
+            new Chart(monthlyDeliveryTrendsChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Deliveries',
+                        data: @Json.Serialize(Model.MonthlyDeliveries),
+                        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                        borderColor: '#28a745',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Deliveries'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const topCustomersChartCtx = document.getElementById('topCustomersChart').getContext('2d');
+            new Chart(topCustomersChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Json.Serialize(Model.TopCustomers.Keys.ToList()),
+                    datasets: [{
+                        label: 'Total Orders',
+                        data: @Json.Serialize(Model.TopCustomers.Values.ToList()),
+                        backgroundColor: 'rgba(78, 115, 223, 0.6)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Total Orders'
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+            const orders = @Json.Serialize(Model.Orders.Select(o => new
+            {
+                x = o.TotalItems,
+                y = (o.OrderDate - o.OrderDate).Days 
+            }).ToList());
+
+            const orderSizeVsDeliveryChartCtx = document.getElementById('orderSizeVsDeliveryChart').getContext('2d');
+            new Chart(orderSizeVsDeliveryChartCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Order Size vs. Delivery Time',
+                        data: orders,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Total Items'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Delivery Time (Days)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Initialize DataTables
+            $('#orderTable').DataTable({
+                pageLength: 10,
+                responsive: true,
+                dom: 'Bfrtip',
+                buttons: [],
+                language: {
+                    search: "<i class='fas fa-search'></i>",
+                    paginate: {
+                        previous: "<i class='fas fa-chevron-left'></i>",
+                        next: "<i class='fas fa-chevron-right'></i>"
+                    }
+                },
+                order: [[2, 'desc']] 
+            });
+        });
+    </script>
+}

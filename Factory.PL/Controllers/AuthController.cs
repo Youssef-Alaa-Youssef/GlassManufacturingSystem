@@ -739,7 +739,8 @@ namespace Factory.Controllers
                 UserName = model.UserName,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                LockoutEnabled = model.IsActive
+                LockoutEnabled = model.IsActive,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

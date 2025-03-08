@@ -131,7 +131,7 @@
                             }
                             @foreach (var item in Model.Items)
                             {
-                                <tr data-item-id="@item.Id">
+                                <tr data-item-id="@item.Id" class="@(item.IsDelivered ? "" : "d-print-none")">
                                     <td>@counter</td>
                                     <td>@(string.IsNullOrEmpty(item.Description) ? "N/A" : item.Description)</td>
                                     <td>@(item.Width == 0 ? "0" : item.Width)</td>
@@ -145,14 +145,14 @@
                                             <input class="form-check-input delivery-checkbox" type="checkbox" data-item-id="@item.Id" @(item.IsDelivered ? "checked" : "") />
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="d-print-none">
                                         <input class="form-control delivery-date" type="date" data-item-id="@item.Id" value="@(item.DeliveryDate?.ToString("yyyy-MM-dd") ?? "")" @(item.DeliveryDate == null ? "disabled" : "") />
                                     </td>
-                                    <td>
+                                    <td class="d-print-none">
                                         <input class="form-control delivered-by" type="text" placeholder="Enter name" data-item-id="@item.Id" value="@item.DeliveredBy" @(string.IsNullOrWhiteSpace(item.DeliveredBy) ? "disabled" : "") />
                                     </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-outline-success save-delivery-btn" @(item.IsDelivered ? "" : "") data-item-id="@item.Id">
+                                    <td class="d-print-none">
+                                        <button type="button" class="btn btn-sm btn-outline-success save-delivery-btn" @(item.IsDelivered ? "disabled" : "") data-item-id="@item.Id">
                                             <i class="bi bi-save"></i>
                                         </button>
                                     </td>

@@ -103,7 +103,8 @@ namespace Factory.DAL.Configurations.Permission
                 new SubModule { Id = 42, Name = "Financial Reports", Controller = "Reports", Action = "Finance", Title = "View Financial Reports", ModuleId = 20 },
                 new SubModule { Id = 43, Name = "Employee Insights", Controller = "Reports", Action = "Employees", Title = "Analyze Employee Performance", ModuleId = 20 },
                 new SubModule { Id = 44, Name = "Sales & Revenue", Controller = "Reports", Action = "Sales", Title = "Track Sales & Revenue", ModuleId = 20 },
-                new SubModule { Id = 45, Name = "Support Dashboard", Controller = "Support", Action = "Index", Title = "View Support Overview", ModuleId = 18 }
+                new SubModule { Id = 45, Name = "Support Dashboard", Controller = "Support", Action = "Index", Title = "View Support Overview", ModuleId = 18 },
+                new SubModule { Id = 46, Name = "Orders Dashboard", Controller = "OrderReport", Action = "Index", Title = "View Orders Overview", ModuleId = 20 }
                 );
 
         }

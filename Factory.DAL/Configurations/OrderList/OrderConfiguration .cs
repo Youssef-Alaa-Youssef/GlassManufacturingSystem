@@ -23,7 +23,10 @@ namespace Factory.DAL.Configurations.OrderList
                 builder.Property(o => o.Priority)
                        .HasMaxLength(50);
 
-                builder.Property(o => o.Signature)
+                builder.Property(o => o.Status)
+                       .HasMaxLength(50);
+
+            builder.Property(o => o.Signature)
                        .HasMaxLength(255);
 
                 builder.Property(o => o.TotalSQM)
