@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.BLL.Interfaces;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Warehouses;
-using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.Warehouses;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
-using Factory.BLL.InterFaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Factory.Controllers.Warehouses
 {
@@ -32,7 +28,7 @@ namespace Factory.Controllers.Warehouses
                 Type = i.Type,
                 Color = i.Color,
                 Thickness = i.Thickness,
-                Dimensions = i.Dimensions,  
+                Dimensions = i.Dimensions,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
                 WarehouseName = i.Warehouse?.NameEn,

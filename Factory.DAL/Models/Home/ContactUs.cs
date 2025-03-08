@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Factory.DAL.Models.Home
+﻿namespace Factory.DAL.Models.Home
 {
     public class ContactUs
     {

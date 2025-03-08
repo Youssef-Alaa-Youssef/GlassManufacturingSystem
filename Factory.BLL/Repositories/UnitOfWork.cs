@@ -1,6 +1,6 @@
-﻿using Factory.BLL.Repositories;
-using Factory.BLL.Interfaces;
+﻿using Factory.BLL.Interfaces;
 using Factory.BLL.InterFaces;
+using Factory.BLL.Repositories;
 using Factory.DAL;
 
 namespace Factory.BLL

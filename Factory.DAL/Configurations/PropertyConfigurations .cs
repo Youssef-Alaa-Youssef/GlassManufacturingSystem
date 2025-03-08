@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.Home;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.Home;
 
 namespace Factory.DAL.Data
 {
@@ -10,7 +10,7 @@ namespace Factory.DAL.Data
         {
             builder.Property(p => p.Address)
                 .IsRequired()
-                .HasMaxLength(255); 
+                .HasMaxLength(255);
 
             builder.Property(p => p.City)
                 .IsRequired()
@@ -22,11 +22,11 @@ namespace Factory.DAL.Data
 
             builder.Property(p => p.ZipCode)
                 .IsRequired()
-                .HasMaxLength(20); 
+                .HasMaxLength(20);
 
             builder.Property(p => p.Price)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)"); 
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(p => p.SquareFootage)
                 .IsRequired();
@@ -48,7 +48,7 @@ namespace Factory.DAL.Data
                 .HasColumnType("text");
 
             builder.Property(p => p.Status)
-                .HasMaxLength(50); 
+                .HasMaxLength(50);
 
             builder.Property(p => p.HasGarage)
                 .IsRequired();
@@ -63,10 +63,10 @@ namespace Factory.DAL.Data
                 .HasMaxLength(100);
 
             builder.Property(p => p.AgentEmail)
-                .HasMaxLength(150); 
+                .HasMaxLength(150);
 
             builder.Property(p => p.AgentPhone)
-                .HasMaxLength(20); 
+                .HasMaxLength(20);
 
             builder.Property(p => p.IsDeleted)
                 .IsRequired()
@@ -74,13 +74,13 @@ namespace Factory.DAL.Data
 
             builder.Property(p => p.CreatedDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()"); 
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(p => p.UpdatedDate)
                 .IsRequired(false);
 
             builder.Property(p => p.IpAddress)
-                .HasMaxLength(45); 
+                .HasMaxLength(45);
         }
     }
 }

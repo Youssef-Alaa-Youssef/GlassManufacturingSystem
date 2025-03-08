@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.Errors;
+﻿using Factory.DAL.Models.Errors;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Factory.Controllers
 {

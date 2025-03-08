@@ -1,18 +1,16 @@
-﻿using Factory.PL.ViewModels;
+﻿using Factory.DAL.Models.Auth;
+using Factory.PL.Helper;
+using Factory.PL.Services.Email;
+using Factory.PL.ViewModels;
+using Factory.PL.ViewModels.Auth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using Factory.PL.Helper;
-using Factory.PL.Services.Email;
-using Factory.PL.ViewModels.Auth;
-using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Factory.DAL.Enums;
-using Factory.DAL.Models.Auth;
 namespace Factory.Controllers
 {
     public class AuthController : Controller
@@ -97,7 +95,7 @@ namespace Factory.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Dashboard", "Home"); 
+                return RedirectToAction("Dashboard", "Home");
             }
             return View();
         }
@@ -123,13 +121,13 @@ namespace Factory.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id) 
+                    new Claim(ClaimTypes.NameIdentifier, user.Id)
                 };
 
                 var userRoles = await _userManager.GetRolesAsync(user);
                 foreach (var role in userRoles)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, role)); 
+                    claims.Add(new Claim(ClaimTypes.Role, role));
                 }
 
                 var identity = new ClaimsIdentity(claims, "login");
@@ -615,7 +613,7 @@ namespace Factory.Controllers
                 Id = user.Id,
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                PhoneNumber = user.PhoneNumber  ?? string.Empty
+                PhoneNumber = user.PhoneNumber ?? string.Empty
             };
 
             return View(viewModel);
@@ -639,7 +637,7 @@ namespace Factory.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            var userId = User?.Identity?.Name; 
+            var userId = User?.Identity?.Name;
             if (userId == null)
             {
                 return RedirectToAction("Login", "Auth");
@@ -661,7 +659,7 @@ namespace Factory.Controllers
 
             return View(model);
         }
-        
+
 
         public IActionResult Settings()
         {
@@ -718,7 +716,7 @@ namespace Factory.Controllers
         {
             var viewModel = new UserCreateViewModel
             {
-                IsActive = true 
+                IsActive = true
             };
 
             return View(viewModel);
@@ -726,7 +724,7 @@ namespace Factory.Controllers
         [Authorize(Policy = "User Management_Create")]
 
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(UserCreateViewModel model)
         {
             if (!ModelState.IsValid)

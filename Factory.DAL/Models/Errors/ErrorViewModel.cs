@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Factory.DAL.Models.Errors
+﻿namespace Factory.DAL.Models.Errors
 {
     public class ErrorViewModel
     {

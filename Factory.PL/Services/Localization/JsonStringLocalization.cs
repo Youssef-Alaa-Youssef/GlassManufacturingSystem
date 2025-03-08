@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Factory.PL.Services.Localization
 {

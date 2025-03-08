@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.Support;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Factory.BLL.InterFaces;
-using Factory.DAL.ViewModels.Support;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Auth;
+using Factory.DAL.Models.Support;
+using Factory.DAL.ViewModels.Support;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Factory.Controllers
 {

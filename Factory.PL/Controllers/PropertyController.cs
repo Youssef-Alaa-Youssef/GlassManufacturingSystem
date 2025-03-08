@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Factory.PL.ViewModels.Property;
-using Factory.BLL.InterFaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using Factory.BLL.InterFaces;
+using Factory.DAL.Enums;
 using Factory.DAL.Models.Home;
 using Factory.PL.Helper;
-using Factory.DAL.Enums;
+using Factory.PL.ViewModels.Property;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Factory.PL.Controllers
 {
@@ -44,14 +44,14 @@ namespace Factory.PL.Controllers
                             if (photo.Length > 0)
                             {
                                 // Validate image dimensions (425x388)
-                               /* using (var image = Image.FromStream(photo.OpenReadStream()))
-                                {
-                                    if (image.Width != 425 || image.Height != 388)
-                                    {
-                                        ModelState.AddModelError("Photos", "Each photo must be 425x388 pixels.");
-                                        return View(model);
-                                    }
-                                }*/
+                                /* using (var image = Image.FromStream(photo.OpenReadStream()))
+                                 {
+                                     if (image.Width != 425 || image.Height != 388)
+                                     {
+                                         ModelState.AddModelError("Photos", "Each photo must be 425x388 pixels.");
+                                         return View(model);
+                                     }
+                                 }*/
 
                                 // Save the photo if it passes the validation
                                 var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(photo.FileName)}";
@@ -115,8 +115,8 @@ namespace Factory.PL.Controllers
             return View(model);
         }
 
-    // GET: Property/Edit/5
-    public async Task<IActionResult> Edit(Guid id)
+        // GET: Property/Edit/5
+        public async Task<IActionResult> Edit(Guid id)
         {
             var property = await _unitOfWork.GetRepository<Property>().GetByIdAsync(id);
             if (property == null)
@@ -241,8 +241,8 @@ namespace Factory.PL.Controllers
                     ZipCode = p.ZipCode,
                     Price = p.Price,
                     SquareFootage = p.SquareFootage,
-                    Bedrooms =p.Bedrooms,
-                    Bathrooms =p.Bathrooms,
+                    Bedrooms = p.Bedrooms,
+                    Bathrooms = p.Bathrooms,
                     ListedDate = p.ListedDate,
                     Description = p.Description,
                     Features = p.Features,
@@ -257,7 +257,7 @@ namespace Factory.PL.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = $"An error occurred: {ex.Message}";
-                ViewBag.PropertyCount = 0; 
+                ViewBag.PropertyCount = 0;
                 return View(new List<PropertyViewModel>());
             }
         }

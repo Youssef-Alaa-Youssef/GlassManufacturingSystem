@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Factory.DAL.Models.Settings;
 using Microsoft.EntityFrameworkCore;
-using Factory.DAL.Models.Settings;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Factory.DAL.Configurations.Warehouses
 {

@@ -1,10 +1,9 @@
-﻿using MailKit.Net.Smtp;
+﻿using Factory.PL.Helper;
+using Factory.PL.Services.Email;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MimeKit.Utils;
-using Factory.PL.Helper;
-using Factory.PL.Services.Email;
 
 namespace Factory.PL.Services
 {
@@ -17,7 +16,7 @@ namespace Factory.PL.Services
             _emailSettings = emailSettings.Value;
         }
 
-        public async Task SendEmailAsync(string mailTo, string subject, string body, IList<IFormFile>? attachments )
+        public async Task SendEmailAsync(string mailTo, string subject, string body, IList<IFormFile>? attachments)
         {
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_emailSettings.DisplayName, _emailSettings.Email));

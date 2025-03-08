@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.Support;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.Support;
 
 namespace Factory.DAL.Configurations.Support
 {

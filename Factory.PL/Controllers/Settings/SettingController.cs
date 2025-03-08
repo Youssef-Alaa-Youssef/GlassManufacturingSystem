@@ -1,16 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Settings;
-using Factory.PL.ViewModels.Settings;
-using Factory.BLL.Interfaces;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Factory.BLL.InterFaces;
-using Factory.DAL.Enums;
-using Microsoft.EntityFrameworkCore;
 using Factory.PL.Services.Setting;
+using Factory.PL.ViewModels.Settings;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Factory.Controllers.Warehouses
 {

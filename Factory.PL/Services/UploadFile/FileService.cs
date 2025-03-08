@@ -7,7 +7,7 @@ namespace Factory.PL.Services.UploadFile
     public class FileService : IFileService
     {
         private readonly string _fileStoragePath;
-        private const long MaxFileSize = 5 * 1024 * 1024; 
+        private const long MaxFileSize = 5 * 1024 * 1024;
 
         public FileService(IWebHostEnvironment webHostEnvironment)
         {

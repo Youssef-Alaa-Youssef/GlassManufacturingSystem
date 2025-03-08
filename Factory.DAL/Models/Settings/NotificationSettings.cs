@@ -1,6 +1,5 @@
 ﻿using Factory.DAL.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
 namespace Factory.DAL.Models.Settings
 {
     public class NotificationSettings

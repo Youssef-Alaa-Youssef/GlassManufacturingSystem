@@ -25,5 +25,5 @@ namespace Factory.DAL.Models.OnBoarding
         public virtual TrainingModule Training { get; set; } = new TrainingModule();
         public virtual OrientationModule Orientation { get; set; } = new OrientationModule();
     }
-   
+
 }

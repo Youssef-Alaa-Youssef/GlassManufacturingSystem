@@ -1,56 +1,111 @@
 ﻿@model IEnumerable<Factory.DAL.Models.Permission.SubModule>
-
 @{
     ViewData["Title"] = "SubModules";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
     @await Html.PartialAsync("_PageTitle")
-
 
     <p>
         <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
     </p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Controller</th>
-                <th>Action</th>
-                <th>Title</th>
-                <th>Module</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+    <div class="form-group col-md-6">
+        <label for="moduleDropdown">Select Module</label>
+        <select class="form-control" id="moduleDropdown">
+            <option value="">-- Select Module --</option>
+            @if (ViewBag.Modules != null)
             {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Controller</td>
-                    <td>@item.Action</td>
-                    <td>@item.Title</td>
-                    <td>@item.Module?.Name</td>
-                    <td>
-                    <div class="d-flex flex-wrap gap-2 justify-content-center">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm w-100 w-md-auto">
-                            🔍 Edit
-                        </a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
-                            ✏ Details
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
-                            🗑 Delete
-                        </a>
-                    </div>
-                    </td>
-                </tr>
+                foreach (var module in ViewBag.Modules)
+                {
+                    <option value="@module.Id"><i class="@module.IconClass"></i>@module.Name</option>
+                }
             }
-        </tbody>
-    </table>
+        </select>
+    </div>
+
+    <div class="table-responsive mt-4" id="subModuleTableContainer" style="display: none;">
+        <table class="table" id="subModuleTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Controller</th>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Module</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#moduleDropdown').change(function() {
+                var moduleId = $(this).val();
+
+                if (moduleId) {
+                    $('#subModuleTableContainer').hide();
+                    $('#subModuleTable tbody').empty();
+
+                    $.ajax({
+                        url: '@Url.Action("GetSubModulesByModule", "SubModule")',
+                        type: 'GET',
+                        data: { moduleId: moduleId },
+                        success: function(data) {
+                            $('#subModuleTableContainer').show();
+                            $('#subModuleTable tbody').empty();
+
+                            if (data.length > 0) {
+                                $.each(data, function(index, item) {
+                                    var row = `<tr>
+                                        <td>${item.name}</td>
+                                        <td>${item.controller}</td>
+                                        <td>${item.action}</td>
+                                        <td>${item.title}</td>
+                                        <td>${item.module.name}</td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                                <a href="/SubModule/Edit/${item.id}" class="btn btn-outline-info btn-sm w-100 w-md-auto">
+                                                    🔍 Edit
+                                                </a>
+                                                <a href="/SubModule/Details/${item.id}" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
+                                                    ✏ Details
+                                                </a>
+                                                <a href="/SubModule/Delete/${item.id}" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
+                                                    🗑 Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                                    $('#subModuleTable tbody').append(row);
+                                });
+                            } else {
+                                var noDataRow = `<tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-database fa-3x mb-3"></i>
+                                        <h4>No Data Found</h4>
+                                        <p class="mb-0">No submodules are available for the selected module.</p>
+                                    </td>
+                                </tr>`;
+                                $('#subModuleTable tbody').append(noDataRow);
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred while fetching submodules.');
+                        }
+                    });
+                } else {
+                    $('#subModuleTableContainer').hide();
+                    $('#subModuleTable tbody').empty();
+                }
+            });
+        });
+    </script>
+}

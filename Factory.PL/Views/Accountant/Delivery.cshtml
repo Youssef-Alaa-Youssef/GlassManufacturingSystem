@@ -44,7 +44,7 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-user me-2"></i>Customer Information</h5>
                 </div>
                 <div class="card-body">
@@ -72,7 +72,7 @@
 
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Invoice Details</h5>
                 </div>
                 <div class="card-body">
@@ -103,7 +103,7 @@
     @if (Model.Items?.Any() == true)
     {
         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0"><i class="fas fa-table me-2"></i>Order Details</h5>
             </div>
             <div class="card-body">
@@ -120,7 +120,7 @@
                                 <th>Total SQM</th>
                                 <th>Customer Reference</th>
                                 <th>Delivered</th>
-                                <th>Delivery Date</th>
+                                @* <th>Delivery Date</th> *@
                                 <th>Delivered By</th>
                                 <th>Actions</th>
                             </tr>
@@ -145,9 +145,9 @@
                                             <input class="form-check-input delivery-checkbox" type="checkbox" data-item-id="@item.Id" @(item.IsDelivered ? "checked" : "") />
                                         </div>
                                     </td>
-                                    <td class="d-print-none">
-                                        <input class="form-control delivery-date" type="date" data-item-id="@item.Id" value="@(item.DeliveryDate?.ToString("yyyy-MM-dd") ?? "")" @(item.DeliveryDate == null ? "disabled" : "") />
-                                    </td>
+                                    @* <td class="d-print-none"> *@
+                                    @*     <input class="form-control delivery-date" type="date" data-item-id="@item.Id" value="@(item.DeliveryDate?.ToString("yyyy-MM-dd") ?? "")" @(item.DeliveryDate == null ? "disabled" : "") /> *@
+                                    @* </td> *@
                                     <td class="d-print-none">
                                         <input class="form-control delivered-by" type="text" placeholder="Enter name" data-item-id="@item.Id" value="@item.DeliveredBy" @(string.IsNullOrWhiteSpace(item.DeliveredBy) ? "disabled" : "") />
                                     </td>
@@ -259,14 +259,14 @@
             deliveryCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     const row = this.closest('tr');
-                    const deliveryDateInput = row.querySelector('.delivery-date');
+                    // const deliveryDateInput = row.querySelector('.delivery-date');
                     const deliveredByInput = row.querySelector('.delivered-by');
 
                     if (this.checked) {
-                        deliveryDateInput.removeAttribute('disabled');
+                        // deliveryDateInput.removeAttribute('disabled');
                         deliveredByInput.removeAttribute('disabled');
                     } else {
-                        deliveryDateInput.setAttribute('disabled', 'disabled');
+                        // deliveryDateInput.setAttribute('disabled', 'disabled');
                         deliveredByInput.setAttribute('disabled', 'disabled');
                     }
                 });
@@ -276,13 +276,13 @@
                     const itemId = this.dataset.itemId;
                     const row = this.closest('tr');
                     const isDelivered = row.querySelector('.delivery-checkbox').checked;
-                    const deliveryDate = row.querySelector('.delivery-date').value;
+                    // const deliveryDate = row.querySelector('.delivery-date').value;
                     const deliveredBy = row.querySelector('.delivered-by').value;
 
                     const data = {
                         ItemId: parseInt(itemId),
                         IsDelivered: isDelivered,
-                        DeliveryDate: deliveryDate,
+                        DeliveryDate: new Date().toISOString(),
                         DeliveredBy: deliveredBy
                     };
 

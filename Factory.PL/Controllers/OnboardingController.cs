@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Factory.BLL.InterFaces;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
 using Factory.DAL.Models.OnBoarding;
 using Factory.PL.ViewModels.OnBoarding;

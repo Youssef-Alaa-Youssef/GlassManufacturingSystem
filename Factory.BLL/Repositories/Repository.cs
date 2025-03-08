@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+﻿using Factory.BLL.Interfaces;
 using Factory.DAL.Models.Permission;
-using Factory.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Factory.BLL.Repositories
 {

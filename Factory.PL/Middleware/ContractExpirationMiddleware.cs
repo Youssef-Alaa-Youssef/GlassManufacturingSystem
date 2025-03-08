@@ -1,9 +1,6 @@
-﻿using Factory.DAL.Models.Settings;
-using Factory.DAL;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
+﻿using Factory.DAL;
+using Factory.DAL.Models.Settings;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Factory.PL.Middleware
 {

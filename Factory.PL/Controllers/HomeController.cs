@@ -1,14 +1,14 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.Home;
-using Factory.PL.ViewModels;
-using Factory.PL.ViewModels.Home;
-using System.Diagnostics;
 using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
 using Factory.DAL.Models.Auth;
+using Factory.DAL.Models.Home;
 using Factory.DAL.Models.Support;
+using Factory.PL.ViewModels;
+using Factory.PL.ViewModels.Home;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Factory.Controllers
 {
@@ -24,7 +24,7 @@ namespace Factory.Controllers
         public async Task<IActionResult> Index()
         {
             var Partners = await _unitOfWork.GetRepository<Partner>().GetAllAsync();
-            return RedirectToAction("Login","Auth");
+            return RedirectToAction("Login", "Auth");
         }
 
         public async Task<IActionResult> FAQ()
@@ -124,7 +124,7 @@ namespace Factory.Controllers
                     Email = contact.Email,
                     Message = contact.Message,
                     IpAddress = ipAddress,
-                    CreatedDate = DateTime.UtcNow 
+                    CreatedDate = DateTime.UtcNow
                 };
 
                 await _unitOfWork.GetRepository<ContactUs>().AddAsync(contactEntity);
@@ -214,6 +214,9 @@ namespace Factory.Controllers
         {
             return View();
         }
+
+
+
 
     }
 }

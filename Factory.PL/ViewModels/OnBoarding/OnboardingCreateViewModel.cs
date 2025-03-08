@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Factory.DAL.Enums;
-using Factory.DAL.Models.OnBoarding;
 
 namespace Factory.PL.ViewModels.OnBoarding
 {
@@ -20,7 +18,7 @@ namespace Factory.PL.ViewModels.OnBoarding
         public DateTime StartDate { get; set; }
     }
 
- 
+
 
 
 

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.Documentation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.Documentation;
 
 namespace Factory.DAL.Configurations.Documents
 {
@@ -32,7 +32,7 @@ namespace Factory.DAL.Configurations.Documents
 
             builder.Property(d => d.UserId)
                 .IsRequired()
-                .HasMaxLength(450); 
+                .HasMaxLength(450);
         }
     }
 }

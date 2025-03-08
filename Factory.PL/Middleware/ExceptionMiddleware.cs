@@ -25,12 +25,12 @@
             catch (UnauthorizedAccessException ex)
             {
                 _logger.LogError(ex, "Unauthorized access error occurred.");
-                context.Response.Redirect("/Auth/AccessDenied"); 
+                context.Response.Redirect("/Auth/AccessDenied");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected error occurred.");
-                context.Response.Redirect("/Home/Error"); 
+                context.Response.Redirect("/Home/Error");
             }
         }
     }

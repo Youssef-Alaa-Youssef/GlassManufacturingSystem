@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.Home; 
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Factory.BLL.InterFaces;
-using Factory.PL.ViewModels.Home;
-using System.Drawing;
+﻿using Factory.BLL.InterFaces;
+using Factory.DAL.Models.Home;
 using Factory.PL.Services.UploadFile;
+using Factory.PL.ViewModels.Home;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.Security.Claims;
 
 namespace Factory.Controllers
 {
@@ -68,7 +68,7 @@ namespace Factory.Controllers
             {
                 try
                 {
-                    string filePath =  string.Empty;
+                    string filePath = string.Empty;
 
                     if (model.LogoFile != null && model.LogoFile.Length > 0)
                     {
@@ -104,7 +104,7 @@ namespace Factory.Controllers
                 }
             }
 
-            return View(model); 
+            return View(model);
         }
 
         [HttpPost]

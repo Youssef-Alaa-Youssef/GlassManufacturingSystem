@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Factory.BLL.InterFaces;
 using Factory.Controllers;
-using Factory.BLL.InterFaces;
 using Factory.DAL.Models.OrderList;
 using Factory.PL.ViewModels.OrderList;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 public class OrderControllerTests
@@ -48,7 +48,7 @@ public class OrderControllerTests
     [Fact]
     public async Task Details_OrderDoesNotExist_ReturnsNotFound()
     {
-       _mockUnitOfWork.Setup(u => u.GetRepository<Order>().GetByIdAsync(1)).ReturnsAsync((Order)null);
+        _mockUnitOfWork.Setup(u => u.GetRepository<Order>().GetByIdAsync(1)).ReturnsAsync((Order)null);
 
         var result = await _controller.Details(1);
 

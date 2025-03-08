@@ -18,13 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factory.Tests", "Factory.Tests\Factory.Tests.csproj", "{15B9D6EE-ADBF-4E3E-92B3-94BC990C1612}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EC177DA9-E3EA-4FBB-A6A3-549DD6088231}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3214B09C-A85A-426D-A9E5-2C24DB8B54B0}"
-	ProjectSection(SolutionItems) = preProject
-		GlassManufacturingSystem.yaml = GlassManufacturingSystem.yaml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,9 +43,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{3214B09C-A85A-426D-A9E5-2C24DB8B54B0} = {EC177DA9-E3EA-4FBB-A6A3-549DD6088231}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4049FF4-0231-49E3-AA8D-22BE0F409C11}

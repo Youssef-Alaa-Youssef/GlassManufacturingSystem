@@ -1,31 +1,64 @@
 ﻿@model Factory.PL.ViewModels.Permissions.PermissionManagementViewModel
 
 @{
-    ViewData["Title"] = "Assign Permissions";
+    ViewData["Title"] = "Permission Management";
     Layout = "_LogedUser";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-<style>
-    .card-header {
-        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-    }
- 
-</style>
 
-<div class="container mt-4 shadow p-3 rounded">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
 
+    <div class="card-body p-4">
+        @await Html.PartialAsync("ErrorSummaryPartial")
 
-    <h2 class="text-center mb-4  text-white py-3 px-4 rounded" style="background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);color:white">
-        <i class="bi bi-plus-circle me-2"></i> @ViewData["Title"]
-    </h2>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
-    <form asp-action="AssignPermissions" method="post">
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Assign Permissions</h4>
+        <form id="permissionForm" asp-action="AssignPermissions" method="post">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="moduleDropdown" class="form-label fw-semibold">
+                            <i class="fas fa-puzzle-piece me-1"></i> Select Module
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-filter"></i>
+                            </span>
+                            <select id="moduleDropdown" class="form-select form-select-lg">
+                                <option value="">-- Select a Module --</option>
+                                @foreach (var module in Model.RolePermissions
+                                .SelectMany(rp => rp.Permissions)
+                                .SelectMany(p => p.Modules)
+                                .GroupBy(m => m.ModuleId)
+                                .Select(g => g.First()))
+                                {
+                                    <option value="module-@module.ModuleId">@module.ModuleName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="form-check form-switch ms-auto">
+                        <input class="form-check-input" type="checkbox" id="expandAllRoles">
+                        <label class="form-check-label" for="expandAllRoles">Expand all roles</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modulesContainer" class="mb-4">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Please select a module to manage permissions
+                </div>
 
                 @foreach (var module in Model.RolePermissions
                 .SelectMany(rp => rp.Permissions)
@@ -33,116 +66,310 @@
                 .GroupBy(m => m.ModuleId)
                 .Select(g => g.First()))
                 {
-                    <div class="card mb-4">
-                        <div class="card-header  d-flex justify-content-between align-items-center">
+                    <div id="module-@module.ModuleId" class="module-permissions card border-0 shadow-sm mb-4" style="display:none;">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <button type="button" class="btn btn-link text-white text-decoration-none" data-bs-toggle="collapse" data-bs-target="#module-@module.ModuleId" aria-expanded="false" aria-controls="module-@module.ModuleId">
-                                    <i class="bi bi-chevron-down"></i> Module: @module.ModuleName
-                                </button>
+                                <i class="fas fa-layer-group me-2"></i>Module: <span class="fw-bold">@module.ModuleName</span>
                             </h5>
-                            <div class="select-all-roles">
-                                @foreach (var rolePermission in Model.RolePermissions)
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input type="checkbox" class="form-check-input select-all-role" data-module-id="@module.ModuleId" data-role-id="@rolePermission.RoleId" />
-                                        <label class="form-check-label text-white">Select All (@rolePermission.RoleName)</label>
-                                    </div>
-                                }
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary select-all-btn" data-module="@module.ModuleId">
+                                    <i class="fas fa-check-double me-1"></i> Select All
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary deselect-all-btn" data-module="@module.ModuleId">
+                                    <i class="fas fa-times me-1"></i> Deselect All
+                                </button>
                             </div>
                         </div>
-                        <div id="module-@module.ModuleId" class="collapse">
-                            <!-- Collapsed by default -->
-                            <div class="card-body">
-                                <table class="table table-bordered table-striped ">
-                                    <thead>
-                                        <tr>
-                                            <th>Permission</th>
-                                            <th>Assign</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var permission in Model.RolePermissions
-                                       .SelectMany(rp => rp.Permissions)
-                                       .Where(p => p.Modules.Any(m => m.ModuleId == module.ModuleId))
-                                       .GroupBy(p => p.PermissionId)
-                                       .Select(g => g.First()))
-                                        {
-                                            <tr>
-                                                <td>@permission.PermissionName</td>
-                                                
-                                                <td>
-                                                    @foreach (var rolePermission in Model.RolePermissions
-                                                   .Where(rp => rp.Permissions.Any(p => p.PermissionId == permission.PermissionId && p.Modules.Any(m => m.ModuleId == module.ModuleId))))
+                        <div class="card-body">
+                            <div class="role-permissions-container">
+                                @foreach (var rolePermission in Model.RolePermissions)
+                                {
+                                    <div class="role-panel card border mb-3">
+                                        <div class="card-header role-header d-flex justify-content-between align-items-center"
+                                             data-bs-toggle="collapse" data-bs-target="#role-@rolePermission.RoleId-@module.ModuleId">
+                                            <div>
+                                                <i class="fas fa-user-tag me-2"></i>
+                                                <span class="fw-bold">@rolePermission.RoleName</span>
+                                            </div>
+                                            <span class="badge rounded-pill text-dark permission-counter"
+                                                  data-role="@rolePermission.RoleId"
+                                                  data-module="@module.ModuleId">
+                                                0/0 Permissions
+                                            </span>
+                                        </div>
+                                        <div id="role-@rolePermission.RoleId-@module.ModuleId" class="collapse">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    @{
+                                                        var permissionsForModule = Model.RolePermissions
+                                                        .SelectMany(rp => rp.Permissions)
+                                                        .Where(p => p.Modules.Any(m => m.ModuleId == module.ModuleId))
+                                                        .GroupBy(p => p.PermissionId)
+                                                        .Select(g => g.First())
+                                                        .ToList();
+                                                    }
+
+                                                    @foreach (var permission in permissionsForModule)
                                                     {
                                                         var rolePermissionIndex = Model.RolePermissions.IndexOf(rolePermission);
                                                         var permissionIndex = rolePermission.Permissions.FindIndex(p => p.PermissionId == permission.PermissionId);
                                                         var moduleIndex = rolePermission.Permissions[permissionIndex].Modules.FindIndex(m => m.ModuleId == module.ModuleId);
 
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleId" />
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleName" />
+                                                        <div class="col-md-4 mb-2">
+                                                            <div class="form-check permission-item">
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleId" />
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].RoleName" />
 
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionId" />
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionName" />
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleId" />
-                                                        <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleName" />
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionId" />
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].PermissionName" />
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleId" />
+                                                                <input type="hidden" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].ModuleName" />
 
-                                                        <input type="checkbox" asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].IsSelected" class="form-check-input permission-checkbox" data-module-id="@module.ModuleId" data-role-id="@rolePermission.RoleId" />
-                                                        <span class="ms-2">@rolePermission.RoleName</span>
-
-                                                        <br />
+                                                                <input type="checkbox"
+                                                                       asp-for="@Model.RolePermissions[rolePermissionIndex].Permissions[permissionIndex].Modules[moduleIndex].IsSelected"
+                                                                       class="form-check-input permission-checkbox"
+                                                                       data-module-id="@module.ModuleId"
+                                                                       data-role-id="@rolePermission.RoleId" />
+                                                                <label class="form-check-label">
+                                                                    @permission.PermissionName
+                                                                </label>
+                                                            </div>
+                                                        </div>
                                                     }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
                 }
             </div>
-        </div>
 
-        <div class="row mt-4">
-            <div class="col-md-12 d-flex justify-content-center">
-                <button type="submit" class="btn btn-outline-primary btn-lg me-2">
-                    <i class="bi bi-save me-2"></i> Save Permissions
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                    <i class="bi bi-arrow-left me-2"></i> Back to List
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
                 </a>
+                <div>
+                    <button type="button" id="resetChangesBtn" class="btn btn-outline-warning me-2">
+                        <i class="fas fa-undo me-1"></i> Reset Changes
+                    </button>
+                    <button type="submit" id="savePermissionsBtn" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Permissions
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-question-circle me-2"></i>Confirm Action</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">Are you sure you want to proceed with this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmActionBtn" class="btn btn-primary">Confirm</button>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        // Select All for Roles within a Module
-        document.querySelectorAll('.select-all-role').forEach(selectAllCheckbox => {
-            selectAllCheckbox.addEventListener('change', function () {
-                const moduleId = this.getAttribute('data-module-id');
-                const roleId = this.getAttribute('data-role-id');
-                const permissionCheckboxes = document.querySelectorAll(`.permission-checkbox[data-module-id="${moduleId}"][data-role-id="${roleId}"]`);
+        // Store original state for reset functionality
+        let originalState = {};
 
-                permissionCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize permission counters
+            updateAllPermissionCounters();
+
+            // Store original checkbox states
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                const moduleId = checkbox.dataset.moduleId;
+                const roleId = checkbox.dataset.roleId;
+                const key = `${moduleId}-${roleId}-${checkbox.name}`;
+                originalState[key] = checkbox.checked;
             });
-        });
 
-        // Collapse/Expand Module Sections
-        document.querySelectorAll('.btn-link').forEach(button => {
-            button.addEventListener('click', () => {
-                const icon = button.querySelector('i');
-                if (icon.classList.contains('bi-chevron-down')) {
-                    icon.classList.remove('bi-chevron-down');
-                    icon.classList.add('bi-chevron-up');
+            // Module dropdown change handler
+            document.getElementById('moduleDropdown').addEventListener('change', function() {
+                document.querySelectorAll('.module-permissions').forEach(module => {
+                    module.style.display = module.id === this.value ? 'block' : 'none';
+                });
+
+                // Show/hide modules container
+                const modulesContainer = document.getElementById('modulesContainer');
+                if (this.value) {
+                    document.querySelector('.alert-info').style.display = 'none';
                 } else {
-                    icon.classList.remove('bi-chevron-up');
-                    icon.classList.add('bi-chevron-down');
+                    document.querySelector('.alert-info').style.display = 'block';
                 }
             });
+
+            // Checkbox change handler
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updatePermissionCounter(this.dataset.moduleId, this.dataset.roleId);
+                });
+            });
+
+            // Expand all roles toggle
+            document.getElementById('expandAllRoles').addEventListener('change', function() {
+                const accordions = document.querySelectorAll('.collapse');
+                const bsCollapse = this.checked ? 'show' : 'hide';
+                accordions.forEach(accordion => {
+                    bootstrap.Collapse.getInstance(accordion)?.[bsCollapse]() || new bootstrap.Collapse(accordion, {
+                        toggle: this.checked
+                    });
+                });
+            });
+
+            // Select all permissions for a module
+            document.querySelectorAll('.select-all-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const moduleId = this.dataset.module;
+                    toggleModulePermissions(moduleId, true);
+                });
+            });
+
+            // Deselect all permissions for a module
+            document.querySelectorAll('.deselect-all-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const moduleId = this.dataset.module;
+                    toggleModulePermissions(moduleId, false);
+                });
+            });
+
+            // Reset form to original state
+            document.getElementById('resetChangesBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                showConfirmationModal(
+                    'Are you sure you want to reset all changes?',
+                    resetToOriginalState
+                );
+            });
+
+            // Form submission confirmation
+            document.getElementById('permissionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                showConfirmationModal(
+                    'Are you sure you want to save these permission changes?',
+                    () => { this.submit(); }
+                );
+            });
         });
+
+        // Update permission counter for a specific role and module
+        function updatePermissionCounter(moduleId, roleId) {
+            const checkboxes = document.querySelectorAll(`.permission-checkbox[data-module-id="${moduleId}"][data-role-id="${roleId}"]`);
+            const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+            const counter = document.querySelector(`.permission-counter[data-role="${roleId}"][data-module="${moduleId}"]`);
+
+            if (counter) {
+                counter.textContent = `${checkedCount}/${checkboxes.length} Permissions`;
+
+                // Update styling based on selection status
+                if (checkedCount === 0) {
+                    counter.className = 'badge rounded-pill permission-counter';
+                } else if (checkedCount === checkboxes.length) {
+                    counter.className = 'badge rounded-pill permission-counter';
+                } else {
+                    counter.className = 'badge rounded-pill text-dark permission-counter';
+                }
+            }
+        }
+
+        // Update all permission counters
+        function updateAllPermissionCounters() {
+            const moduleIds = [...new Set(Array.from(document.querySelectorAll('.permission-checkbox')).map(cb => cb.dataset.moduleId))];
+            const roleIds = [...new Set(Array.from(document.querySelectorAll('.permission-checkbox')).map(cb => cb.dataset.roleId))];
+
+            moduleIds.forEach(moduleId => {
+                roleIds.forEach(roleId => {
+                    updatePermissionCounter(moduleId, roleId);
+                });
+            });
+        }
+
+        // Toggle all permissions for a module
+        function toggleModulePermissions(moduleId, state) {
+            document.querySelectorAll(`.permission-checkbox[data-module-id="${moduleId}"]`).forEach(checkbox => {
+                checkbox.checked = state;
+                updatePermissionCounter(moduleId, checkbox.dataset.roleId);
+            });
+        }
+
+        // Reset form to original state
+        function resetToOriginalState() {
+            document.querySelectorAll('.permission-checkbox').forEach(checkbox => {
+                const moduleId = checkbox.dataset.moduleId;
+                const roleId = checkbox.dataset.roleId;
+                const key = `${moduleId}-${roleId}-${checkbox.name}`;
+                checkbox.checked = originalState[key];
+                updatePermissionCounter(moduleId, roleId);
+            });
+
+            showToast('Changes have been reset to their original state', 'info');
+        }
+
+        // Show confirmation modal
+        function showConfirmationModal(message, confirmCallback) {
+            const modal = document.getElementById('confirmationModal');
+            const bsModal = new bootstrap.Modal(modal);
+
+            document.getElementById('confirmationMessage').textContent = message;
+
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            // Remove existing event listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            // Add new event listener
+            newConfirmBtn.addEventListener('click', function() {
+                confirmCallback();
+                bsModal.hide();
+            });
+
+            bsModal.show();
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+            toastContainer.style.zIndex = 5;
+
+            toastContainer.innerHTML = `
+                <div class="toast align-items-center text-white bg-${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle'} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(toastContainer);
+            const toastElement = toastContainer.querySelector('.toast');
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastContainer.remove();
+            });
+
+            toast.show();
+        }
     </script>
 }

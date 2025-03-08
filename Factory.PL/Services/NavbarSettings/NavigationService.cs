@@ -10,7 +10,7 @@ namespace Factory.PL.Services.NavbarSettings
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _unitOfWork;
 
-        public NavigationService(IHttpContextAccessor httpContextAccessor ,IUnitOfWork unitOfWork)
+        public NavigationService(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
         {
             _httpContextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
@@ -54,11 +54,11 @@ namespace Factory.PL.Services.NavbarSettings
 
                 if (userRoles.Any())
                 {
-                    return userRoles.First().ToUpper();  
+                    return userRoles.First().ToUpper();
                 }
             }
 
-            return "User"; 
+            return "User";
         }
 
     }

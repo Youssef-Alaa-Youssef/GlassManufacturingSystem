@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Factory.BLL.InterFaces;
+using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Permission;
+using Factory.PL.ViewModels.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Factory.PL.ViewModels.Permissions;
-using Factory.BLL.InterFaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Factory.DAL.Models.Auth;
 
 namespace Factory.PL.Controllers.Permission
 {
@@ -50,7 +50,7 @@ namespace Factory.PL.Controllers.Permission
             {
                 ModuleId = module.Id,
                 ModuleName = module.Name,
-                IsSelected = false 
+                IsSelected = false
             }).ToList();
 
             var permissionViewModels = permissions.Select(permission => new PermissionViewModel

@@ -13,7 +13,7 @@ namespace Factory.PL.ViewModels.Home
         [Required(ErrorMessage = "Logo is required.")]
         [ImageSizeValidation(250, 190, ErrorMessage = "Each photo must be 250x190 pixels.")]
 
-        public IFormFile? LogoFile { get; set; } 
+        public IFormFile? LogoFile { get; set; }
         public string? LogoUrl { get; set; }
 
         [StringLength(1000, ErrorMessage = "Description can't be longer than 1000 characters.")]

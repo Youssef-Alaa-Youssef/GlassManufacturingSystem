@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.BLL.InterFaces;
-using Microsoft.AspNetCore.Authorization;
-using Factory.PL.ViewModels.OrderList;
-using Factory.DAL.Models.Warehouses;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.OrderList;
+using Factory.DAL.Models.Warehouses;
+using Factory.PL.ViewModels.OrderList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ZXing;
 using ZXing.Common;
 
@@ -22,7 +22,7 @@ namespace Factory.Controllers
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
-            var orderViewModels = orders.Select(MapToViewModel).ToList();
+            var orderViewModels = orders.Select(MapToViewModel).OrderByDescending(o=>o.Id).ToList();
             return View(orderViewModels);
         }
 
@@ -125,20 +125,20 @@ namespace Factory.Controllers
 
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
 
-var model = new OrderViewModel
-{
-    JobNo = newJobNo,
-    Date = DateTime.Now,
-    FinishDate = DateTime.Now.AddDays(10),
-    Priority = "High",
-    IsAccepted = true,
-    Signature = User.Identity?.Name,
-    Items = items.Select(item => new OrderItemViewModel
-    {
-        Id = item.Id,  // Assuming Item has an Id property
-        ItemName = item.Name,  // Assuming Item has a Name property
-    }).ToList()
-};
+            var model = new OrderViewModel
+            {
+                JobNo = newJobNo,
+                Date = DateTime.Now,
+                FinishDate = DateTime.Now.AddDays(10),
+                Priority = "High",
+                IsAccepted = true,
+                Signature = User.Identity?.Name,
+                Items = items.Select(item => new OrderItemViewModel
+                {
+                    Id = item.Id,  // Assuming Item has an Id property
+                    ItemName = item.Name,  // Assuming Item has a Name property
+                }).ToList()
+            };
 
 
             return model;
@@ -241,15 +241,15 @@ var model = new OrderViewModel
         [Authorize(Policy = "Orders_Read")]
         public async Task<IActionResult> GlassLabel(int id)
         {
-        var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
-        if (order == null)
-        {
-        return NotFound(); 
-        }
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
 
-        var labelViewModel = MapToLabelViewModel(order);
+            var labelViewModel = MapToLabelViewModel(order);
 
-        return View(labelViewModel);
+            return View(labelViewModel);
         }
 
         private LabelViewModel MapToLabelViewModel(Order order)
@@ -260,48 +260,48 @@ var model = new OrderViewModel
                 CustomerName = order.CustomerName,
                 JobNo = order.JobNo,
                 OrderDate = order.Date.ToString("d"),
-                Barcode = GenerateBarcode(order.Id), 
+                Barcode = GenerateBarcode(order.Id),
                 Items = order.Items.Select(item => new OrderItemViewModel
                 {
                     Id = item.Id,
                     ItemName = item.ItemName,
                     Quantity = item.Quantity,
                     CustomerReference = item.CustomerReference
-                }).ToList() 
+                }).ToList()
             };
         }
 
 
         private string GenerateBarcode(int orderId)
-{
-    var barcodeWriter = new BarcodeWriterPixelData
-    {
-        Format = BarcodeFormat.CODE_128,
-        Options = new EncodingOptions
         {
-            Height = 50,
-            Width = 200
-        }
-    };
+            var barcodeWriter = new BarcodeWriterPixelData
+            {
+                Format = BarcodeFormat.CODE_128,
+                Options = new EncodingOptions
+                {
+                    Height = 50,
+                    Width = 200
+                }
+            };
 
-    var pixelData = barcodeWriter.Write(orderId.ToString());
-    using (var bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
-    {
-        using (var ms = new MemoryStream())
-        {
-            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-            try
+            var pixelData = barcodeWriter.Write(orderId.ToString());
+            using (var bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
             {
-                System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+                using (var ms = new MemoryStream())
+                {
+                    var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                    try
+                    {
+                        System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+                    }
+                    finally
+                    {
+                        bitmap.UnlockBits(bitmapData);
+                    }
+                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    return $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+                }
             }
-            finally
-            {
-                bitmap.UnlockBits(bitmapData);
-            }
-            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            return $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
         }
-    }
-}
     }
 }

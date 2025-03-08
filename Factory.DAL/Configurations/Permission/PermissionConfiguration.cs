@@ -8,7 +8,7 @@ namespace Factory.DAL.Configurations.Permission
     {
         public void Configure(EntityTypeBuilder<PermissionTyepe> builder)
         {
-            builder.ToTable("PermissionTyepe"); 
+            builder.ToTable("PermissionTyepe");
 
             builder.HasKey(p => p.Id);
 

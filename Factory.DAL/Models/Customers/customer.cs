@@ -2,7 +2,7 @@
 {
     public class Customer
     {
-        public Guid Id { get; set; } 
+        public Guid Id { get; set; }
 
         public string FirstNameEnglish { get; set; } = string.Empty;
         public string LastNameEnglish { get; set; } = string.Empty;
@@ -18,11 +18,11 @@
         public string PostalCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
 
-        public DateTime? DateOfBirth { get; set; } 
+        public DateTime? DateOfBirth { get; set; }
         public string CustomerType { get; set; } = string.Empty;
-        public DateTime RegistrationDate { get; set; } 
-        public bool IsActive { get; set; }         
+        public DateTime RegistrationDate { get; set; }
+        public bool IsActive { get; set; }
 
-        public  ICollection<Order> Orders { get; set; } 
+        public ICollection<Order> Orders { get; set; }
     }
 }

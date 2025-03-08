@@ -9,7 +9,7 @@ namespace Factory.DAL.Models.Auth
         public bool IsMFAEnabled { get; set; } = false;
         public bool IsDarkModeEnabled { get; set; } = false;
         public DateTime? LastBackupDate { get; set; }
-        public DateTime? DeleteRequestedOn { get; set; } 
+        public DateTime? DeleteRequestedOn { get; set; }
     }
 
 }

@@ -24,7 +24,7 @@ namespace Factory.PL.ViewModels.Auth
         public string Password { get; set; } = string.Empty;
 
         [Display(Name = "Is Active")]
-        public bool IsActive { get; set; } = true; 
+        public bool IsActive { get; set; } = true;
     }
 
 

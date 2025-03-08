@@ -14,7 +14,7 @@ namespace Factory.PL.ViewModels.OnBoarding
 
         [Required]
         [Display(Name = "Employee ID")]
-        public string EmployeeId { get; set; } = string.Empty ;
+        public string EmployeeId { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Start Date")]

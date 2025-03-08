@@ -43,7 +43,7 @@ namespace Factory.DAL.Configurations.Warehouses
                     NameAr = "المستودع الفرعي أ",
                     AddressEn = "Main Warehouse, Section 1",
                     AddressAr = "القسم الأول، المستودع الرئيسي",
-                    MainWarehouseId = 1 
+                    MainWarehouseId = 1
                 },
                 new SubWarehouse
                 {
@@ -52,7 +52,7 @@ namespace Factory.DAL.Configurations.Warehouses
                     NameAr = "المستودع الفرعي ب",
                     AddressEn = "Main Warehouse, Section 2",
                     AddressAr = "القسم الثاني، المستودع الرئيسي",
-                    MainWarehouseId = 1 
+                    MainWarehouseId = 1
                 }
             );
         }

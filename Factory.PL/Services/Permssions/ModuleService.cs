@@ -1,14 +1,12 @@
-﻿using Factory.BLL.Interfaces;
-using Factory.BLL.InterFaces;
-using Factory.DAL.Models;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Permission;
 
 namespace Factory.PL.Services.Permssions
 {
-public interface IModuleService
-{
-    Task<List<Module>> GetModulesForUserAsync(string userId);
-}
+    public interface IModuleService
+    {
+        Task<List<Module>> GetModulesForUserAsync(string userId);
+    }
 
     public class ModuleService : IModuleService
     {
@@ -24,5 +22,5 @@ public interface IModuleService
             return await _unitOfWork.GetRepository<Module>().GetModulesForUserAsync(userId);
         }
     }
-    
+
 }

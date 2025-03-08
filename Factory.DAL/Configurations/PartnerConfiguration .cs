@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Factory.DAL.Models.Home;
 using Microsoft.EntityFrameworkCore;
-using Factory.DAL.Models.Home;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public class PartnerConfiguration : IEntityTypeConfiguration<Partner>
 {

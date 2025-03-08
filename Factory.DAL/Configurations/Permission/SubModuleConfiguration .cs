@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Factory.DAL.Models.Permission;
 using Microsoft.EntityFrameworkCore;
-using Factory.DAL.Models.Permission;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Factory.DAL.Configurations.Permission
 {
@@ -69,7 +69,7 @@ namespace Factory.DAL.Configurations.Permission
                 new SubModule { Id = 20, Name = "Payslip Generation", Controller = "Payroll", Action = "GeneratePayslip", Title = "Payslip Generation", ModuleId = 6 },
                 new SubModule { Id = 21, Name = "Overtime Payments", Controller = "Payroll", Action = "Overtime", Title = "Overtime Payments", ModuleId = 6 },
                 new SubModule { Id = 22, Name = "Payroll History", Controller = "Payroll", Action = "History", Title = "Payroll History", ModuleId = 6 },
-                new SubModule { Id = 23,Name = "Financial Orders",  Controller = "Accountant",Action = "Index",Title = "Financial History", ModuleId = 8},
+                new SubModule { Id = 23, Name = "Financial Orders", Controller = "Accountant", Action = "Index", Title = "Financial History", ModuleId = 8 },
                 new SubModule { Id = 24, Name = "Pre-Onboarding", Controller = "Onboarding", Action = "PreOnboarding", Title = "Pre-Onboarding Process", ModuleId = 9 },
                 new SubModule { Id = 25, Name = "IT Setup", Controller = "Onboarding", Action = "ITSetup", Title = "IT System & Equipment Setup", ModuleId = 9 },
                 new SubModule { Id = 26, Name = "Training & Orientation", Controller = "Onboarding", Action = "Training", Title = "Employee Training and Orientation", ModuleId = 9 },

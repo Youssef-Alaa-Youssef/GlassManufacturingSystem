@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.OrderList;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.OrderList;
 
 namespace Factory.DAL.Configurations
 {
@@ -16,7 +16,7 @@ namespace Factory.DAL.Configurations
             builder.Property(oi => oi.Description)
                    .IsRequired()
                    .HasMaxLength(255);
-            
+
             builder.Property(oi => oi.Width)
                    .HasPrecision(18, 2)
                    .IsRequired();
@@ -48,11 +48,11 @@ namespace Factory.DAL.Configurations
 
             builder.Property(oi => oi.IsDelivered)
                 .IsRequired()
-                .HasDefaultValue(false); 
+                .HasDefaultValue(false);
 
             builder.Property(oi => oi.DeliveryDate)
                    .HasColumnType("datetime")
-                   .IsRequired(false); 
+                   .IsRequired(false);
 
             builder.Property(oi => oi.DeliveredBy)
                    .HasMaxLength(255)

@@ -6,7 +6,7 @@ namespace Factory.PL.Services.Order
     {
         public async Task<OrderData> GetOrderByIdAsync(string orderId)
         {
-            await Task.Delay(10); 
+            await Task.Delay(10);
 
             return new OrderData
             {

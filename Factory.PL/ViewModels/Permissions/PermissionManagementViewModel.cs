@@ -1,6 +1,4 @@
-﻿using Factory.DAL.Models.Permission;
-
-namespace Factory.PL.ViewModels.Permissions
+﻿namespace Factory.PL.ViewModels.Permissions
 {
     public class PermissionManagementViewModel
     {

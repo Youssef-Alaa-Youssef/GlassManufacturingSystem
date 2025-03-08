@@ -61,7 +61,7 @@ namespace Factory.PL.Services.UploadFile
                 return Task.FromResult(true);
             }
 
-            return Task.FromResult(false); 
+            return Task.FromResult(false);
         }
 
         private string GetContentType(string fileName)

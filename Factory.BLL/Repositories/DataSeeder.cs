@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
-using Factory.DAL.Models.Permission;
-using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Auth;
+using Factory.DAL.Models.Permission;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Factory.DAL.Configurations
 {

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Factory.DAL.Models.Home;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Factory.DAL.Models.Home;
-using System;
 
 namespace Factory.DAL.Data
 {
@@ -27,13 +26,13 @@ namespace Factory.DAL.Data
 
             builder.Property(c => c.CreatedDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()"); 
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(c => c.UpdatedDate)
                 .IsRequired(false);
 
             builder.Property(c => c.IpAddress)
-                .HasMaxLength(45); 
+                .HasMaxLength(45);
         }
     }
 }

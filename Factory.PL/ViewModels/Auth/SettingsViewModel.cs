@@ -6,7 +6,7 @@
         public string Email { get; set; } = string.Empty;
         public string ProfilePictureUrl { get; set; } = string.Empty;
 
-        public bool IsMFAEnabled { get; set; } 
+        public bool IsMFAEnabled { get; set; }
 
         public bool IsDarkModeEnabled { get; set; }
 

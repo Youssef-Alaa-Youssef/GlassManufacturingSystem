@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+﻿using Factory.DAL.Models.Auth;
 using Factory.PL.ViewModels.Auth;
-using Factory.DAL.Models.Auth;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 public class SettingsController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -29,8 +29,8 @@ public class SettingsController : Controller
             Email = user.Email ?? string.Empty,
             ProfilePictureUrl = user.ProfilePictureUrl ?? "/images/default-profile.png",
             IsMFAEnabled = user.TwoFactorEnabled,
-            IsDarkModeEnabled = user.IsDarkModeEnabled, 
-            LastBackupDate = user.LastBackupDate, 
+            IsDarkModeEnabled = user.IsDarkModeEnabled,
+            LastBackupDate = user.LastBackupDate,
             ChangePasswordModel = new ChangePasswordViewModel()
         };
 

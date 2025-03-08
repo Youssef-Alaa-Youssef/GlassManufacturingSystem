@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Documentation;
-using Factory.BLL.InterFaces;
-using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.Documentation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Factory.Controllers

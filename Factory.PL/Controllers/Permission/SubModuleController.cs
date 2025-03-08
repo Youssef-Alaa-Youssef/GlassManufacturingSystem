@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Models.Permission;
-using Microsoft.AspNetCore.Authorization;
 using Factory.PL.ViewModels.Permission;
-using Factory.BLL.InterFaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Factory.Controllers
 {
@@ -19,6 +20,17 @@ namespace Factory.Controllers
         [Authorize(Policy = "Permission Management_Read")]
         public async Task<IActionResult> Index()
         {
+            var modules = (await _unitOfWork.GetRepository<Module>()
+            .GetAllAsync())
+            .Select(m => new
+            {
+               m.Id,
+               m.Name,
+               m.IconClass
+            })
+            .ToList();
+
+            ViewBag.Modules = modules;
             var subModules = await _unitOfWork.GetRepository<SubModule>().GetAllAsync();
             return View(subModules);
         }
@@ -187,6 +199,23 @@ namespace Factory.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<JsonResult> GetSubModulesByModule(int moduleId)
+        {
+            var subModules = await _unitOfWork.GetRepository<SubModule>()
+                .Query() 
+                .Where(s => s.ModuleId == moduleId)
+                .Select(s => new
+                {
+                    id = s.Id,
+                    name = s.Name,
+                    controller = s.Controller,
+                    action = s.Action,
+                    title = s.Title,
+                    module = new { name = s.Module.Name }
+                })
+                .ToListAsync(); 
+            return Json(subModules);
+        }
         private IEnumerable<SelectListItem> ConvertToSelectList(IEnumerable<Module> modules)
         {
             return modules.Select(m => new SelectListItem

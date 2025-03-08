@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Factory.PL.Models;
+using Factory.PL.Services.Order;
+using Microsoft.AspNetCore.Mvc;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Factory.PL.Models;
-using Factory.PL.Services.Order;
 
 namespace Factory.PL.Controllers.OrderList
 {

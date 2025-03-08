@@ -2,7 +2,6 @@
 using Factory.DAL.Configurations;
 using Factory.PL.Helper;
 using Factory.PL.Middleware;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 public static class MiddlewareConfiguration

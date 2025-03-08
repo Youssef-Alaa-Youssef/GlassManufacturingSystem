@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Factory.DAL.Enums;
+﻿using Factory.DAL.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Factory.PL.ViewModels.Property

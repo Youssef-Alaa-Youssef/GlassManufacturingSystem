@@ -29,7 +29,7 @@ namespace Factory.DAL.Configurations.Finance
                    .IsRequired();
 
             builder.Property(fr => fr.UserId)
-                   .HasMaxLength(450) 
+                   .HasMaxLength(450)
                    .IsRequired();
 
             builder.HasIndex(fr => fr.Date)

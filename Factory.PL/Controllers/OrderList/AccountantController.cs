@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Factory.DAL.Models.Finance;
-using Factory.BLL.InterFaces;
-using Factory.PL.ViewModels.Finance;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Factory.DAL.Models.OrderList;
-using Factory.PL.ViewModels.OrderList;
-using Microsoft.EntityFrameworkCore;
-using Factory.DAL.Models.Warehouses;
+﻿using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
+using Factory.DAL.Models.Finance;
+using Factory.DAL.Models.OrderList;
 using Factory.PL.ViewModels.Accountant;
+using Factory.PL.ViewModels.Finance;
+using Factory.PL.ViewModels.OrderList;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Factory.Controllers
 {
@@ -28,10 +26,10 @@ namespace Factory.Controllers
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
             if (orders == null || !orders.Any())
             {
-                return View(new List<OrderViewModel>()); 
+                return View(new List<OrderViewModel>());
             }
 
-            var orderViewModels = orders.Select(MapToViewModel).ToList();
+            var orderViewModels = orders.Select(MapToViewModel).OrderByDescending(o => o.Id).ToList();
             return View(orderViewModels);
         }
 
@@ -210,7 +208,7 @@ namespace Factory.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction(nameof(Index)); 
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -305,6 +303,60 @@ namespace Factory.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateRank([FromBody] RankUpdateModel model)
+        {
+            if (model == null)
+            {
+                return Json(new { success = false, message = "Invalid request data." });
+            }
+
+            try
+            {
+                var itemRepository = _unitOfWork.GetRepository<OrderItem>();
+                var item = await itemRepository.GetByIdAsync(model.ItemId);
+
+                if (item == null)
+                {
+                    return Json(new { success = false, message = "Item not found." });
+                }
+
+                item.Rank = model.Rank;
+
+                await itemRepository.UpdateAsync(item);
+                await _unitOfWork.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Rank updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating rank: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred while updating the rank." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDeliveryStatus([FromBody] DeliveryDataViewModel data)
+        {
+            try
+            {
+                var item = await _unitOfWork.GetRepository<OrderItem>().GetByIdAsync(data.ItemId);
+                if (item != null)
+                {
+                    item.IsDelivered = data.IsDelivered;
+                    item.DeliveryDate = data.IsDelivered ? DateTime.Parse(data.DeliveryDate) : (DateTime?)null;
+                    item.DeliveredBy = data.IsDelivered ? data.DeliveredBy : null;
+                    await _unitOfWork.GetRepository<OrderItem>().UpdateAsync(item);
+                    await _unitOfWork.SaveChangesAsync();
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false, message = "Item not found." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         public static OrderViewModel MapToViewModel(Order order)
         {
             if (order == null)
@@ -338,66 +390,14 @@ namespace Factory.Controllers
                     CustomerReference = i.CustomerReference,
                     Description = i.Description,
                     Rank = i.Rank,
+                    SQM = Math.Round(i.SQM, 2),
+                    TotalLM = Math.Round(i.TotalLM, 2),
                     DeliveredBy = i.DeliveredBy,
                     DeliveryDate = i.DeliveryDate,
-                    IsDelivered = i.IsDelivered
+                    IsDelivered = i.IsDelivered,
                 }).ToList() ?? new List<OrderItemViewModel>(),
                 ItemCount = order.Items?.Count ?? 0
             };
-        }
-        [HttpPost]
-        public async Task<IActionResult> UpdateRank([FromBody] RankUpdateModel model)
-        {
-            if (model == null)
-            {
-                return Json(new { success = false, message = "Invalid request data." });
-            }
-
-            try
-            {
-                var itemRepository = _unitOfWork.GetRepository<OrderItem>();
-                var item = await itemRepository.GetByIdAsync(model.ItemId);
-
-                if (item == null)
-                {
-                    return Json(new { success = false, message = "Item not found." });
-                }
-
-                item.Rank = model.Rank;
-
-                await itemRepository.UpdateAsync(item);
-                await _unitOfWork.SaveChangesAsync(); 
-
-                return Json(new { success = true, message = "Rank updated successfully." });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating rank: {ex.Message}");
-                return Json(new { success = false, message = "An error occurred while updating the rank." });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateDeliveryStatus([FromBody] DeliveryDataViewModel data)
-        {
-            try
-            {
-                var item = await _unitOfWork.GetRepository<OrderItem>().GetByIdAsync(data.ItemId);
-                if (item != null)
-                {
-                    item.IsDelivered = data.IsDelivered;
-                    item.DeliveryDate = data.IsDelivered ? DateTime.Parse(data.DeliveryDate) : (DateTime?)null;
-                    item.DeliveredBy = data.IsDelivered ? data.DeliveredBy : null;
-                    await _unitOfWork.GetRepository<OrderItem>().UpdateAsync(item);
-                    await _unitOfWork.SaveChangesAsync();
-                    return Json(new { success = true });
-                }
-                return Json(new { success = false, message = "Item not found." });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
         }
 
     }
