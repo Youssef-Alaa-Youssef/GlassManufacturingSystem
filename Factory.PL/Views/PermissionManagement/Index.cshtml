@@ -5,80 +5,54 @@
     Layout = "_LogedUser";
 }
 
-
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
-
-    <!-- Page Title -->
     @await Html.PartialAsync("_PageTitle")
 
-
-    <!-- Overview Section -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">System Overview</h5>
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary  h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Users</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Users.Count()</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Users -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Users</h6>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Modules</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Modules.Count()</div>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                @foreach (var user in Model.Users)
-                                {
-                                    <li class="list-group-item">
-                                        <strong>@user.UserName</strong>
-                                        <ul class="list-unstyled ml-3">
-                                            @foreach (var role in user.Roles)
-                                            {
-                                                <li><span class="badge badge-secondary">@role</span></li>
-                                            }
-                                        </ul>
-                                    </li>
-                                }
-                            </ul>
+                        <div class="col-auto">
+                            <i class="fas fa-puzzle-piece fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Modules -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Modules</h6>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Permissions</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Permissions.Count()</div>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                @foreach (var module in Model.Modules)
-                                {
-                                    <li class="list-group-item">
-                                        <strong>@module.ModuleName</strong>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Permissions -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">Permissions</h6>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                @foreach (var permission in Model.Permissions)
-                                {
-                                    <li class="list-group-item">
-                                        <strong>@permission.PermissionName</strong>
-                                    </li>
-                                }
-                            </ul>
+                        <div class="col-auto">
+                            <i class="fas fa-key fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -86,10 +60,173 @@
         </div>
     </div>
 
-    <!-- Assign Permissions Button -->
-    <div class="card-footer text-center">
-        <a asp-action="AssignPermissions" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-shield-alt"></i> Assign Permissions
-            </a>
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Pie Chart: User Roles -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">User Roles Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="userRolesChart"></canvas>
+                </div>
+            </div>
         </div>
+
+        <!-- Bar Chart: Module Distribution -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Module Distribution</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="moduleDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart: Permission Usage -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Permission Usage</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="permissionUsageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="row">
+        <!-- Users Table -->
+        <div class="col-md-6 mb-4">
+            <div class="card  h-100">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Users</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Roles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        <td><strong>@user.UserName</strong></td>
+                                        <td>
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <span class="badge badge-primary mr-1">@role</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permissions Table -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold">Permissions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Permission Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var permission in Model.Permissions)
+                                {
+                                    <tr>
+                                        <td><strong>@permission.PermissionName</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer text-center mt-2">
+        <a asp-action="AssignPermissions" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-shield-alt mr-2"></i> Assign Permissions
+        </a>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/chart.js/chart.min.js"></script>
+    <script>
+        var userRolesCtx = document.getElementById('userRolesChart').getContext('2d');
+        var userRolesChart = new Chart(userRolesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Admin', 'Editor', 'Viewer'], // Replace with actual roles
+                datasets: [{
+                    data: [10, 20, 30], // Replace with actual counts
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+
+        var moduleDistributionCtx = document.getElementById('moduleDistributionChart').getContext('2d');
+        var moduleDistributionChart = new Chart(moduleDistributionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Module 1', 'Module 2', 'Module 3'],  
+                datasets: [{
+                    label: 'Modules',
+                    data: [12, 19, 8], 
+                    backgroundColor: '#4e73df',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var permissionUsageCtx = document.getElementById('permissionUsageChart').getContext('2d');
+        var permissionUsageChart = new Chart(permissionUsageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Read', 'Write', 'Delete'], 
+                datasets: [{
+                    data: [15, 25, 10], 
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    </script>
+}

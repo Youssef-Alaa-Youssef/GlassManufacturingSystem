@@ -3,20 +3,22 @@
 @{
     ViewData["Title"] = "Modules";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow mt-3 p-3">
+<div class="container-fluid card shadow mt-3 p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
-
 
     <p>
         <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
         <a asp-controller="SubModule" asp-action="Create" class="btn btn-outline-info">Create Sub Warehouse</a>
     </p>
 
-    <table class="table table-bordered table-striped">
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by name or URL..." onkeyup="searchTable()" aria-label="Search modules by name or URL">
+    </div>
+
+    <table class="table table-bordered table-striped" id="modulesTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -33,20 +35,46 @@
                     <td>@item.Url</td>
                     <td>@item.IconClass</td>
                     <td>
-                    <div class="d-flex flex-wrap gap-2 justify-content-center">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm w-100 w-md-auto">
-                            🔍 Edit
-                        </a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
-                            ✏ Details
-                        </a>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm w-100 w-md-auto">
+                                🔍 Edit
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm w-100 w-md-auto">
+                                ✏ Details
+                            </a>
                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
                                 🗑 Delete
                             </a>
-                    </div>
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<script>
+    let timeout;
+    function searchTable() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("modulesTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                let found = false;
+
+                for (let j = 0; j < cells.length - 1; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(input)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = found ? "" : "none";
+            }
+        }, 300);
+    }
+</script>
