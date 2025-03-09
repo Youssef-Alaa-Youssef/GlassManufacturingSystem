@@ -4,13 +4,11 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card shadow mt-3 p-3">
-    <!-- Error Summary and Page Title -->
+<div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
     @await Html.PartialAsync("_Header")
 
-    <!-- Cutting Machine Alert -->
     <div class="row">
         <div class="col-md-12">
             @{
@@ -40,7 +38,6 @@
         </div>
     </div>
 
-    <!-- Customer and Invoice Information -->
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm">
@@ -99,7 +96,6 @@
         </div>
     </div>
 
-    <!-- Order Details Table -->
     @if (Model.Items?.Any() == true)
     {
         <div class="card border-0 shadow-sm mb-4">
@@ -173,7 +169,6 @@
         </div>
     }
 
-    <!-- Footer Buttons -->
     <div class="card-footer text-center mt-4 d-print-none">
         <button onclick="window.print()" class="btn btn-outline-secondary me-2">
             <i class="fas fa-print me-1"></i> Print Invoice
@@ -259,14 +254,11 @@
             deliveryCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     const row = this.closest('tr');
-                    // const deliveryDateInput = row.querySelector('.delivery-date');
                     const deliveredByInput = row.querySelector('.delivered-by');
 
                     if (this.checked) {
-                        // deliveryDateInput.removeAttribute('disabled');
                         deliveredByInput.removeAttribute('disabled');
                     } else {
-                        // deliveryDateInput.setAttribute('disabled', 'disabled');
                         deliveredByInput.setAttribute('disabled', 'disabled');
                     }
                 });
@@ -276,7 +268,6 @@
                     const itemId = this.dataset.itemId;
                     const row = this.closest('tr');
                     const isDelivered = row.querySelector('.delivery-checkbox').checked;
-                    // const deliveryDate = row.querySelector('.delivery-date').value;
                     const deliveredBy = row.querySelector('.delivered-by').value;
 
                     const data = {

@@ -16,14 +16,14 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [DynamicAuthorize]
         public async Task<IActionResult> Index()
         {
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
             return View(modules);
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [DynamicAuthorize]
         public async Task<IActionResult> Details(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);

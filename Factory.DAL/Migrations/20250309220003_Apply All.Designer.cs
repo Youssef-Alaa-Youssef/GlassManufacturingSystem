@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250309115955_Apply All")]
+    [Migration("20250309220003_Apply All")]
     partial class ApplyAll
     {
         /// <inheritdoc />
@@ -870,6 +870,11 @@ namespace Factory.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -888,142 +893,618 @@ namespace Factory.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            IconClass = "bi bi-shield-lock",
-                            Name = "Permission Management",
-                            Url = "/Users/Index"
+                            IconClass = "bi-people",
+                            IsActive = true,
+                            Name = "User Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 2,
-                            IconClass = "bi bi-people",
-                            Name = "User Management",
-                            Url = "/Auth/Index"
+                            IconClass = "bi-person-badge",
+                            IsActive = true,
+                            Name = "Role Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 3,
-                            IconClass = "bi bi-person-badge",
-                            Name = "Role Management",
-                            Url = "/Role/Index"
+                            IconClass = "bi-box-seam",
+                            IsActive = true,
+                            Name = "Inventory Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 4,
-                            IconClass = "bi bi-box-seam",
-                            Name = "Warehouse Management",
-                            Url = "/Warehouse/Index"
+                            IconClass = "bi-cart",
+                            IsActive = true,
+                            Name = "Order Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 5,
-                            IconClass = "bi bi-cart",
-                            Name = "Orders",
-                            Url = "/Order/Index"
+                            IconClass = "bi-cash-stack",
+                            IsActive = true,
+                            Name = "Payroll Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 6,
-                            IconClass = "bi bi-cash",
-                            Name = "Payroll",
-                            Url = "/Payroll/Index"
+                            IconClass = "bi-speedometer",
+                            IsActive = true,
+                            Name = "System Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 7,
-                            IconClass = "bi bi-gear",
-                            Name = "Settings",
-                            Url = "/Settings/Index"
+                            IconClass = "bi-headset",
+                            IsActive = true,
+                            Name = "Support Management",
+                            Url = ""
                         },
                         new
                         {
                             Id = 8,
-                            IconClass = "bi bi-cash-stack",
-                            Name = "Financial",
-                            Url = "/Accountant/Index"
+                            IconClass = "bi-file-earmark-bar-graph",
+                            IsActive = true,
+                            Name = "Reports",
+                            Url = ""
                         },
                         new
                         {
                             Id = 9,
-                            IconClass = "bi bi-person-plus",
-                            Name = "Onboarding",
-                            Url = "/Onboarding/Index"
+                            IconClass = "bi-gear",
+                            IsActive = true,
+                            Name = "Settings",
+                            Url = ""
+                        });
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Permission.Page", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Controller")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SubmoduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubmoduleId");
+
+                    b.ToTable("Pages", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Action = "Index",
+                            Controller = "PermissionManagement",
+                            IsActive = true,
+                            Name = "Permission List",
+                            SubmoduleId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Action = "AssignPermissions",
+                            Controller = "PermissionManagement",
+                            IsActive = true,
+                            Name = "Assign Permission",
+                            SubmoduleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Action = "Index",
+                            Controller = "Module",
+                            IsActive = true,
+                            Name = "Module List",
+                            SubmoduleId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Action = "Create",
+                            Controller = "Module",
+                            IsActive = true,
+                            Name = "Add Module",
+                            SubmoduleId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Action = "Index",
+                            Controller = "SubModule",
+                            IsActive = true,
+                            Name = "Submodule List",
+                            SubmoduleId = 4
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Action = "Create",
+                            Controller = "SubModule",
+                            IsActive = true,
+                            Name = "Add Submodule",
+                            SubmoduleId = 4
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Action = "Index",
+                            Controller = "Auth",
+                            IsActive = true,
+                            Name = "User List",
+                            SubmoduleId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Action = "Create",
+                            Controller = "Auth",
+                            IsActive = true,
+                            Name = "Add User",
+                            SubmoduleId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Action = "Index",
+                            Controller = "Role",
+                            IsActive = true,
+                            Name = "Role List",
+                            SubmoduleId = 3
                         },
                         new
                         {
                             Id = 10,
-                            IconClass = "bi bi-person-dash",
-                            Name = "Offboarding",
-                            Url = "/Offboarding/Index"
+                            Action = "Create",
+                            Controller = "Role",
+                            IsActive = true,
+                            Name = "Add Role",
+                            SubmoduleId = 3
                         },
                         new
                         {
                             Id = 11,
-                            IconClass = "bi bi-briefcase",
-                            Name = "HR Management",
-                            Url = "/HR/Index"
+                            Action = "Index",
+                            Controller = "Warehouse",
+                            IsActive = true,
+                            Name = "Warehouse List",
+                            SubmoduleId = 5
                         },
                         new
                         {
                             Id = 12,
-                            IconClass = "bi bi-graph-up",
-                            Name = "Performance Management",
-                            Url = "/Performance/Index"
+                            Action = "Create",
+                            Controller = "Warehouse",
+                            IsActive = true,
+                            Name = "Add Warehouse",
+                            SubmoduleId = 5
                         },
                         new
                         {
                             Id = 13,
-                            IconClass = "bi bi-person-circle",
-                            Name = "Employee Self-Service",
-                            Url = "/ESS/Index"
+                            Action = "Index",
+                            Controller = "Item",
+                            IsActive = true,
+                            Name = "Item List",
+                            SubmoduleId = 6
                         },
                         new
                         {
                             Id = 14,
-                            IconClass = "bi bi-laptop",
-                            Name = "IT Service Desk",
-                            Url = "/ITService/Index"
+                            Action = "Create",
+                            Controller = "Item",
+                            IsActive = true,
+                            Name = "Add Item",
+                            SubmoduleId = 6
                         },
                         new
                         {
                             Id = 15,
-                            IconClass = "bi bi-key",
-                            Name = "Access Control",
-                            Url = "/AccessControl/Index"
+                            Action = "Create",
+                            Controller = "Order",
+                            IsActive = true,
+                            Name = "Create Order",
+                            SubmoduleId = 7
                         },
                         new
                         {
                             Id = 16,
-                            IconClass = "bi bi-kanban",
-                            Name = "Project Management",
-                            Url = "/Project/Index"
+                            Action = "Index",
+                            Controller = "Order",
+                            IsActive = true,
+                            Name = "Order List",
+                            SubmoduleId = 8
                         },
                         new
                         {
                             Id = 17,
-                            IconClass = "bi bi-lightning",
-                            Name = "Workflow Automation",
-                            Url = "/Workflow/Index"
+                            Action = "General",
+                            Controller = "Settings",
+                            IsActive = true,
+                            Name = "General Settings",
+                            SubmoduleId = 17
                         },
                         new
                         {
                             Id = 18,
-                            IconClass = "bi bi-headset",
-                            Name = "Customer Support",
-                            Url = "/Support/Index"
+                            Action = "Security",
+                            Controller = "Settings",
+                            IsActive = true,
+                            Name = "Security Settings",
+                            SubmoduleId = 18
                         },
                         new
                         {
                             Id = 19,
-                            IconClass = "bi bi-person-lines-fill",
-                            Name = "CRM",
-                            Url = "/CRM/Index"
+                            Action = "Index",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Payroll Dashboard",
+                            SubmoduleId = 9
                         },
                         new
                         {
                             Id = 20,
-                            IconClass = "bi bi-bar-chart-line",
-                            Name = "Analytics & Reporting",
-                            Url = "/Reports/Index"
+                            Action = "EmployeeSalaries",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Employee Salaries",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Action = "ProcessSalaries",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Salary Processing",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Action = "Reports",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Payroll Reports",
+                            SubmoduleId = 15
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Action = "Bonuses",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Bonuses Management",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Action = "Deductions",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Deductions",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Action = "Tax",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Tax Calculations",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Action = "GeneratePayslip",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Payslip Generation",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Action = "Overtime",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Overtime Payments",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Action = "History",
+                            Controller = "Payroll",
+                            IsActive = true,
+                            Name = "Payroll History",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Action = "Index",
+                            Controller = "Accountant",
+                            IsActive = true,
+                            Name = "Financial Orders",
+                            SubmoduleId = 15
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Action = "PreOnboarding",
+                            Controller = "Onboarding",
+                            IsActive = true,
+                            Name = "Pre-Onboarding",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Action = "ITSetup",
+                            Controller = "Onboarding",
+                            IsActive = true,
+                            Name = "IT Setup",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Action = "Training",
+                            Controller = "Onboarding",
+                            IsActive = true,
+                            Name = "Training & Orientation",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Action = "Clearance",
+                            Controller = "Offboarding",
+                            IsActive = true,
+                            Name = "Exit Clearance",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Action = "RevokeAccess",
+                            Controller = "Offboarding",
+                            IsActive = true,
+                            Name = "Access Revocation",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Action = "FinalPayroll",
+                            Controller = "Offboarding",
+                            IsActive = true,
+                            Name = "Final Payroll & Documents",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Action = "Records",
+                            Controller = "HR",
+                            IsActive = true,
+                            Name = "Employee Records",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Action = "Leave",
+                            Controller = "HR",
+                            IsActive = true,
+                            Name = "Leave Management",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Action = "Payroll",
+                            Controller = "HR",
+                            IsActive = true,
+                            Name = "Payroll Processing",
+                            SubmoduleId = 9
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Action = "Reviews",
+                            Controller = "Performance",
+                            IsActive = true,
+                            Name = "Performance Reviews",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Action = "KPIs",
+                            Controller = "Performance",
+                            IsActive = true,
+                            Name = "KPI Tracking",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Action = "Feedback",
+                            Controller = "Performance",
+                            IsActive = true,
+                            Name = "Feedback & Recognition",
+                            SubmoduleId = 10
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Action = "Tickets",
+                            Controller = "ITService",
+                            IsActive = true,
+                            Name = "Ticket Management",
+                            SubmoduleId = 11
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Action = "Monitoring",
+                            Controller = "ITService",
+                            IsActive = true,
+                            Name = "System Monitoring",
+                            SubmoduleId = 12
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Action = "Inventory",
+                            Controller = "ITService",
+                            IsActive = true,
+                            Name = "Hardware Inventory",
+                            SubmoduleId = 5
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Action = "Tickets",
+                            Controller = "Support",
+                            IsActive = true,
+                            Name = "Support Tickets",
+                            SubmoduleId = 13
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Action = "Chat",
+                            Controller = "Support",
+                            IsActive = true,
+                            Name = "Live Chat",
+                            SubmoduleId = 14
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Action = "FAQ",
+                            Controller = "Support",
+                            IsActive = true,
+                            Name = "FAQ & Help Center",
+                            SubmoduleId = 13
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Action = "Finance",
+                            Controller = "Reports",
+                            IsActive = true,
+                            Name = "Financial Reports",
+                            SubmoduleId = 15
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Action = "Employees",
+                            Controller = "Reports",
+                            IsActive = true,
+                            Name = "Employee Insights",
+                            SubmoduleId = 15
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Action = "Sales",
+                            Controller = "Reports",
+                            IsActive = true,
+                            Name = "Sales & Revenue",
+                            SubmoduleId = 15
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Action = "Index",
+                            Controller = "Support",
+                            IsActive = true,
+                            Name = "Support Dashboard",
+                            SubmoduleId = 13
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Action = "Index",
+                            Controller = "OrderReport",
+                            IsActive = true,
+                            Name = "Orders Dashboard",
+                            SubmoduleId = 8
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Action = "Settings",
+                            Controller = "ExportImport",
+                            IsActive = true,
+                            Name = "Data Management",
+                            SubmoduleId = 17
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Action = "Export",
+                            Controller = "ExportImport",
+                            IsActive = true,
+                            Name = "Data Export",
+                            SubmoduleId = 17
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Action = "Import",
+                            Controller = "ExportImport",
+                            IsActive = true,
+                            Name = "Data Import",
+                            SubmoduleId = 17
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Action = "Index",
+                            Controller = "OrderReport",
+                            IsActive = true,
+                            Name = "Order Dashboard",
+                            SubmoduleId = 16
                         });
                 });
 
@@ -1100,18 +1581,16 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Controller")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IconClass")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("ModuleId")
                         .HasColumnType("int");
@@ -1123,8 +1602,7 @@ namespace Factory.DAL.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -1136,492 +1614,182 @@ namespace Factory.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            Action = "index",
-                            Controller = "PermissionManagement",
-                            IconClass = "bi-shield-lock",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-people",
                             ModuleId = 1,
-                            Name = "Permission Management",
-                            Title = "Manage Permissions"
+                            Name = "Users",
+                            Title = ""
                         },
                         new
                         {
                             Id = 2,
-                            Action = "AssignPermissions",
-                            Controller = "PermissionManagement",
-                            IconClass = "bi-person-check",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-shield-lock",
                             ModuleId = 1,
-                            Name = "Assign Permission",
-                            Title = "Assign Permissions"
+                            Name = "Permissions",
+                            Title = ""
                         },
                         new
                         {
                             Id = 3,
-                            Action = "index",
-                            Controller = "Module",
-                            IconClass = "bi-puzzle",
-                            ModuleId = 1,
-                            Name = "Modules Management",
-                            Title = "Modules Management"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-person-badge",
+                            ModuleId = 2,
+                            Name = "Roles",
+                            Title = ""
                         },
                         new
                         {
                             Id = 4,
-                            Action = "Index",
-                            Controller = "SubModule",
-                            IconClass = "bi-puzzle-fill",
-                            ModuleId = 1,
-                            Name = "Sub Modules Management",
-                            Title = "Sub Modules Management"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-person-check",
+                            ModuleId = 2,
+                            Name = "Assign Roles",
+                            Title = ""
                         },
                         new
                         {
                             Id = 5,
-                            Action = "index",
-                            Controller = "Auth",
-                            IconClass = "bi-people",
-                            ModuleId = 2,
-                            Name = "User Management",
-                            Title = "User Management"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-box-seam",
+                            ModuleId = 3,
+                            Name = "Inventory",
+                            Title = ""
                         },
                         new
                         {
                             Id = 6,
-                            Action = "index",
-                            Controller = "Role",
-                            IconClass = "bi-person-badge",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-boxes",
                             ModuleId = 3,
-                            Name = "Role Management",
-                            Title = "Role Management"
+                            Name = "Stock Levels",
+                            Title = ""
                         },
                         new
                         {
                             Id = 7,
-                            Action = "index",
-                            Controller = "Warehouse",
-                            IconClass = "bi-house-door",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-cart-plus",
                             ModuleId = 4,
-                            Name = "Warehouse Management",
-                            Title = "Warehouse Management"
+                            Name = "New Order",
+                            Title = ""
                         },
                         new
                         {
                             Id = 8,
-                            Action = "index",
-                            Controller = "Item",
-                            IconClass = "bi-box-seam",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-cart-check",
                             ModuleId = 4,
-                            Name = "Item Management",
-                            Title = "Item Management"
+                            Name = "Order History",
+                            Title = ""
                         },
                         new
                         {
                             Id = 9,
-                            Action = "Create",
-                            Controller = "Order",
-                            IconClass = "bi-cart-plus",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-cash-stack",
                             ModuleId = 5,
-                            Name = "Create Order",
-                            Title = "Order Creation"
+                            Name = "Payroll Dashboard",
+                            Title = ""
                         },
                         new
                         {
                             Id = 10,
-                            Action = "index",
-                            Controller = "Order",
-                            IconClass = "bi-cart-check",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-file-earmark-person",
                             ModuleId = 5,
-                            Name = "View Orders",
-                            Title = "Order Management"
+                            Name = "Employee Records",
+                            Title = ""
                         },
                         new
                         {
                             Id = 11,
-                            Action = "General",
-                            Controller = "Settings",
-                            IconClass = "bi-gear",
-                            ModuleId = 7,
-                            Name = "General Settings",
-                            Title = "General Settings"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-ticket-detailed",
+                            ModuleId = 6,
+                            Name = "Tickets",
+                            Title = ""
                         },
                         new
                         {
                             Id = 12,
-                            Action = "Security",
-                            Controller = "Settings",
-                            IconClass = "bi-shield",
-                            ModuleId = 7,
-                            Name = "Security Settings",
-                            Title = "Security Settings"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-speedometer",
+                            ModuleId = 6,
+                            Name = "System Monitoring",
+                            Title = ""
                         },
                         new
                         {
                             Id = 13,
-                            Action = "Index",
-                            Controller = "Payroll",
-                            IconClass = "bi-cash-stack",
-                            ModuleId = 6,
-                            Name = "Payroll Dashboard",
-                            Title = "Payroll Dashboard"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-headset",
+                            ModuleId = 7,
+                            Name = "Support Tickets",
+                            Title = ""
                         },
                         new
                         {
                             Id = 14,
-                            Action = "EmployeeSalaries",
-                            Controller = "Payroll",
-                            IconClass = "bi-wallet",
-                            ModuleId = 6,
-                            Name = "Employee Salaries",
-                            Title = "Employee Salaries"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-chat-dots",
+                            ModuleId = 7,
+                            Name = "Live Chat",
+                            Title = ""
                         },
                         new
                         {
                             Id = 15,
-                            Action = "ProcessSalaries",
-                            Controller = "Payroll",
-                            IconClass = "bi-calculator",
-                            ModuleId = 6,
-                            Name = "Salary Processing",
-                            Title = "Salary Processing"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-file-earmark-bar-graph",
+                            ModuleId = 8,
+                            Name = "Reports",
+                            Title = ""
                         },
                         new
                         {
                             Id = 16,
-                            Action = "Reports",
-                            Controller = "Payroll",
-                            IconClass = "bi-file-earmark-bar-graph",
-                            ModuleId = 6,
-                            Name = "Payroll Reports",
-                            Title = "Payroll Reports"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-speedometer2",
+                            ModuleId = 8,
+                            Name = "Dashboards",
+                            Title = ""
                         },
                         new
                         {
                             Id = 17,
-                            Action = "Bonuses",
-                            Controller = "Payroll",
-                            IconClass = "bi-gift",
-                            ModuleId = 6,
-                            Name = "Bonuses Management",
-                            Title = "Bonuses Management"
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-gear",
+                            ModuleId = 9,
+                            Name = "General Settings",
+                            Title = ""
                         },
                         new
                         {
                             Id = 18,
-                            Action = "Deductions",
-                            Controller = "Payroll",
-                            IconClass = "bi-dash-circle",
-                            ModuleId = 6,
-                            Name = "Deductions",
-                            Title = "Salary Deductions"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Action = "Tax",
-                            Controller = "Payroll",
-                            IconClass = "bi-percent",
-                            ModuleId = 6,
-                            Name = "Tax Calculations",
-                            Title = "Tax Calculations"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Action = "GeneratePayslip",
-                            Controller = "Payroll",
-                            IconClass = "bi-receipt",
-                            ModuleId = 6,
-                            Name = "Payslip Generation",
-                            Title = "Payslip Generation"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Action = "Overtime",
-                            Controller = "Payroll",
-                            IconClass = "bi-clock-history",
-                            ModuleId = 6,
-                            Name = "Overtime Payments",
-                            Title = "Overtime Payments"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Action = "History",
-                            Controller = "Payroll",
-                            IconClass = "bi-archive",
-                            ModuleId = 6,
-                            Name = "Payroll History",
-                            Title = "Payroll History"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Action = "Index",
-                            Controller = "Accountant",
-                            IconClass = "bi-currency-dollar",
-                            ModuleId = 8,
-                            Name = "Financial Orders",
-                            Title = "Financial History"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Action = "PreOnboarding",
-                            Controller = "Onboarding",
-                            IconClass = "bi-person-plus",
+                            Action = "",
+                            Controller = "",
+                            IconClass = "bi-shield",
                             ModuleId = 9,
-                            Name = "Pre-Onboarding",
-                            Title = "Pre-Onboarding Process"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Action = "ITSetup",
-                            Controller = "Onboarding",
-                            IconClass = "bi-laptop",
-                            ModuleId = 9,
-                            Name = "IT Setup",
-                            Title = "IT System & Equipment Setup"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Action = "Training",
-                            Controller = "Onboarding",
-                            IconClass = "bi-book",
-                            ModuleId = 9,
-                            Name = "Training & Orientation",
-                            Title = "Employee Training and Orientation"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Action = "Clearance",
-                            Controller = "Offboarding",
-                            IconClass = "bi-door-open",
-                            ModuleId = 10,
-                            Name = "Exit Clearance",
-                            Title = "Employee Exit Clearance"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Action = "RevokeAccess",
-                            Controller = "Offboarding",
-                            IconClass = "bi-lock",
-                            ModuleId = 10,
-                            Name = "Access Revocation",
-                            Title = "Revoke IT & System Access"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Action = "FinalPayroll",
-                            Controller = "Offboarding",
-                            IconClass = "bi-file-earmark-text",
-                            ModuleId = 10,
-                            Name = "Final Payroll & Documents",
-                            Title = "Final Payroll & Document Handling"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Action = "Records",
-                            Controller = "HR",
-                            IconClass = "bi-file-earmark-person",
-                            ModuleId = 11,
-                            Name = "Employee Records",
-                            Title = "Manage Employee Records"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Action = "Leave",
-                            Controller = "HR",
-                            IconClass = "bi-calendar-event",
-                            ModuleId = 11,
-                            Name = "Leave Management",
-                            Title = "Manage Leaves & Absences"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Action = "Payroll",
-                            Controller = "HR",
-                            IconClass = "bi-cash-coin",
-                            ModuleId = 11,
-                            Name = "Payroll Processing",
-                            Title = "Automate Payroll Processing"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Action = "Reviews",
-                            Controller = "Performance",
-                            IconClass = "bi-graph-up",
-                            ModuleId = 12,
-                            Name = "Performance Reviews",
-                            Title = "Employee Performance Reviews"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Action = "KPIs",
-                            Controller = "Performance",
-                            IconClass = "bi-bar-chart-line",
-                            ModuleId = 12,
-                            Name = "KPI Tracking",
-                            Title = "Track KPIs & Goals"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            Action = "Feedback",
-                            Controller = "Performance",
-                            IconClass = "bi-chat-left-text",
-                            ModuleId = 12,
-                            Name = "Feedback & Recognition",
-                            Title = "360 Feedback & Recognition"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Action = "Tickets",
-                            Controller = "ITService",
-                            IconClass = "bi-ticket-detailed",
-                            ModuleId = 14,
-                            Name = "Ticket Management",
-                            Title = "Manage IT Support Tickets"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Action = "Monitoring",
-                            Controller = "ITService",
-                            IconClass = "bi-speedometer",
-                            ModuleId = 14,
-                            Name = "System Monitoring",
-                            Title = "Monitor IT Infrastructure"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Action = "Inventory",
-                            Controller = "ITService",
-                            IconClass = "bi-pc-display",
-                            ModuleId = 14,
-                            Name = "Hardware Inventory",
-                            Title = "Manage IT Assets"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Action = "Tickets",
-                            Controller = "Support",
-                            IconClass = "bi-headset",
-                            ModuleId = 18,
-                            Name = "Support Tickets",
-                            Title = "Manage Customer Tickets"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Action = "Chat",
-                            Controller = "Support",
-                            IconClass = "bi-chat-dots",
-                            ModuleId = 18,
-                            Name = "Live Chat",
-                            Title = "Provide Live Chat Support"
-                        },
-                        new
-                        {
-                            Id = 41,
-                            Action = "FAQ",
-                            Controller = "Support",
-                            IconClass = "bi-question-circle",
-                            ModuleId = 18,
-                            Name = "FAQ & Help Center",
-                            Title = "Manage Help Center Articles"
-                        },
-                        new
-                        {
-                            Id = 42,
-                            Action = "Finance",
-                            Controller = "Reports",
-                            IconClass = "bi-file-earmark-bar-graph",
-                            ModuleId = 20,
-                            Name = "Financial Reports",
-                            Title = "View Financial Reports"
-                        },
-                        new
-                        {
-                            Id = 43,
-                            Action = "Employees",
-                            Controller = "Reports",
-                            IconClass = "bi-people",
-                            ModuleId = 20,
-                            Name = "Employee Insights",
-                            Title = "Analyze Employee Performance"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            Action = "Sales",
-                            Controller = "Reports",
-                            IconClass = "bi-graph-up",
-                            ModuleId = 20,
-                            Name = "Sales & Revenue",
-                            Title = "Track Sales & Revenue"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            Action = "Index",
-                            Controller = "Support",
-                            IconClass = "bi-speedometer2",
-                            ModuleId = 18,
-                            Name = "Support Dashboard",
-                            Title = "View Support Overview"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            Action = "Index",
-                            Controller = "OrderReport",
-                            IconClass = "bi-cart",
-                            ModuleId = 20,
-                            Name = "Orders Dashboard",
-                            Title = "View Orders Overview"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            Action = "Settings",
-                            Controller = "ExportImport",
-                            IconClass = "bi-download",
-                            ModuleId = 7,
-                            Name = "Data Management",
-                            Title = "Export & Import Settings"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            Action = "Export",
-                            Controller = "ExportImport",
-                            IconClass = "bi-file-earmark-arrow-down",
-                            ModuleId = 7,
-                            Name = "Data Export",
-                            Title = "Export "
-                        },
-                        new
-                        {
-                            Id = 49,
-                            Action = "Import",
-                            Controller = "ExportImport",
-                            IconClass = "bi-file-earmark-arrow-up",
-                            ModuleId = 7,
-                            Name = "Data Import",
-                            Title = "Import"
+                            Name = "Security",
+                            Title = ""
                         });
                 });
 
@@ -2360,6 +2528,17 @@ namespace Factory.DAL.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Factory.DAL.Models.Permission.Page", b =>
+                {
+                    b.HasOne("Factory.DAL.Models.Permission.SubModule", "Submodule")
+                        .WithMany("Pages")
+                        .HasForeignKey("SubmoduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submodule");
+                });
+
             modelBuilder.Entity("Factory.DAL.Models.Permission.RolePermission", b =>
                 {
                     b.HasOne("Factory.DAL.Models.Permission.Module", "Module")
@@ -2549,6 +2728,11 @@ namespace Factory.DAL.Migrations
             modelBuilder.Entity("Factory.DAL.Models.Permission.PermissionTyepe", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Permission.SubModule", b =>
+                {
+                    b.Navigation("Pages");
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Support.SupportTicket", b =>

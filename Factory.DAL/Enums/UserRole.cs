@@ -6,5 +6,6 @@
         GM,
         Accountant,
         Sales,
+        SuperAdmin,
     }
 }

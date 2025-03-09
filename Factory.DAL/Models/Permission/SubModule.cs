@@ -11,5 +11,8 @@
 
         public int ModuleId { get; set; }
         public virtual Module Module { get; set; }
+
+        public virtual ICollection<Page> Pages { get; set; } = new List<Page>();
+
     }
 }

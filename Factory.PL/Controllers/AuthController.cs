@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
@@ -21,8 +22,9 @@ namespace Factory.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly CompanyDetails _companydetails;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthController(EmailConfiguration emailconfig, IWebHostEnvironment environment, IEmailService EmailService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<CompanyDetails> companydetails)
+        public AuthController(EmailConfiguration emailconfig, IWebHostEnvironment environment, IEmailService EmailService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<CompanyDetails> companydetails, RoleManager<IdentityRole> roleManager)
         {
             _emailconfig = emailconfig;
             _environment = environment;
@@ -30,6 +32,7 @@ namespace Factory.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _companydetails = companydetails.Value;
+            _roleManager = roleManager;
         }
 
         [Authorize(Policy = "User Management_Read")]
@@ -659,13 +662,10 @@ namespace Factory.Controllers
 
             return View(model);
         }
-
-
         public IActionResult Settings()
         {
             return View();
         }
-
         public async Task<IActionResult> TwoFactorSettings()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -697,7 +697,6 @@ namespace Factory.Controllers
 
             return RedirectToAction(nameof(TwoFactorSettings));
         }
-
         public async Task<IActionResult> Disable2FA()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -708,44 +707,34 @@ namespace Factory.Controllers
 
             return RedirectToAction(nameof(TwoFactorSettings));
         }
-
         [Authorize(Policy = "User Management_Create")]
-
-        [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
             var viewModel = new UserCreateViewModel
             {
-                IsActive = true
+                Roles = await GetRolesAsync(),
+                IsActive = true // Default to active
             };
 
             return View(viewModel);
         }
         [Authorize(Policy = "User Management_Create")]
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(UserCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                model.Roles = await GetRolesAsync(); // Repopulate roles if validation fails
                 return View(model);
             }
 
-            var user = new ApplicationUser
-            {
-                UserName = model.UserName,
-                Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                LockoutEnabled = model.IsActive,
-                EmailConfirmed = true
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await CreateUserAsync(model);
 
             if (result.Succeeded)
             {
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "User created successfully!";
+                return RedirectToAction("Index");
             }
 
             foreach (var error in result.Errors)
@@ -753,10 +742,9 @@ namespace Factory.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
+            model.Roles = await GetRolesAsync(); // Repopulate roles if user creation fails
             return View(model);
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAccount()
@@ -797,10 +785,83 @@ namespace Factory.Controllers
                 return BadRequest("User does not have the requested role.");
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            var claims = await _userManager.GetClaimsAsync(user);
+            var roleClaims = claims.Where(c => c.Type == ClaimTypes.Role).ToList();
+            foreach (var claim in roleClaims)
+            {
+                await _userManager.RemoveClaimAsync(user, claim);
+            }
 
-            return Ok("Role updated successfully.");
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.Role));
+            await _signInManager.RefreshSignInAsync(user);
+
+            return Ok(new { message = "Role updated successfully.", redirectUrl = $"/Dashboard/{model.Role}" });
+        }
+        private async Task<List<SelectListItem>> GetRolesAsync()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+            return roles.Select(r => new SelectListItem
+            {
+                Value = r.Name, 
+                Text = r.Name
+            }).ToList();
+        }
+        private async Task<IdentityResult> CreateUserAsync(UserCreateViewModel model)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                LockoutEnabled = model.IsActive,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded && !string.IsNullOrEmpty(model.SelectedRole))
+            {
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            }
+
+            return result;
         }
 
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePasswordLogedUser(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                TempData["Success"] = "Your password has been changed successfully.";
+                return Redirect("/");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View("ChangePassword", model);
+        }
     }
 }

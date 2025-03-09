@@ -9,6 +9,6 @@ namespace Factory.PL.ViewModels.Permission
         public string Url { get; set; } = string.Empty;
         public string IconClass { get; set; } = string.Empty;
         public ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
-        public List<SubModule> SubModules { get; set; } = new List<SubModule>();
+        public ICollection<SubModule> SubModules { get; set; } = new List<SubModule>();
     }
 }

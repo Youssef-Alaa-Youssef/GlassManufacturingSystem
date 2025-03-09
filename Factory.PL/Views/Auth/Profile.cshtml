@@ -5,13 +5,12 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card shadow p-4">
+<div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
     <div class="col-md-12">
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body text-center">
-                    <!-- Profile Picture -->
                     <img src="@Model.ProfilePictureUrl" class="rounded-circle mb-3" width="120" height="120" alt="Profile Picture">
 
                     <h2 class="fw-bold text-dark">@Model.UserName</h2>

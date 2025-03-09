@@ -6,6 +6,7 @@ using Factory.DAL.Models.Settings;
 using Factory.PL.Helper;
 using Factory.PL.Services;
 using Factory.PL.Services.Background;
+using Factory.PL.Services.Dashboard;
 using Factory.PL.Services.DataExportImport;
 using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
@@ -34,10 +35,10 @@ public static class ServiceConfiguration
             });
 
         var cultureInfo = new System.Globalization.CultureInfo("en-US");
-        cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+        //cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
 
-        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+        //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
         ConfigureLocalization(services);
         ConfigureApplicationServices(services, configuration);
@@ -68,9 +69,11 @@ public static class ServiceConfiguration
 
     private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
     {
+        //services.AddScoped<IPermissionService, PermissionService>();
         services.AddSingleton(new ExportImportSettings());
         services.AddScoped<IExportService, ExportService>();
         services.AddScoped<IImportService, ImportService>();
+        services.AddScoped<IDashboardService, DashboardService>();
         services.AddHostedService<AccountDeletionBackgroundService>();
         services.Configure<EmailConfiguration>(configuration.GetSection("MailConfigurations"));
         services.AddSingleton<EmailConfiguration>();

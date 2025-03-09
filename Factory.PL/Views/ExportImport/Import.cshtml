@@ -5,21 +5,17 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card shadow p-3">
-    <!-- Error Summary Partial -->
+<div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
-    <!-- Import Options Card -->
     <div class="card">
         <div class="card-header">
             <h4>Import Options</h4>
         </div>
         <div class="card-body">
-            <!-- Import Form -->
             <form asp-action="ImportData" id="importForm" method="post" enctype="multipart/form-data">
                 <div class="row">
-                    <!-- Data Type Dropdown -->
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="modelType">Data Type</label>
@@ -32,7 +28,6 @@
                         </div>
                     </div>
 
-                    <!-- Format Dropdown -->
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="format">Format (Optional)</label>
@@ -47,7 +42,6 @@
                     </div>
                 </div>
 
-                <!-- File Upload -->
                 <div class="form-group">
                     <label for="file">Select File</label>
                     <div class="custom-file">
@@ -59,7 +53,6 @@
                     </small>
                 </div>
 
-                <!-- Submit Button -->
                 <div class="form-group mt-4">
                     <button type="submit" class="btn btn-outline-success">
                         <i class="fas fa-upload"></i> Import Data
@@ -69,7 +62,6 @@
         </div>
     </div>
 
-    <!-- Navigation Buttons -->
     <div class="mt-4">
         <a asp-action="Settings" class="btn btn-outline-secondary">
             <i class="fas fa-cog"></i> Export/Import Settings
@@ -79,7 +71,6 @@
         </a>
     </div>
 
-    <!-- Import Instructions -->
     <div class="card mt-4">
         <div class="card-header">
             <h4>Import Instructions</h4>
@@ -97,7 +88,6 @@
         </div>
     </div>
 
-    <!-- Import Results -->
     <div id="importResults" class="mt-4" style="display: none;">
         <div class="card">
             <div class="card-header">
@@ -110,11 +100,9 @@
     </div>
 </div>
 
-<!-- Scripts Section -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Handle form submission asynchronously
         document.getElementById("importForm").addEventListener("submit", async function (e) {
             e.preventDefault();
 

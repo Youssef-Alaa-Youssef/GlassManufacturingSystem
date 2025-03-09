@@ -1,0 +1,23 @@
+﻿@model Factory.PL.ViewModels.Home.Dashboard.DashboardItem
+
+<div class="col-12 col-sm-6 col-xl-3">
+    <div class="card shadow-sm border-0 h-100">
+        <div class="card-header d-flex align-items-center">
+            <i class="bi @Model.IconClass me-2"></i>
+            <span>@Model.Title</span>
+        </div>
+        <div class="card-body text-center">
+            <div class="display-6 mb-2"
+                 style="@(Model.Value > 0 ? "cursor: pointer;" : "")"
+                 onclick="@(Model.Value > 0 ? $"openChartModal('{Model.ChartId}', '{Model.ChartTitle}')" : "")">
+                @Model.Value
+            </div>
+            <p class="text-muted mb-0">@Model.Description</p>
+        </div>
+        <div class="card-footer bg-transparent">
+            <small class="@Model.TrendClass">
+                <i class="bi @Model.TrendIcon"></i> @Model.TrendText
+            </small>
+        </div>
+    </div>
+</div>

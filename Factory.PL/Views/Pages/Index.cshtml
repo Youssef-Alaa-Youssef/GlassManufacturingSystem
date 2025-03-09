@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Factory.DAL.Models.Permission.Page>
+@{
+    ViewData["Title"] = "Pages";
+    Layout = "_LogedUser";
+
+}
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+                <th>Controller</th>
+                <th>Is Active</th>
+                <th>Submodule</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any()){
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Action</td>
+                        <td>@item.Controller</td>
+                        <td>@item.IsActive</td>
+                        <td>@item.SubmoduleId</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }else
+            {
+                <tr><td colspan="6">No Found Pages</td></tr>
+            }
+    </tbody>
+</table>
+</div>

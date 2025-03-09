@@ -28,7 +28,7 @@ public static class MiddlewareConfiguration
 
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<PermissionPolicyMiddleware>();
+        //app.UseMiddleware<Factory.PL.Middleware.PermissionPolicyMiddleware>();
 
         ConfigureRoutes(app);
 

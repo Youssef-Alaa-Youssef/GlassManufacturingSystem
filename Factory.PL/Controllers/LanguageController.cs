@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-namespace Factory.PL.ViewModels.Home
+namespace Factory.PL.Controllers
 {
     public class LanguageController : Controller
     {

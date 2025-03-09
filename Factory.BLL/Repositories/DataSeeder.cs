@@ -40,7 +40,7 @@ namespace Factory.DAL.Configurations
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(defaultUser, UserRole.Owner.ToString());
+                    await userManager.AddToRoleAsync(defaultUser, UserRole.SuperAdmin.ToString());
                 }
             }
 
@@ -63,7 +63,7 @@ namespace Factory.DAL.Configurations
             var moduleRepository = unitOfWork.GetRepository<Module>();
             var allModules = await moduleRepository.GetAllAsync();
 
-            var superAdminRole = await roleManager.FindByNameAsync(UserRole.Owner.ToString());
+            var superAdminRole = await roleManager.FindByNameAsync(UserRole.SuperAdmin.ToString());
 
             if (superAdminRole != null && allModules.Any())
             {

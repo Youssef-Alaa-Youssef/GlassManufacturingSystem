@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Factory.BLL.Interfaces;
 using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Permission;
 using Microsoft.AspNetCore.Authorization;
@@ -73,7 +72,7 @@ namespace Factory.PL.Helper
 
                     var roleIds = await _memoryCache.GetOrCreateAsync("RoleIds", async entry =>
                     {
-                        entry.SlidingExpiration = CacheExpiration; 
+                        entry.SlidingExpiration = CacheExpiration;
                         return await roleManager.Roles
                             .Where(r => roleNames.Contains(r.Name))
                             .Select(r => r.Id)
@@ -82,20 +81,20 @@ namespace Factory.PL.Helper
 
                     var userRolePermissions = await _memoryCache.GetOrCreateAsync(RolePermissionsCacheKey, async entry =>
                     {
-                        entry.SlidingExpiration = CacheExpiration; 
+                        entry.SlidingExpiration = CacheExpiration;
                         return await unitOfWork.GetRepository<RolePermission>()
                             .FindAsync(rp => roleIds.Contains(rp.RoleId));
                     });
 
                     var permissions = await _memoryCache.GetOrCreateAsync(PermissionsCacheKey, async entry =>
                     {
-                        entry.SlidingExpiration = CacheExpiration; 
+                        entry.SlidingExpiration = CacheExpiration;
                         return await unitOfWork.GetRepository<PermissionTyepe>().GetAllAsync();
                     });
 
                     var modules = await _memoryCache.GetOrCreateAsync(ModulesCacheKey, async entry =>
                     {
-                        entry.SlidingExpiration = CacheExpiration; 
+                        entry.SlidingExpiration = CacheExpiration;
                         return await unitOfWork.GetRepository<Module>().GetAllAsync();
                     });
 

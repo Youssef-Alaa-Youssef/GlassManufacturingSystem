@@ -180,7 +180,8 @@ namespace Factory.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Url = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    IconClass = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IconClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -545,10 +546,10 @@ namespace Factory.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Controller = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    IconClass = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Controller = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IconClass = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ModuleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -796,6 +797,29 @@ namespace Factory.DAL.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Pages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Controller = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    SubmoduleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Pages_SubModules_SubmoduleId",
+                        column: x => x.SubmoduleId,
+                        principalTable: "SubModules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "MainWarehouses",
                 columns: new[] { "Id", "AddressAr", "AddressEn", "NameAr", "NameEn" },
@@ -803,29 +827,18 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.InsertData(
                 table: "Modules",
-                columns: new[] { "Id", "IconClass", "Name", "Url" },
+                columns: new[] { "Id", "IconClass", "IsActive", "Name", "Url" },
                 values: new object[,]
                 {
-                    { 1, "bi bi-shield-lock", "Permission Management", "/Users/Index" },
-                    { 2, "bi bi-people", "User Management", "/Auth/Index" },
-                    { 3, "bi bi-person-badge", "Role Management", "/Role/Index" },
-                    { 4, "bi bi-box-seam", "Warehouse Management", "/Warehouse/Index" },
-                    { 5, "bi bi-cart", "Orders", "/Order/Index" },
-                    { 6, "bi bi-cash", "Payroll", "/Payroll/Index" },
-                    { 7, "bi bi-gear", "Settings", "/Settings/Index" },
-                    { 8, "bi bi-cash-stack", "Financial", "/Accountant/Index" },
-                    { 9, "bi bi-person-plus", "Onboarding", "/Onboarding/Index" },
-                    { 10, "bi bi-person-dash", "Offboarding", "/Offboarding/Index" },
-                    { 11, "bi bi-briefcase", "HR Management", "/HR/Index" },
-                    { 12, "bi bi-graph-up", "Performance Management", "/Performance/Index" },
-                    { 13, "bi bi-person-circle", "Employee Self-Service", "/ESS/Index" },
-                    { 14, "bi bi-laptop", "IT Service Desk", "/ITService/Index" },
-                    { 15, "bi bi-key", "Access Control", "/AccessControl/Index" },
-                    { 16, "bi bi-kanban", "Project Management", "/Project/Index" },
-                    { 17, "bi bi-lightning", "Workflow Automation", "/Workflow/Index" },
-                    { 18, "bi bi-headset", "Customer Support", "/Support/Index" },
-                    { 19, "bi bi-person-lines-fill", "CRM", "/CRM/Index" },
-                    { 20, "bi bi-bar-chart-line", "Analytics & Reporting", "/Reports/Index" }
+                    { 1, "bi-people", true, "User Management", "" },
+                    { 2, "bi-person-badge", true, "Role Management", "" },
+                    { 3, "bi-box-seam", true, "Inventory Management", "" },
+                    { 4, "bi-cart", true, "Order Management", "" },
+                    { 5, "bi-cash-stack", true, "Payroll Management", "" },
+                    { 6, "bi-speedometer", true, "System Management", "" },
+                    { 7, "bi-headset", true, "Support Management", "" },
+                    { 8, "bi-file-earmark-bar-graph", true, "Reports", "" },
+                    { 9, "bi-gear", true, "Settings", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -844,55 +857,24 @@ namespace Factory.DAL.Migrations
                 columns: new[] { "Id", "Action", "Controller", "IconClass", "ModuleId", "Name", "Title" },
                 values: new object[,]
                 {
-                    { 1, "index", "PermissionManagement", "bi-shield-lock", 1, "Permission Management", "Manage Permissions" },
-                    { 2, "AssignPermissions", "PermissionManagement", "bi-person-check", 1, "Assign Permission", "Assign Permissions" },
-                    { 3, "index", "Module", "bi-puzzle", 1, "Modules Management", "Modules Management" },
-                    { 4, "Index", "SubModule", "bi-puzzle-fill", 1, "Sub Modules Management", "Sub Modules Management" },
-                    { 5, "index", "Auth", "bi-people", 2, "User Management", "User Management" },
-                    { 6, "index", "Role", "bi-person-badge", 3, "Role Management", "Role Management" },
-                    { 7, "index", "Warehouse", "bi-house-door", 4, "Warehouse Management", "Warehouse Management" },
-                    { 8, "index", "Item", "bi-box-seam", 4, "Item Management", "Item Management" },
-                    { 9, "Create", "Order", "bi-cart-plus", 5, "Create Order", "Order Creation" },
-                    { 10, "index", "Order", "bi-cart-check", 5, "View Orders", "Order Management" },
-                    { 11, "General", "Settings", "bi-gear", 7, "General Settings", "General Settings" },
-                    { 12, "Security", "Settings", "bi-shield", 7, "Security Settings", "Security Settings" },
-                    { 13, "Index", "Payroll", "bi-cash-stack", 6, "Payroll Dashboard", "Payroll Dashboard" },
-                    { 14, "EmployeeSalaries", "Payroll", "bi-wallet", 6, "Employee Salaries", "Employee Salaries" },
-                    { 15, "ProcessSalaries", "Payroll", "bi-calculator", 6, "Salary Processing", "Salary Processing" },
-                    { 16, "Reports", "Payroll", "bi-file-earmark-bar-graph", 6, "Payroll Reports", "Payroll Reports" },
-                    { 17, "Bonuses", "Payroll", "bi-gift", 6, "Bonuses Management", "Bonuses Management" },
-                    { 18, "Deductions", "Payroll", "bi-dash-circle", 6, "Deductions", "Salary Deductions" },
-                    { 19, "Tax", "Payroll", "bi-percent", 6, "Tax Calculations", "Tax Calculations" },
-                    { 20, "GeneratePayslip", "Payroll", "bi-receipt", 6, "Payslip Generation", "Payslip Generation" },
-                    { 21, "Overtime", "Payroll", "bi-clock-history", 6, "Overtime Payments", "Overtime Payments" },
-                    { 22, "History", "Payroll", "bi-archive", 6, "Payroll History", "Payroll History" },
-                    { 23, "Index", "Accountant", "bi-currency-dollar", 8, "Financial Orders", "Financial History" },
-                    { 24, "PreOnboarding", "Onboarding", "bi-person-plus", 9, "Pre-Onboarding", "Pre-Onboarding Process" },
-                    { 25, "ITSetup", "Onboarding", "bi-laptop", 9, "IT Setup", "IT System & Equipment Setup" },
-                    { 26, "Training", "Onboarding", "bi-book", 9, "Training & Orientation", "Employee Training and Orientation" },
-                    { 27, "Clearance", "Offboarding", "bi-door-open", 10, "Exit Clearance", "Employee Exit Clearance" },
-                    { 28, "RevokeAccess", "Offboarding", "bi-lock", 10, "Access Revocation", "Revoke IT & System Access" },
-                    { 29, "FinalPayroll", "Offboarding", "bi-file-earmark-text", 10, "Final Payroll & Documents", "Final Payroll & Document Handling" },
-                    { 30, "Records", "HR", "bi-file-earmark-person", 11, "Employee Records", "Manage Employee Records" },
-                    { 31, "Leave", "HR", "bi-calendar-event", 11, "Leave Management", "Manage Leaves & Absences" },
-                    { 32, "Payroll", "HR", "bi-cash-coin", 11, "Payroll Processing", "Automate Payroll Processing" },
-                    { 33, "Reviews", "Performance", "bi-graph-up", 12, "Performance Reviews", "Employee Performance Reviews" },
-                    { 34, "KPIs", "Performance", "bi-bar-chart-line", 12, "KPI Tracking", "Track KPIs & Goals" },
-                    { 35, "Feedback", "Performance", "bi-chat-left-text", 12, "Feedback & Recognition", "360 Feedback & Recognition" },
-                    { 36, "Tickets", "ITService", "bi-ticket-detailed", 14, "Ticket Management", "Manage IT Support Tickets" },
-                    { 37, "Monitoring", "ITService", "bi-speedometer", 14, "System Monitoring", "Monitor IT Infrastructure" },
-                    { 38, "Inventory", "ITService", "bi-pc-display", 14, "Hardware Inventory", "Manage IT Assets" },
-                    { 39, "Tickets", "Support", "bi-headset", 18, "Support Tickets", "Manage Customer Tickets" },
-                    { 40, "Chat", "Support", "bi-chat-dots", 18, "Live Chat", "Provide Live Chat Support" },
-                    { 41, "FAQ", "Support", "bi-question-circle", 18, "FAQ & Help Center", "Manage Help Center Articles" },
-                    { 42, "Finance", "Reports", "bi-file-earmark-bar-graph", 20, "Financial Reports", "View Financial Reports" },
-                    { 43, "Employees", "Reports", "bi-people", 20, "Employee Insights", "Analyze Employee Performance" },
-                    { 44, "Sales", "Reports", "bi-graph-up", 20, "Sales & Revenue", "Track Sales & Revenue" },
-                    { 45, "Index", "Support", "bi-speedometer2", 18, "Support Dashboard", "View Support Overview" },
-                    { 46, "Index", "OrderReport", "bi-cart", 20, "Orders Dashboard", "View Orders Overview" },
-                    { 47, "Settings", "ExportImport", "bi-download", 7, "Data Management", "Export & Import Settings" },
-                    { 48, "Export", "ExportImport", "bi-file-earmark-arrow-down", 7, "Data Export", "Export " },
-                    { 49, "Import", "ExportImport", "bi-file-earmark-arrow-up", 7, "Data Import", "Import" }
+                    { 1, "", "", "bi-people", 1, "Users", "" },
+                    { 2, "", "", "bi-shield-lock", 1, "Permissions", "" },
+                    { 3, "", "", "bi-person-badge", 2, "Roles", "" },
+                    { 4, "", "", "bi-person-check", 2, "Assign Roles", "" },
+                    { 5, "", "", "bi-box-seam", 3, "Inventory", "" },
+                    { 6, "", "", "bi-boxes", 3, "Stock Levels", "" },
+                    { 7, "", "", "bi-cart-plus", 4, "New Order", "" },
+                    { 8, "", "", "bi-cart-check", 4, "Order History", "" },
+                    { 9, "", "", "bi-cash-stack", 5, "Payroll Dashboard", "" },
+                    { 10, "", "", "bi-file-earmark-person", 5, "Employee Records", "" },
+                    { 11, "", "", "bi-ticket-detailed", 6, "Tickets", "" },
+                    { 12, "", "", "bi-speedometer", 6, "System Monitoring", "" },
+                    { 13, "", "", "bi-headset", 7, "Support Tickets", "" },
+                    { 14, "", "", "bi-chat-dots", 7, "Live Chat", "" },
+                    { 15, "", "", "bi-file-earmark-bar-graph", 8, "Reports", "" },
+                    { 16, "", "", "bi-speedometer2", 8, "Dashboards", "" },
+                    { 17, "", "", "bi-gear", 9, "General Settings", "" },
+                    { 18, "", "", "bi-shield", 9, "Security", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -902,6 +884,69 @@ namespace Factory.DAL.Migrations
                 {
                     { 1, "القسم الأول، المستودع الرئيسي", "Main Warehouse, Section 1", 1, "المستودع الفرعي أ", "Sub-Warehouse A" },
                     { 2, "القسم الثاني، المستودع الرئيسي", "Main Warehouse, Section 2", 1, "المستودع الفرعي ب", "Sub-Warehouse B" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Pages",
+                columns: new[] { "Id", "Action", "Controller", "IsActive", "Name", "SubmoduleId" },
+                values: new object[,]
+                {
+                    { 1, "Index", "PermissionManagement", true, "Permission List", 2 },
+                    { 2, "AssignPermissions", "PermissionManagement", true, "Assign Permission", 2 },
+                    { 3, "Index", "Module", true, "Module List", 3 },
+                    { 4, "Create", "Module", true, "Add Module", 3 },
+                    { 5, "Index", "SubModule", true, "Submodule List", 4 },
+                    { 6, "Create", "SubModule", true, "Add Submodule", 4 },
+                    { 7, "Index", "Auth", true, "User List", 1 },
+                    { 8, "Create", "Auth", true, "Add User", 1 },
+                    { 9, "Index", "Role", true, "Role List", 3 },
+                    { 10, "Create", "Role", true, "Add Role", 3 },
+                    { 11, "Index", "Warehouse", true, "Warehouse List", 5 },
+                    { 12, "Create", "Warehouse", true, "Add Warehouse", 5 },
+                    { 13, "Index", "Item", true, "Item List", 6 },
+                    { 14, "Create", "Item", true, "Add Item", 6 },
+                    { 15, "Create", "Order", true, "Create Order", 7 },
+                    { 16, "Index", "Order", true, "Order List", 8 },
+                    { 17, "General", "Settings", true, "General Settings", 17 },
+                    { 18, "Security", "Settings", true, "Security Settings", 18 },
+                    { 19, "Index", "Payroll", true, "Payroll Dashboard", 9 },
+                    { 20, "EmployeeSalaries", "Payroll", true, "Employee Salaries", 10 },
+                    { 21, "ProcessSalaries", "Payroll", true, "Salary Processing", 9 },
+                    { 22, "Reports", "Payroll", true, "Payroll Reports", 15 },
+                    { 23, "Bonuses", "Payroll", true, "Bonuses Management", 9 },
+                    { 24, "Deductions", "Payroll", true, "Deductions", 9 },
+                    { 25, "Tax", "Payroll", true, "Tax Calculations", 9 },
+                    { 26, "GeneratePayslip", "Payroll", true, "Payslip Generation", 9 },
+                    { 27, "Overtime", "Payroll", true, "Overtime Payments", 9 },
+                    { 28, "History", "Payroll", true, "Payroll History", 9 },
+                    { 29, "Index", "Accountant", true, "Financial Orders", 15 },
+                    { 30, "PreOnboarding", "Onboarding", true, "Pre-Onboarding", 10 },
+                    { 31, "ITSetup", "Onboarding", true, "IT Setup", 10 },
+                    { 32, "Training", "Onboarding", true, "Training & Orientation", 10 },
+                    { 33, "Clearance", "Offboarding", true, "Exit Clearance", 10 },
+                    { 34, "RevokeAccess", "Offboarding", true, "Access Revocation", 10 },
+                    { 35, "FinalPayroll", "Offboarding", true, "Final Payroll & Documents", 10 },
+                    { 36, "Records", "HR", true, "Employee Records", 10 },
+                    { 37, "Leave", "HR", true, "Leave Management", 10 },
+                    { 38, "Payroll", "HR", true, "Payroll Processing", 9 },
+                    { 39, "Reviews", "Performance", true, "Performance Reviews", 10 },
+                    { 40, "KPIs", "Performance", true, "KPI Tracking", 10 },
+                    { 41, "Feedback", "Performance", true, "Feedback & Recognition", 10 },
+                    { 42, "Tickets", "ITService", true, "Ticket Management", 11 },
+                    { 43, "Monitoring", "ITService", true, "System Monitoring", 12 },
+                    { 44, "Inventory", "ITService", true, "Hardware Inventory", 5 },
+                    { 45, "Tickets", "Support", true, "Support Tickets", 13 },
+                    { 46, "Chat", "Support", true, "Live Chat", 14 },
+                    { 47, "FAQ", "Support", true, "FAQ & Help Center", 13 },
+                    { 48, "Finance", "Reports", true, "Financial Reports", 15 },
+                    { 49, "Employees", "Reports", true, "Employee Insights", 15 },
+                    { 50, "Sales", "Reports", true, "Sales & Revenue", 15 },
+                    { 51, "Index", "Support", true, "Support Dashboard", 13 },
+                    { 52, "Index", "OrderReport", true, "Orders Dashboard", 8 },
+                    { 53, "Settings", "ExportImport", true, "Data Management", 17 },
+                    { 54, "Export", "ExportImport", true, "Data Export", 17 },
+                    { 55, "Import", "ExportImport", true, "Data Import", 17 },
+                    { 56, "Index", "OrderReport", true, "Order Dashboard", 16 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -991,6 +1036,11 @@ namespace Factory.DAL.Migrations
                 table: "OrientationModule",
                 column: "OnboardingProcessId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pages_SubmoduleId",
+                table: "Pages",
+                column: "SubmoduleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Partners_Name",
@@ -1110,6 +1160,9 @@ namespace Factory.DAL.Migrations
                 name: "OrientationModule");
 
             migrationBuilder.DropTable(
+                name: "Pages");
+
+            migrationBuilder.DropTable(
                 name: "Partners");
 
             migrationBuilder.DropTable(
@@ -1120,9 +1173,6 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
-
-            migrationBuilder.DropTable(
-                name: "SubModules");
 
             migrationBuilder.DropTable(
                 name: "SupportResponse");
@@ -1140,13 +1190,13 @@ namespace Factory.DAL.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
+                name: "SubModules");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "PermissionTyepe");
-
-            migrationBuilder.DropTable(
-                name: "Modules");
 
             migrationBuilder.DropTable(
                 name: "SupportTicket");
@@ -1156,6 +1206,9 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "MainWarehouses");
+
+            migrationBuilder.DropTable(
+                name: "Modules");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

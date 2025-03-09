@@ -2,10 +2,7 @@
   <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" />
     <PackageReference Include="AutoMapper" />
-    <PackageReference Include="CsvHelper" />
-    <PackageReference Include="DocumentFormat.OpenXml" />
     <PackageReference Include="EPPlus" />
-    <PackageReference Include="ExcelDataReader" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />

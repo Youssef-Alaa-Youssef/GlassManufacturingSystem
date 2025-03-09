@@ -3,8 +3,10 @@ using Factory.DAL.Enums;
 using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Home;
 using Factory.DAL.Models.Support;
+using Factory.PL.Services.Dashboard;
 using Factory.PL.ViewModels;
 using Factory.PL.ViewModels.Home;
+using Factory.PL.ViewModels.Home.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +17,13 @@ namespace Factory.Controllers
     public class HomeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDashboardService _dashboardService;
 
-        public HomeController(IUnitOfWork unitOfWork)
+        public HomeController(IUnitOfWork unitOfWork,IDashboardService dashboardService)
         {
             _unitOfWork = unitOfWork;
+            _dashboardService = dashboardService;
+
         }
 
         public async Task<IActionResult> Index()
@@ -170,23 +175,17 @@ namespace Factory.Controllers
         [Authorize()]
         public async Task<IActionResult> DashBoard()
         {
-            var userCount = (await _unitOfWork.GetRepository<ApplicationUser>().GetAllAsync()).Count();
-            var teamMemberCount = (await _unitOfWork.GetRepository<TeamMember>().GetAllAsync()).Count();
-            var contactCount = (await _unitOfWork.GetRepository<ContactUs>().GetAllAsync()).Count();
-            var roleCount = (await _unitOfWork.GetRepository<IdentityRole>().GetAllAsync()).Count();
-
-            var viewModel = new AdminDashboardViewModel
+            try
             {
-                UserCount = userCount,
-                TeamMemberCount = teamMemberCount,
-                ContactCount = contactCount,
-                RoleCount = roleCount
-            };
-
-            return View(viewModel);
+                var viewModel = await _dashboardService.GetDashboardDataAsync();
+                return View("DashBoard/DashBoard", viewModel);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home");
+            }
 
         }
-
         public IActionResult PropertyDetails()
         {
             return View();

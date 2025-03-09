@@ -5,7 +5,7 @@
     Layout = "_LogedUser";
 }
 
-<div class="container-fluid card shadow mt-3 p-3">
+<div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
@@ -100,7 +100,7 @@
                     .then(response => response.json())
                     .then(data => {
                         var columnsContainer = document.getElementById("columnsContainer");
-                        columnsContainer.innerHTML = ""; // Clear previous content
+                        columnsContainer.innerHTML = ""; 
 
                         data.forEach(column => {
                             var checkbox = document.createElement("input");
@@ -121,21 +121,17 @@
             }
         }
 
-        // Handle form submission
         document.getElementById("exportForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
-            // Collect selected columns
             var selectedColumns = [];
             document.querySelectorAll("#columnsContainer input[type='checkbox']:checked").forEach(checkbox => {
                 selectedColumns.push(checkbox.value);
             });
 
-            // Add selected columns to the form data
             var formData = new FormData(this);
             formData.append("selectedColumns", JSON.stringify(selectedColumns));
 
-            // Submit the form
             fetch(this.action, {
                 method: "POST",
                 body: formData

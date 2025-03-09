@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Factory.Controllers
 {
-    [Authorize(Policy = "Role Management_Create")]
-    [Authorize(Policy = "Role Management_Update")]
+    //[Authorize(Policy = "Role Management_Create")]
+    //[Authorize(Policy = "Role Management_Update")]
+    [Authorize]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
