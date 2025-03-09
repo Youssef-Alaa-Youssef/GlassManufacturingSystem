@@ -1,0 +1,131 @@
+﻿@model Factory.DAL.Models.Settings.ExportImportSettings
+
+@{
+    ViewBag.Title = "Export and Import Settings";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card  shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="Settings" method="post">
+        <div class="card mb-3">
+            <div class="card-header">Export & Import Settings</div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input asp-for="EnableExport" class="form-check-input" />
+                    <label asp-for="EnableExport" class="form-check-label">Enable Export</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="EnableImport" class="form-check-input" />
+                    <label asp-for="EnableImport" class="form-check-label">Enable Import</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supported Formats -->
+        <div class="card mb-3">
+            <div class="card-header">File Formats</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label asp-for="SupportedExportFormats">Supported Export Formats</label>
+                    <select asp-for="SupportedExportFormats" asp-items="@(new SelectList(new List<string> { "XLSX", "JSON", "XML", "CSV" }))" class="form-control" multiple>
+                    </select>
+                    <small class="form-text text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple formats.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SupportedImportFormats">Supported Import Formats</label>
+                    <select asp-for="SupportedImportFormats" asp-items="@(new SelectList(new List<string> { "XLSX", "JSON", "XML", "CSV" }))" class="form-control" multiple>
+                    </select>
+                    <small class="form-text text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple formats.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DefaultExportFormat">Default Export Format</label>
+                    <select asp-for="DefaultExportFormat" asp-items="@(new SelectList(new List<string> { "XLSX", "JSON", "XML", "CSV" }))" class="form-control">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limits & Restrictions -->
+        <div class="card mb-3">
+            <div class="card-header">Limits & Restrictions</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="MaxExportRows">Max Export Rows</label>
+                            <input asp-for="MaxExportRows" class="form-control" />
+                            <span asp-validation-for="MaxExportRows" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="MaxImportFileSize">Max Import File Size (in bytes)</label>
+                            <input asp-for="MaxImportFileSize" class="form-control" />
+                            <span asp-validation-for="MaxImportFileSize" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Hint: 1 KB = 1,024 bytes, 1 MB = 1,048,576 bytes. For example, 5 MB = 5,242,880 bytes.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="DateFormat">Date Format</label>
+                            <select asp-for="DateFormat" class="form-control">
+                                <option value="yyyy-MM-dd">YYYY-MM-DD (2025-03-09)</option>
+                                <option value="MM/dd/yyyy">MM/DD/YYYY (03/09/2025)</option>
+                                <option value="dd/MM/yyyy">DD/MM/YYYY (09/03/2025)</option>
+                                <option value="yyyy/MM/dd">YYYY/MM/DD (2025/03/09)</option>
+                                <option value="dd-MMM-yyyy">DD-MMM-YYYY (09-Mar-2025)</option>
+                                <option value="MMM dd, yyyy">MMM DD, YYYY (Mar 09, 2025)</option>
+                            </select>
+                            <span asp-validation-for="DateFormat" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Select your preferred date format for exports and imports.
+                            </small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="card mb-3">
+            <div class="card-header">Additional Options</div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input asp-for="IncludeHeaders" class="form-check-input" />
+                    <label asp-for="IncludeHeaders" class="form-check-label">Include Headers in Exported Files</label>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CsvDelimiter">CSV Delimiter</label>
+                    <input asp-for="CsvDelimiter" class="form-control" />
+                    <span asp-validation-for="CsvDelimiter" class="text-danger"></span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="AllowNullValues" class="form-check-input" />
+                    <label asp-for="AllowNullValues" class="form-check-label">Allow Null Values in Imported Data</label>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ValidateImportData" class="form-check-input" />
+                    <label asp-for="ValidateImportData" class="form-check-label">Validate Imported Data</label>
+                </div>
+            </div>
+        </div>
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-outline-primary">Save Changes</button>
+            </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

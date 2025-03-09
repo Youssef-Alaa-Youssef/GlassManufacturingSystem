@@ -1,0 +1,163 @@
+﻿@model Factory.PL.ViewModels.Settings.ExportViewModel
+
+@{
+    ViewData["Title"] = "Export Data";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow mt-3 p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Export Options</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="GenericExport">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="modelType">Data Type</label>
+                            <select id="modelType" name="modelType" class="form-control" required onchange="loadColumns()">
+                                <option value="">-- Select Data Type --</option>
+                                <option value="Users">Users</option>
+                                <option value="Roles">Roles</option>
+                                <option value="Orders">Orders</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="format">Export Format</label>
+                            <select id="format" name="format" class="form-control" required>
+                                @foreach (var format in Model.SupportedFormats)
+                                {
+                                    <option value="@format">@format</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-outline-secondary btn-block">
+                                <i class="fas fa-download"></i> Export Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Select Columns</label>
+                            <div id="columnsContainer">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Settings" class="btn btn-outline-secondary">
+            <i class="fas fa-cog"></i> Export/Import Settings
+        </a>
+        <a asp-action="Import" class="btn btn-outline-secondary">
+            <i class="fas fa-upload"></i> Go to Import
+        </a>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Export Instructions</h4>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li><strong>Select Data Type:</strong> Choose the type of data you want to export from the <strong>Data Type</strong> dropdown.</li>
+                <li><strong>Select Columns:</strong> Choose the specific columns you want to include in the export.</li>
+                <li><strong>Choose Export Format:</strong> Select your preferred export format from the <strong>Export Format</strong> dropdown.</li>
+                <li><strong>Export Data:</strong> Click the <strong>Export Data</strong> button to download the file.</li>
+            </ol>
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i> The exported file will include only the selected columns.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                function loadColumns() {
+            var modelType = document.getElementById("modelType").value;
+            if (modelType) {
+                fetch(`/ExportImport/GetColumns?modelType=${modelType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var columnsContainer = document.getElementById("columnsContainer");
+                        columnsContainer.innerHTML = ""; // Clear previous content
+
+                        data.forEach(column => {
+                            var checkbox = document.createElement("input");
+                            checkbox.type = "checkbox";
+                            checkbox.name = "selectedColumns";
+                            checkbox.value = column;
+                            checkbox.id = column;
+
+                            var label = document.createElement("label");
+                            label.htmlFor = column;
+                            label.innerText = column;
+
+                            columnsContainer.appendChild(checkbox);
+                            columnsContainer.appendChild(label);
+                            columnsContainer.appendChild(document.createElement("br"));
+                        });
+                    });
+            }
+        }
+
+        // Handle form submission
+        document.getElementById("exportForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Collect selected columns
+            var selectedColumns = [];
+            document.querySelectorAll("#columnsContainer input[type='checkbox']:checked").forEach(checkbox => {
+                selectedColumns.push(checkbox.value);
+            });
+
+            // Add selected columns to the form data
+            var formData = new FormData(this);
+            formData.append("selectedColumns", JSON.stringify(selectedColumns));
+
+            // Submit the form
+            fetch(this.action, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error("Export failed.");
+            })
+            .then(blob => {
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = url;
+                a.download = `Export_${new Date().toISOString()}.${document.getElementById("format").value.toLowerCase()}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        });
+    </script>
+}

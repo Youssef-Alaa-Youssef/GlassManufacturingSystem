@@ -110,8 +110,11 @@ namespace Factory.DAL.Configurations.Permission
     new SubModule { Id = 43, Name = "Employee Insights", IconClass = "bi-people", Controller = "Reports", Action = "Employees", Title = "Analyze Employee Performance", ModuleId = 20 },
     new SubModule { Id = 44, Name = "Sales & Revenue", IconClass = "bi-graph-up", Controller = "Reports", Action = "Sales", Title = "Track Sales & Revenue", ModuleId = 20 },
     new SubModule { Id = 45, Name = "Support Dashboard", IconClass = "bi-speedometer2", Controller = "Support", Action = "Index", Title = "View Support Overview", ModuleId = 18 },
-    new SubModule { Id = 46, Name = "Orders Dashboard", IconClass = "bi-cart", Controller = "OrderReport", Action = "Index", Title = "View Orders Overview", ModuleId = 20 }
-);
+    new SubModule { Id = 46, Name = "Orders Dashboard", IconClass = "bi-cart", Controller = "OrderReport", Action = "Index", Title = "View Orders Overview", ModuleId = 20 },
+    new SubModule { Id = 47, Name = "Data Management", IconClass = "bi-download", Controller = "ExportImport", Action = "Settings", Title = "Export & Import Settings", ModuleId = 7 },
+    new SubModule { Id = 48, Name = "Data Export", IconClass = "bi-file-earmark-arrow-down", Controller = "ExportImport", Action = "Export", Title = "Export ", ModuleId = 7 },
+    new SubModule { Id = 49, Name = "Data Import", IconClass = "bi-file-earmark-arrow-up", Controller = "ExportImport", Action = "Import", Title = "Import", ModuleId = 7 }
+    );
 
         }
     }

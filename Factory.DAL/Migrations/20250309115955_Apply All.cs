@@ -114,6 +114,32 @@ namespace Factory.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExportImportSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnableExport = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    EnableImport = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    SupportedExportFormats = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SupportedImportFormats = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaxExportRows = table.Column<int>(type: "int", nullable: false, defaultValue: 10000),
+                    MaxImportFileSize = table.Column<int>(type: "int", nullable: false, defaultValue: 10485760),
+                    IncludeHeaders = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    DateFormat = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "yyyy-MM-dd"),
+                    DefaultExportFormat = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false, defaultValue: "XLSX"),
+                    CsvDelimiter = table.Column<string>(type: "nvarchar(1)", nullable: false, defaultValue: ","),
+                    AllowNullValues = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    ValidateImportData = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExportImportSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FinancialRecords",
                 columns: table => new
                 {
@@ -292,53 +318,6 @@ namespace Factory.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Property", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Settings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FactoryNameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    FactoryNameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FactoryLogo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TaxNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FacebookUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TwitterUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LinkedInUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InstagramUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ItemsPerPage = table.Column<int>(type: "int", nullable: false),
-                    EnableAnimations = table.Column<bool>(type: "bit", nullable: false),
-                    EnableNotifications = table.Column<bool>(type: "bit", nullable: false),
-                    NotificationPreferences = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NotifyOnNewOrder = table.Column<bool>(type: "bit", nullable: false),
-                    NotifyOnDelivery = table.Column<bool>(type: "bit", nullable: false),
-                    ShowDesign1 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    ShowDesign2 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    ShowDesign3 = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    DefaultDesign = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EnableTwoFactorAuth = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordExpiryDays = table.Column<int>(type: "int", nullable: false),
-                    RequireStrongPasswords = table.Column<bool>(type: "bit", nullable: false),
-                    EnableAutoBackup = table.Column<bool>(type: "bit", nullable: false),
-                    BackupFrequency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BackupLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Settings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -910,7 +889,10 @@ namespace Factory.DAL.Migrations
                     { 43, "Employees", "Reports", "bi-people", 20, "Employee Insights", "Analyze Employee Performance" },
                     { 44, "Sales", "Reports", "bi-graph-up", 20, "Sales & Revenue", "Track Sales & Revenue" },
                     { 45, "Index", "Support", "bi-speedometer2", 18, "Support Dashboard", "View Support Overview" },
-                    { 46, "Index", "OrderReport", "bi-cart", 20, "Orders Dashboard", "View Orders Overview" }
+                    { 46, "Index", "OrderReport", "bi-cart", 20, "Orders Dashboard", "View Orders Overview" },
+                    { 47, "Settings", "ExportImport", "bi-download", 7, "Data Management", "Export & Import Settings" },
+                    { 48, "Export", "ExportImport", "bi-file-earmark-arrow-down", 7, "Data Export", "Export " },
+                    { 49, "Import", "ExportImport", "bi-file-earmark-arrow-up", 7, "Data Import", "Import" }
                 });
 
             migrationBuilder.InsertData(
@@ -1033,12 +1015,6 @@ namespace Factory.DAL.Migrations
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Settings_UserId",
-                table: "Settings",
-                column: "UserId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SubModules_ModuleId",
                 table: "SubModules",
                 column: "ModuleId");
@@ -1110,6 +1086,9 @@ namespace Factory.DAL.Migrations
                 name: "Documentation");
 
             migrationBuilder.DropTable(
+                name: "ExportImportSettings");
+
+            migrationBuilder.DropTable(
                 name: "FAQS");
 
             migrationBuilder.DropTable(
@@ -1141,9 +1120,6 @@ namespace Factory.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
-
-            migrationBuilder.DropTable(
-                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "SubModules");

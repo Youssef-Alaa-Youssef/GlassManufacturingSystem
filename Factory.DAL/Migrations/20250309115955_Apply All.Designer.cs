@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Factory.DAL.Migrations
 {
     [DbContext(typeof(FactDdContext))]
-    [Migration("20250308173426_Apply All")]
+    [Migration("20250309115955_Apply All")]
     partial class ApplyAll
     {
         /// <inheritdoc />
@@ -1592,6 +1592,36 @@ namespace Factory.DAL.Migrations
                             ModuleId = 20,
                             Name = "Orders Dashboard",
                             Title = "View Orders Overview"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Action = "Settings",
+                            Controller = "ExportImport",
+                            IconClass = "bi-download",
+                            ModuleId = 7,
+                            Name = "Data Management",
+                            Title = "Export & Import Settings"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Action = "Export",
+                            Controller = "ExportImport",
+                            IconClass = "bi-file-earmark-arrow-down",
+                            ModuleId = 7,
+                            Name = "Data Export",
+                            Title = "Export "
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Action = "Import",
+                            Controller = "ExportImport",
+                            IconClass = "bi-file-earmark-arrow-up",
+                            ModuleId = 7,
+                            Name = "Data Import",
+                            Title = "Import"
                         });
                 });
 
@@ -1630,6 +1660,90 @@ namespace Factory.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContractSettings");
+                });
+
+            modelBuilder.Entity("Factory.DAL.Models.Settings.ExportImportSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowNullValues")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("CsvDelimiter")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(1)")
+                        .HasDefaultValue(",");
+
+                    b.Property<string>("DateFormat")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("yyyy-MM-dd");
+
+                    b.Property<string>("DefaultExportFormat")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("XLSX");
+
+                    b.Property<bool>("EnableExport")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("EnableImport")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IncludeHeaders")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("MaxExportRows")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(10000);
+
+                    b.Property<int>("MaxImportFileSize")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(10485760);
+
+                    b.Property<string>("SupportedExportFormats")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupportedImportFormats")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("ValidateImportData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExportImportSettings");
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Settings.NotificationSettings", b =>
@@ -1686,158 +1800,6 @@ namespace Factory.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NotificationSettings");
-                });
-
-            modelBuilder.Entity("Factory.DAL.Models.Settings.Settings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BackupFrequency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BackupLocation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("DefaultDesign")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EnableAnimations")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EnableAutoBackup")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EnableNotifications")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EnableTwoFactorAuth")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("FacebookUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FactoryLogo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FactoryNameAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FactoryNameEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstagramUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ItemsPerPage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LinkedInUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NotificationPreferences")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("NotifyOnDelivery")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("NotifyOnNewOrder")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PasswordExpiryDays")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("RequireStrongPasswords")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("ShowDesign1")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("ShowDesign2")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("ShowDesign3")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("TaxNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Theme")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TwitterUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Website")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("Factory.DAL.Models.Support.FAQS", b =>

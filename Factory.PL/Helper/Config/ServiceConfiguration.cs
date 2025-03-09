@@ -2,9 +2,11 @@
 using Factory.BLL.InterFaces;
 using Factory.DAL;
 using Factory.DAL.Models.Auth;
+using Factory.DAL.Models.Settings;
 using Factory.PL.Helper;
 using Factory.PL.Services;
 using Factory.PL.Services.Background;
+using Factory.PL.Services.DataExportImport;
 using Factory.PL.Services.Email;
 using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
@@ -66,6 +68,9 @@ public static class ServiceConfiguration
 
     private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton(new ExportImportSettings());
+        services.AddScoped<IExportService, ExportService>();
+        services.AddScoped<IImportService, ImportService>();
         services.AddHostedService<AccountDeletionBackgroundService>();
         services.Configure<EmailConfiguration>(configuration.GetSection("MailConfigurations"));
         services.AddSingleton<EmailConfiguration>();

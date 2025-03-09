@@ -42,6 +42,7 @@ namespace Factory.BLL.Interfaces
 
         Task<List<Module>> GetModulesForUserAsync(string userId);
         IQueryable<TEntity> Query();
+        Task<TEntity?> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate = null);
 
     }
 }

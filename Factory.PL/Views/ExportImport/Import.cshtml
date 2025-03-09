@@ -1,0 +1,141 @@
+﻿@model Factory.PL.ViewModels.Settings.ImportViewModel
+
+@{
+    ViewData["Title"] = "Import Data";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow p-3">
+    <!-- Error Summary Partial -->
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <!-- Import Options Card -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Import Options</h4>
+        </div>
+        <div class="card-body">
+            <!-- Import Form -->
+            <form asp-action="ImportData" id="importForm" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <!-- Data Type Dropdown -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="modelType">Data Type</label>
+                            <select id="modelType" name="modelType" class="form-control" required>
+                                <option value="">-- Select Data Type --</option>
+                                <option value="Users">Users</option>
+                                <option value="Roles">Roles</option>
+                                <option value="Orders">Orders</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Format Dropdown -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="format">Format (Optional)</label>
+                            <select id="format" name="format" class="form-control">
+                                <option value="">Auto-detect</option>
+                                @foreach (var format in Model.SupportedFormats)
+                                {
+                                    <option value="@format">@format</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="form-group">
+                    <label for="file">Select File</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="file" name="file" required>
+                        <label class="custom-file-label" for="file">Choose file...</label>
+                    </div>
+                    <small class="form-text text-muted">
+                        Supported formats: @string.Join(", ", Model.SupportedFormats)
+                    </small>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-outline-success">
+                        <i class="fas fa-upload"></i> Import Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="mt-4">
+        <a asp-action="Settings" class="btn btn-outline-secondary">
+            <i class="fas fa-cog"></i> Export/Import Settings
+        </a>
+        <a asp-action="Export" class="btn btn-outline-secondary">
+            <i class="fas fa-download"></i> Go to Export
+        </a>
+    </div>
+
+    <!-- Import Instructions -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Import Instructions</h4>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li>Select the type of data you want to import from the <strong>Data Type</strong> dropdown.</li>
+                <li>Choose the format of your import file, or leave as "Auto-detect" to determine from the file extension.</li>
+                <li>Click <strong>Choose file</strong> to select your import file.</li>
+                <li>Click the <strong>Import Data</strong> button to start the import process.</li>
+            </ol>
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> Importing data may modify or add records in the system. Make sure your import file follows the correct format.
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Results -->
+    <div id="importResults" class="mt-4" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h4>Import Results</h4>
+            </div>
+            <div class="card-body">
+                <div id="importResultContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts Section -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Handle form submission asynchronously
+        document.getElementById("importForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            let formData = new FormData(this);
+            let response = await fetch(this.action, {
+                method: "POST",
+                body: formData
+            });
+
+            let resultContainer = document.getElementById("importResultContent");
+            let resultsCard = document.getElementById("importResults");
+
+            if (response.ok) {
+                let message = await response.text();
+                resultContainer.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i> ${message}</div>`;
+            } else {
+                let errorMessage = await response.text();
+                resultContainer.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> ${errorMessage}</div>`;
+            }
+
+            resultsCard.style.display = "block";
+        });
+    </script>
+}

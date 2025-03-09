@@ -236,5 +236,16 @@ namespace Factory.BLL.Repositories
             return _dbSet.AsQueryable();
         }
 
+        public async Task<TEntity?> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate = null)
+        {
+            if (predicate == null)
+            {
+                return await _dbSet.FirstOrDefaultAsync();
+            }
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
+
+
     }
 }
