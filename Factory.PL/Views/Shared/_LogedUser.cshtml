@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims
 @using System.Globalization
+@using Factory.PL.Helper
 
 @inject Factory.PL.Services.Permssions.IModuleService ModuleService
 @{
@@ -225,8 +226,8 @@
                                 @foreach (var pages in subModule.Pages)
                                 {
                                             <li class="nav-item d-flex align-items-center mb-1">
-                                                <a asp-controller="@pages.Controller" asp-action="@pages.Action" class="nav-link submodule text-decoration-none" title="@pages.Name">
-                                            <i class="bi bi-dash fs-6"></i> 
+                                        <a href="@UrlHelper.GetSecureUrl(pages)" class="nav-link submodule text-decoration-none" title="@pages.Name">
+                                            <i class="bi bi-dash fs-6"></i>
                                             @pages.Name
                                         </a>
                                     </li>

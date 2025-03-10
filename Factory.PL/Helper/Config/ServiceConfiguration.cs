@@ -70,6 +70,7 @@ public static class ServiceConfiguration
     private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
     {
         //services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddSingleton(new ExportImportSettings());
         services.AddScoped<IExportService, ExportService>();
         services.AddScoped<IImportService, ImportService>();
@@ -80,7 +81,6 @@ public static class ServiceConfiguration
         services.Configure<CompanyDetails>(configuration.GetSection("CompanyDetails"));
         services.AddSingleton<CompanyDetails>();
         services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ISettingsService, SettingsService>();

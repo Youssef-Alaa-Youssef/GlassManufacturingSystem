@@ -1,6 +1,6 @@
 ﻿using Factory.DAL;
 using Factory.DAL.Configurations;
-using Factory.PL.Helper;
+using Factory.PL.Extension;
 using Factory.PL.Middleware;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,15 +21,13 @@ public static class MiddlewareConfiguration
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+        app.UseSecureUrlMapping();
         app.UseRouting();
         app.UseSession();
-
         ConfigureLocalization(app);
-
         app.UseAuthentication();
         app.UseAuthorization();
         //app.UseMiddleware<Factory.PL.Middleware.PermissionPolicyMiddleware>();
-
         ConfigureRoutes(app);
 
         SeedDatabase(app);

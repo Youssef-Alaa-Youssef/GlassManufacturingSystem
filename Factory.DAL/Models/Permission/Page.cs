@@ -9,5 +9,7 @@
         public bool IsActive { get; set; }
         public int SubmoduleId { get; set; }
         public virtual SubModule Submodule { get; set; }
+        public string SecureUrlKey { get; set; } = string.Empty;
+
     }
 }

@@ -10,7 +10,6 @@
     @await Html.PartialAsync("_PageTitle")
 
     <div class="row">
-        <!-- Tickets Summary -->
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
@@ -37,6 +36,7 @@
                             </div>
                         </div>
                     </div>
+                    <canvas id="ticketsChart" class="mb-3"></canvas>
                     <a asp-action="Tickets" class="btn btn-outline-primary w-100">
                         <i class="fas fa-list me-2"></i>View All Tickets
                     </a>
@@ -44,7 +44,6 @@
             </div>
         </div>
 
-        <!-- FAQs Summary -->
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
@@ -55,7 +54,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="card  mb-3">
+                            <div class="card mb-3">
                                 <div class="card-body">
                                     <h5 class="card-title">Active FAQs</h5>
                                     <p class="card-text display-4">@Model.ActiveFAQsCount</p>
@@ -71,6 +70,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <canvas id="faqsChart" class="mb-3"></canvas>
                     <a asp-action="FAQ" class="btn btn-outline-success w-100">
                         <i class="fas fa-list me-2"></i>View All FAQs
                     </a>
@@ -79,3 +80,80 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/chart.js/chart.min.js"></script>
+    <script>
+        const ticketsCtx = document.getElementById('ticketsChart').getContext('2d');
+        const ticketsChart = new Chart(ticketsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Open Tickets', 'Resolved Tickets'],
+                datasets: [{
+                    label: 'Tickets',
+                    data: [@Model.OpenTicketsCount, @Model.ResolvedTicketsCount],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Tickets Overview'
+                    }
+                }
+            }
+        });
+
+        // FAQs Chart
+        const faqsCtx = document.getElementById('faqsChart').getContext('2d');
+        const faqsChart = new Chart(faqsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Active FAQs', 'Archived FAQs'],
+                datasets: [{
+                    label: 'FAQs',
+                    data: [@Model.ActiveFAQsCount, @Model.ArchivedFAQsCount],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'FAQs Overview'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
