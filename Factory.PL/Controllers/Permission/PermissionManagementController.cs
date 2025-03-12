@@ -25,7 +25,7 @@ namespace Factory.PL.Controllers.Permission
             _userManager = userManager;
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Index()
         {
             var users = await _unitOfWork.GetRepository<ApplicationUser>().GetAllAsync();
@@ -175,7 +175,7 @@ namespace Factory.PL.Controllers.Permission
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         public async Task<IActionResult> AssignPermissions(PermissionManagementViewModel model)
         {
             if (!ModelState.IsValid)

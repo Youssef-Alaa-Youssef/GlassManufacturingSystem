@@ -1,14 +1,16 @@
-﻿using Factory.BLL.InterFaces;
+﻿using Factory.BLL.Interfaces;
+using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
 using Factory.DAL.Models.Warehouses;
 using Factory.PL.ViewModels.Warehouses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
 
 namespace Factory.PL.Controllers.Warehouses
 {
-    [Authorize(Roles = nameof(UserRole.Owner))]
+    [Authorize(Roles = nameof(UserRole.SuperAdmin))]
     public class WarehouseController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -31,43 +33,43 @@ namespace Factory.PL.Controllers.Warehouses
             {
                 return NotFound();
             }
-
             return View(mainWarehouse);
         }
 
         public IActionResult Create()
         {
-            var model = new MainWarehouseViewModel();
-            return View(model);
+            return View(new MainWarehouse());
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MainWarehouseViewModel model)
+        public async Task<IActionResult> Create(MainWarehouse model)
         {
             if (ModelState.IsValid)
             {
-                try
+                var mainWarehouse = new MainWarehouse
                 {
-                    var mainWarehouse = new MainWarehouse
-                    {
-                        NameEn = model.NameEn,
-                        NameAr = model.NameAr,
-                        AddressEn = model.AddressEn,
-                        AddressAr = model.AddressAr
-                    };
+                    NameEn = model.NameEn,
+                    NameAr = model.NameAr,
+                    AddressEn = model.AddressEn,
+                    AddressAr = model.AddressAr,
+                    Capacity = model.Capacity,
+                    CurrentStock = model.CurrentStock,
+                    Type = model.Type,
+                    Status = model.Status,
+                    Manager = model.Manager,
+                    PhoneNumber = model.PhoneNumber,
+                    Email = model.Email
+                };
 
-                    await _unitOfWork.GetRepository<MainWarehouse>().AddAsync(mainWarehouse);
-                    TempData["Success"] = "Main warehouse created successfully!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred: {ex.Message}";
-                }
+                await _unitOfWork.GetRepository<MainWarehouse>().AddAsync(mainWarehouse);
+                await _unitOfWork.SaveChangesAsync();
+
+                TempData["Success"] = "Main warehouse created successfully!";
+                return RedirectToAction(nameof(Index));
             }
 
+            TempData["Error"] = "Invalid data. Please check your inputs.";
             return View(model);
         }
 
@@ -79,13 +81,20 @@ namespace Factory.PL.Controllers.Warehouses
                 return NotFound();
             }
 
-            var model = new MainWarehouseViewModel
+            var model = new MainWarehouse
             {
                 Id = mainWarehouse.Id,
                 NameEn = mainWarehouse.NameEn,
                 NameAr = mainWarehouse.NameAr,
                 AddressEn = mainWarehouse.AddressEn,
-                AddressAr = mainWarehouse.AddressAr
+                AddressAr = mainWarehouse.AddressAr,
+                Capacity = mainWarehouse.Capacity,
+                CurrentStock = mainWarehouse.CurrentStock,
+                Type = mainWarehouse.Type,
+                Status = mainWarehouse.Status,
+                Manager = mainWarehouse.Manager,
+                PhoneNumber = mainWarehouse.PhoneNumber,
+                Email = mainWarehouse.Email
             };
 
             return View(model);
@@ -93,38 +102,41 @@ namespace Factory.PL.Controllers.Warehouses
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, MainWarehouseViewModel model)
+        public async Task<IActionResult> Edit(int id, MainWarehouse model)
         {
             if (id != model.Id)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
+                if (mainWarehouse == null)
                 {
-                    var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
-                    if (mainWarehouse == null)
-                    {
-                        return NotFound();
-                    }
-
-                    mainWarehouse.NameEn = model.NameEn;
-                    mainWarehouse.NameAr = model.NameAr;
-                    mainWarehouse.AddressEn = model.AddressEn;
-                    mainWarehouse.AddressAr = model.AddressAr;
-
-                    await _unitOfWork.GetRepository<MainWarehouse>().UpdateAsync(mainWarehouse);
-                    TempData["Success"] = "Main warehouse updated successfully!";
-                    return RedirectToAction(nameof(Index));
+                    return NotFound();
                 }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred: {ex.Message}";
-                }
+
+                mainWarehouse.NameEn = model.NameEn;
+                mainWarehouse.NameAr = model.NameAr;
+                mainWarehouse.AddressEn = model.AddressEn;
+                mainWarehouse.AddressAr = model.AddressAr;
+                mainWarehouse.Capacity = model.Capacity;
+                mainWarehouse.CurrentStock = model.CurrentStock;
+                mainWarehouse.Type = model.Type;
+                mainWarehouse.Status = model.Status;
+                mainWarehouse.Manager = model.Manager;
+                mainWarehouse.PhoneNumber = model.PhoneNumber;
+                mainWarehouse.Email = model.Email;
+
+                await _unitOfWork.GetRepository<MainWarehouse>().UpdateAsync(mainWarehouse);
+                await _unitOfWork.SaveChangesAsync();
+
+                TempData["Success"] = "Main warehouse updated successfully!";
+                return RedirectToAction(nameof(Index));
             }
 
+            TempData["Error"] = "Invalid data. Please check your inputs.";
             return View(model);
         }
 
@@ -135,7 +147,6 @@ namespace Factory.PL.Controllers.Warehouses
             {
                 return NotFound();
             }
-
             return View(mainWarehouse);
         }
 
@@ -143,38 +154,32 @@ namespace Factory.PL.Controllers.Warehouses
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
-                if (mainWarehouse != null)
-                {
-                    await _unitOfWork.GetRepository<MainWarehouse>().RemoveAsync(mainWarehouse);
-                    TempData["Success"] = "Main warehouse deleted successfully!";
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"An error occurred: {ex.Message}";
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> ManageSubWarehouses(int mainWarehouseId)
-        {
-            var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(mainWarehouseId, includeProperties: "SubWarehouses");
+            var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
             if (mainWarehouse == null)
             {
                 return NotFound();
             }
 
+            await _unitOfWork.GetRepository<MainWarehouse>().RemoveAsync(mainWarehouse);
+            await _unitOfWork.SaveChangesAsync();
+
+            TempData["Success"] = "Main warehouse deleted successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> ManageSubWarehouses(int id)
+        {
+            var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id, includeProperties: "SubWarehouses");
+            if (mainWarehouse == null)
+            {
+                return NotFound();
+            }
             return View(mainWarehouse);
         }
 
         public async Task<IActionResult> CreateSubWarehouse()
         {
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-
             var model = new SubWarehouseViewModel
             {
                 MainWarehouses = mainWarehouses.Select(mw => new SelectListItem
@@ -183,7 +188,6 @@ namespace Factory.PL.Controllers.Warehouses
                     Text = mw.NameEn
                 })
             };
-
             return View(model);
         }
 
@@ -193,32 +197,20 @@ namespace Factory.PL.Controllers.Warehouses
         {
             if (ModelState.IsValid)
             {
-                try
+                var subWarehouse = new SubWarehouse
                 {
-                    // Ensure MainWarehouse exists
-                    var mainWarehouseExists = await _unitOfWork.GetRepository<MainWarehouse>()
-                        .FindAsync(mw => mw.Id == model.MainWarehouseId);
+                    NameEn = model.NameEn,
+                    NameAr = model.NameAr,
+                    AddressEn = model.AddressEn,
+                    AddressAr = model.AddressAr,
+                    MainWarehouseId = model.MainWarehouseId
+                };
 
+                await _unitOfWork.GetRepository<SubWarehouse>().AddAsync(subWarehouse);
+                await _unitOfWork.SaveChangesAsync();
 
-                    var subWarehouse = new SubWarehouse
-                    {
-                        NameEn = model.NameEn,
-                        NameAr = model.NameAr,
-                        AddressEn = model.AddressEn,
-                        AddressAr = model.AddressAr,
-                        MainWarehouseId = model.MainWarehouseId
-                    };
-
-                    await _unitOfWork.GetRepository<SubWarehouse>().AddAsync(subWarehouse);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    TempData["Success"] = "Sub-warehouse created successfully!";
-                    return RedirectToAction(nameof(ManageSubWarehouses), new { mainWarehouseId = model.MainWarehouseId });
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred: {ex.Message} | Inner Exception: {ex.InnerException?.Message}";
-                }
+                TempData["Success"] = "Sub-warehouse created successfully!";
+                return RedirectToAction(nameof(ManageSubWarehouses), new { id = model.MainWarehouseId });
             }
 
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
@@ -228,97 +220,8 @@ namespace Factory.PL.Controllers.Warehouses
                 Text = mw.NameEn
             });
 
+            TempData["Error"] = "Invalid data. Please check your inputs.";
             return View(model);
-        }
-
-        public async Task<IActionResult> EditSubWarehouse(int id)
-        {
-            var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-            if (subWarehouse == null)
-            {
-                return NotFound();
-            }
-
-            var model = new SubWarehouseViewModel
-            {
-                Id = subWarehouse.Id,
-                NameEn = subWarehouse.NameEn,
-                NameAr = subWarehouse.NameAr,
-                AddressEn = subWarehouse.AddressEn,
-                AddressAr = subWarehouse.AddressAr,
-                MainWarehouseId = subWarehouse.MainWarehouseId
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSubWarehouse(int id, SubWarehouseViewModel model)
-        {
-            if (id != model.Id)
-            {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-                    if (subWarehouse == null)
-                    {
-                        return NotFound();
-                    }
-
-                    subWarehouse.NameEn = model.NameEn;
-                    subWarehouse.NameAr = model.NameAr;
-                    subWarehouse.AddressEn = model.AddressEn;
-                    subWarehouse.AddressAr = model.AddressAr;
-
-                    await _unitOfWork.GetRepository<SubWarehouse>().UpdateAsync(subWarehouse);
-                    TempData["Success"] = "Sub-warehouse updated successfully!";
-                    return RedirectToAction(nameof(ManageSubWarehouses), new { mainWarehouseId = model.MainWarehouseId });
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = $"An error occurred: {ex.Message}";
-                }
-            }
-
-            return View(model);
-        }
-
-        public async Task<IActionResult> DeleteSubWarehouse(int id)
-        {
-            var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-            if (subWarehouse == null)
-            {
-                return NotFound();
-            }
-
-            return View(subWarehouse);
-        }
-
-        [HttpPost, ActionName("DeleteSubWarehouse")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteSubWarehouseConfirmed(int id)
-        {
-            try
-            {
-                var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-                if (subWarehouse != null)
-                {
-                    await _unitOfWork.GetRepository<SubWarehouse>().RemoveAsync(subWarehouse);
-                    TempData["Success"] = "Sub-warehouse deleted successfully!";
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"An error occurred: {ex.Message}";
-            }
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }

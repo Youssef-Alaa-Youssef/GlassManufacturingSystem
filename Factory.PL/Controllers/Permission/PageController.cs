@@ -57,7 +57,7 @@ namespace Factory.Controllers
                     Action = pageViewModel.Action,
                     Controller = pageViewModel.Controller,
                     IsActive = pageViewModel.IsActive,
-                    SubmoduleId = pageViewModel.SubmoduleId
+                    Submodule = pageViewModel.SubmoduleId
                 };
 
                 try
@@ -91,7 +91,7 @@ namespace Factory.Controllers
                 Action = page.Action,
                 Controller = page.Controller,
                 IsActive = page.IsActive,
-                SubmoduleId = page.SubmoduleId
+                //SubmoduleId = (sub)page.SubmoduleId
             };
 
             return View(pageViewModel);
@@ -119,7 +119,7 @@ namespace Factory.Controllers
                 page.Action = pageViewModel.Action;
                 page.Controller = pageViewModel.Controller;
                 page.IsActive = pageViewModel.IsActive;
-                page.SubmoduleId = pageViewModel.SubmoduleId;
+                page.Submodule = pageViewModel.SubmoduleId;
 
                 try
                 {

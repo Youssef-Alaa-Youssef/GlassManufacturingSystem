@@ -2,12 +2,13 @@
 {
     public class SubModuleViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Controller { get; set; } = string.Empty;
-        public string Action { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string IconClass { get; set; } = string.Empty;
-        public int ModuleId { get; set; }
+        public int SubModuleId { get; set; }
+        public string SubModuleName { get; set; }
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public string IconClass { get; set; }
+        public string Title { get; set; }
+        public bool IsSelected { get; set; }
+        public List<PageViewModel> Pages { get; set; } = new List<PageViewModel>();
     }
 }

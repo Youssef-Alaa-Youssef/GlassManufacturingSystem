@@ -1,7 +1,8 @@
-﻿@model Factory.PL.ViewModels.Warehouses.MainWarehouseViewModel
+﻿@using Factory.DAL.Enums.Stores
+@model Factory.DAL.Models.Warehouses.MainWarehouse
 
 @{
-    ViewData["Title"] = "Edit Main Warehouse";
+    ViewData["Title"] = "Edit Main Store";
     Layout = "_LogedUser";
 }
 
@@ -12,29 +13,82 @@
     <form method="post">
         <div class="row mb-3">
             <div class="col-md-6">
-                <label asp-for="NameEn" class="form-label"></label>
-                <input class="form-control" asp-for="NameEn">
+                <label asp-for="NameEn" class="form-label">Name (EN)</label>
+                <input class="form-control" asp-for="NameEn" />
+                <span asp-validation-for="NameEn" class="text-danger"></span>
             </div>
             <div class="col-md-6">
-                <label asp-for="NameAr" class="form-label"></label>
-                <input class="form-control" asp-for="NameAr">
+                <label asp-for="NameAr" class="form-label">Name (AR)</label>
+                <input class="form-control" asp-for="NameAr" />
+                <span asp-validation-for="NameAr" class="text-danger"></span>
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label asp-for="AddressEn" class="form-label"></label>
-                <input class="form-control" asp-for="AddressEn">
+                <label asp-for="AddressEn" class="form-label">Address (EN)</label>
+                <input class="form-control" asp-for="AddressEn" />
+                <span asp-validation-for="AddressEn" class="text-danger"></span>
             </div>
             <div class="col-md-6">
-                <label asp-for="AddressAr" class="form-label"></label>
-                <input class="form-control" asp-for="AddressAr">
+                <label asp-for="AddressAr" class="form-label">Address (AR)</label>
+                <input class="form-control" asp-for="AddressAr" />
+                <span asp-validation-for="AddressAr" class="text-danger"></span>
             </div>
         </div>
 
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Capacity" class="form-label">Capacity</label>
+                <input class="form-control" asp-for="Capacity" type="number" min="1" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CurrentStock" class="form-label">Current Stock</label>
+                <input class="form-control" asp-for="CurrentStock" type="number" min="0" />
+                <span asp-validation-for="CurrentStock" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label asp-for="Manager" class="form-label">Manager</label>
+                <input class="form-control" asp-for="Manager" />
+                <span asp-validation-for="Manager" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                <input class="form-control" asp-for="PhoneNumber" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input class="form-control" asp-for="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select class="form-control" asp-for="Status" asp-items="Html.GetEnumSelectList<WarehouseStatus>()">
+                <option value="">---Select Status---</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Type" class="form-label">Type</label>
+                <select class="form-control" asp-for="Type" asp-items="Html.GetEnumSelectList<WarehouseType>()">
+                    <option value="">---Select Status---</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
         <div class="card-footer text-center">
             <button type="submit" class="btn btn-outline-primary">
-                Update Now
+                <i class="bi bi-pencil"></i> Update Now
             </button>
         </div>
     </form>

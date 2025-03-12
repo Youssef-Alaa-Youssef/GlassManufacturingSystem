@@ -1,46 +1,68 @@
 ﻿@model IEnumerable<Factory.DAL.Models.Warehouses.MainWarehouse>
 
 @{
-    ViewData["Title"] = "Main Warehouses";
+    ViewData["Title"] = "Main Stores";
     Layout = "_LogedUser";
-
 }
 
-<div class="container-fluid card  shadow-sm p-3">
+<div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
-
+    <!-- Create New Warehouse and Sub-Warehouse -->
     <div class="mb-3">
-        <a href="@Url.Action("Create")" class="btn btn-outline-primary">Create New MainWarehouse</a>
-        <a href="@Url.Action("CreateSubWarehouse", "Warehouse")" class="btn btn-outline-info">Create New Sub Warehouse</a>
+        <a href="@Url.Action("Create")" class="btn btn-outline-primary">
+            <i class="bi bi-plus"></i> Create New Main Warehouse
+        </a>
+        <a href="@Url.Action("CreateSubWarehouse", "Warehouse")" class="btn btn-outline-info">
+            <i class="bi bi-plus"></i> Create New Sub Warehouse
+        </a>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name (EN)</th>
-                <th>Name (AR)</th>
-                <th>Address (EN)</th>
-                <th>Address (AR)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var warehouse in Model)
-            {
+    <!-- Main Warehouses Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
                 <tr>
-                    <td>@warehouse.NameEn</td>
-                    <td>@warehouse.NameAr</td>
-                    <td>@warehouse.AddressEn</td>
-                    <td>@warehouse.AddressAr</td>
-                    <td>
-                        <a href="@Url.Action("Details", new { id = warehouse.Id })" class="btn btn-outline-info btn-sm">Details</a>
-                        <a href="@Url.Action("Edit", new { id = warehouse.Id })" class="btn btn-outline-warning btn-sm">Edit</a>
-                        <a href="@Url.Action("Delete", new { id = warehouse.Id })" class="btn btn-outline-danger btn-sm">Delete</a>
-                    </td>
+                    <th>Name (EN)</th>
+                    <th>Name (AR)</th>
+                    <th>Address (EN)</th>
+                    <th>Address (AR)</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var warehouse in Model)
+                    {
+                        <tr>
+                            <td>@warehouse.NameEn</td>
+                            <td>@warehouse.NameAr</td>
+                            <td>@warehouse.AddressEn</td>
+                            <td>@warehouse.AddressAr</td>
+                            <td>
+                                <!-- Action buttons with icons and tooltips -->
+                                <a href="@Url.Action("Details", new { id = warehouse.Id })" class="btn btn-outline-info btn-sm" title="View Warehouse Details">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", new { id = warehouse.Id })" class="btn btn-outline-warning btn-sm" title="Edit Warehouse">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="@Url.Action("Delete", new { id = warehouse.Id })" class="btn btn-outline-danger btn-sm" title="Delete Warehouse">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No warehouses found. Please create a new warehouse.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

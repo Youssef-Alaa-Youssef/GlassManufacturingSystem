@@ -1,20 +1,18 @@
 ﻿@model Factory.DAL.Models.Warehouses.MainWarehouse
 
 @{
-    ViewData["Title"] = "Warehouse Details";
+    ViewData["Title"] = "Store Details";
     Layout = "_LogedUser";
-
 }
 
 <div class="container-fluid card shadow-sm p-3">
-    @await Html.PartialAsync("ErrorSummaryPartial")
-
-    @await Html.PartialAsync("_PageTitle")
-
+    @await Html.PartialAsync("ErrorSummaryPartial") 
+    @await Html.PartialAsync("_PageTitle")          
     <div class="mb-3">
         <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
     </div>
 
+    <!-- Warehouse Details Section -->
     <dl class="row">
         <dt class="col-sm-3">Name (EN)</dt>
         <dd class="col-sm-9">@Model.NameEn</dd>
@@ -27,18 +25,59 @@
 
         <dt class="col-sm-3">Address (AR)</dt>
         <dd class="col-sm-9">@Model.AddressAr</dd>
+
+        <dt class="col-sm-3">Capacity</dt>
+        <dd class="col-sm-9">@Model.Capacity</dd>
+
+        <dt class="col-sm-3">Current Stock</dt>
+        <dd class="col-sm-9">@Model.CurrentStock</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+
+        <dt class="col-sm-3">Manager</dt>
+        <dd class="col-sm-9">@Model.Manager</dd>
+
+        <dt class="col-sm-3">Phone Number</dt>
+        <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+
+        <dt class="col-sm-3">Created Date</dt>
+        <dd class="col-sm-9">@Model.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+        @if (Model.UpdatedDate.HasValue)
+        {
+            <dt class="col-sm-3">Updated Date</dt>
+            <dd class="col-sm-9">@Model.UpdatedDate.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+        }
     </dl>
 
+    <!-- Sub-Warehouses Section -->
     <h3>Sub-Warehouses</h3>
-    @foreach (var subWarehouse in Model.SubWarehouses)
+    @if (Model.SubWarehouses.Any())
     {
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">@subWarehouse.NameEn</h5>
-                <p class="card-text">@subWarehouse.AddressEn</p>
-                <a href="@Url.Action("EditSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-warning btn-sm">Edit</a>
-                <a href="@Url.Action("DeleteSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-danger btn-sm">Delete</a>
-            </div>
+        <div class="list-group">
+            @foreach (var subWarehouse in Model.SubWarehouses)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">@subWarehouse.NameEn</h5>
+                            <p class="card-text">@subWarehouse.AddressEn</p>
+                        </div>
+                        <div>
+                            <a href="@Url.Action("EditSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-warning btn-sm">Edit</a>
+                            <a href="@Url.Action("DeleteSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-danger btn-sm">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
+    }
+    else
+    {
+        <p>No sub-warehouses available.</p>
     }
 </div>
