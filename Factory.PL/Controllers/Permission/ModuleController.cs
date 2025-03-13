@@ -16,14 +16,14 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [DynamicAuthorize]
+        [Authorize()]
         public async Task<IActionResult> Index()
         {
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
             return View(modules);
         }
 
-        [DynamicAuthorize]
+        [Authorize()]
         public async Task<IActionResult> Details(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -35,12 +35,12 @@ namespace Factory.Controllers
             return View(module);
         }
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         public IActionResult Create()
         {
             return View();
         }
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -75,7 +75,7 @@ namespace Factory.Controllers
             return View(ModulesViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -96,7 +96,7 @@ namespace Factory.Controllers
 
             return View(ModulesViewModel);
         }
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -136,7 +136,7 @@ namespace Factory.Controllers
             return View(ModulesViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(int id)
         {
             var module = await _unitOfWork.GetRepository<Module>().GetByIdAsync(id);
@@ -147,7 +147,7 @@ namespace Factory.Controllers
 
             return View(module);
         }
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

@@ -6,11 +6,9 @@
 @{
     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     var modules = await ModuleService.GetModulesForUserAsync(userId);
-    var currentCulture = CultureInfo.CurrentCulture.Name;
 }
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
- <!-- Default theme is light -->
+<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name" dir="@(System.Globalization.CultureInfo.CurrentCulture.Name == "ar-SA" ? "rtl" : "ltr")" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -18,7 +16,14 @@
     <meta content="" name="description">
     <meta content="" name="keywords">
     <link rel="icon" href="~/assets/images/icons/map-marker-2.png" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    @if (System.Globalization.CultureInfo.CurrentCulture.Name == "ar-SA")
+    {
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    }
+    else
+    {
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    }
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="~/assets/css/Dashboard.css" rel="stylesheet">
 </head>
@@ -62,14 +67,58 @@
 
                 <div class="d-flex align-items-center">
                     <div class="dropdown me-2">
-                        <a href="#" id="logoutDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i id="logoutIcon" class="bi bi-box-arrow-right me-2 fs-5 p-2 rounded"></i>
+                        <a href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="notificationIcon" class="bi bi-bell fs-5 p-2 rounded position-relative">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    5 
+                                    <span class="visually-hidden">unread notifications</span>
+                                </span>
+                            </i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
+
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdownToggle">
+                            <!-- Notification Header -->
                             <li>
-                                <a href="#" class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                                    <i class="bi bi-box-arrow-right fs-4 me-2"></i>
-                                    <span>Logout</span>
+                                <h6 class="dropdown-header">Notifications</h6>
+                            </li>
+
+                            <!-- Notification Items -->
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <i class="bi bi-info-circle fs-4 me-2 text-primary"></i>
+                                    <div>
+                                        <span class="d-block">New update available</span>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <i class="bi bi-check-circle fs-4 me-2 text-success"></i>
+                                    <div>
+                                        <span class="d-block">Your order has been shipped</span>
+                                        <small class="text-muted">1 day ago</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <i class="bi bi-exclamation-triangle fs-4 me-2 text-warning"></i>
+                                    <div>
+                                        <span class="d-block">Low inventory alert</span>
+                                        <small class="text-muted">3 days ago</small>
+                                    </div>
+                                </a>
+                            </li>
+
+                            <!-- View All Notifications -->
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-center text-primary" href="#">
+                                    View All Notifications
                                 </a>
                             </li>
                         </ul>
@@ -92,10 +141,18 @@
                             <i class="bi bi-translate me-2 fs-5 p-2 rounded"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            @if (currentCulture == "ar_EG")
+                            @{
+                                var currentCulture = System.Globalization.CultureInfo.CurrentCulture.Name;
+                            }
+
+                            @if (currentCulture == "ar-SA")
                             {
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Language" asp-action="ChangeLanguage" asp-route-culture="en" asp-route-returnUrl="@Context.Request.Path">
+                                    <a class="dropdown-item"
+                                       asp-controller="Language"
+                                       asp-action="ChangeLanguage"
+                                       asp-route-culture="en-US"
+                                       asp-route-returnUrl="@Context.Request.Path">
                                         English (En)
                                     </a>
                                 </li>
@@ -103,7 +160,11 @@
                             else
                             {
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Language" asp-action="ChangeLanguage" asp-route-culture="ar" asp-route-returnUrl="@Context.Request.Path">
+                                    <a class="dropdown-item"
+                                       asp-controller="Language"
+                                       asp-action="ChangeLanguage"
+                                       asp-route-culture="ar-SA"
+                                       asp-route-returnUrl="@Context.Request.Path">
                                         العربية (Ar)
                                     </a>
                                 </li>
@@ -191,55 +252,75 @@
                                     <i class="bi bi-lock fs-4 me-2"></i> Change Password
                                 </a>
                             </li>
+                            <li>
+                                <a href="#" class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                    <i class="bi bi-box-arrow-right fs-4 me-2"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Sidebar -->
-        <div class="sidebar border-end mt-2" id="sidebar">
-    <ul class="nav flex-column p-3">
-        @foreach (var module in modules)
-        {
-            <li class="nav-item mb-2">
-                <div class="module d-flex justify-content-between align-items-center p-2 rounded cursor-pointer" data-bs-toggle="collapse" href="#@($"menu{module.Id}")" aria-expanded="false" aria-controls="@($"menu{module.Id}")">
-                    <div class="d-flex align-items-center">
-                        <i class="bi @module.IconClass fs-5 me-2"></i>
-                        <span class="fw-semibold">@module.Name</span>
-                    </div>
-                    <i class="bi bi-chevron-down fs-6 transition-rotate"></i>
-                </div>
-
-                <ul class="collapse nav flex-column mt-2 ps-3" id="@($"menu{module.Id}")">
-                    @foreach (var subModule in module.SubModules)
+        <div class="sidebar border-end mt-2 " id="sidebar">
+            @if (modules.Any())
+            {
+                <ul class="nav flex-column p-3">
+                    @foreach (var module in modules)
                     {
                         <li class="nav-item mb-2">
-                            <div class="submodule d-flex justify-content-between align-items-center p-2 rounded cursor-pointer" data-bs-toggle="collapse" href="#@($"submenu{subModule.Id}")" aria-expanded="false" aria-controls="@($"submenu{subModule.Id}")">
+                            <div class="module d-flex justify-content-between align-items-center p-2 rounded cursor-pointer shadow-sm"
+                                 data-bs-toggle="collapse" href="#@($"menu{module.Id}")" aria-expanded="false" aria-controls="@($"menu{module.Id}")">
                                 <div class="d-flex align-items-center">
-                                    <i class="bi @subModule.IconClass fs-4 me-2"></i> 
-                                    <span class="fw-medium">@subModule.Name</span> 
+                                    <i class="bi @module.IconClass fs-5 me-2"></i>
+                                    <span class="fw-semibold">@module.Name</span>
                                 </div>
-                                <i class="bi bi-chevron-down fs-6 transition-rotate"></i> 
+                                <i class="bi bi-chevron-down fs-6 transition-rotate text-muted"></i>
                             </div>
 
-                            <ul class="collapse nav flex-column mt-1 ps-2" id="@($"submenu{subModule.Id}")">
-                                @foreach (var pages in subModule.Pages)
+                            <!-- Submodules -->
+                            <ul class="collapse nav flex-column mt-2 ps-3" id="@($"menu{module.Id}")">
+                                @foreach (var subModule in module.SubModules)
                                 {
-                                            <li class="nav-item d-flex align-items-center mb-1">
-                                        <a href="@UrlHelper.GetSecureUrl(pages)" class="nav-link submodule text-decoration-none" title="@pages.Name">
-                                            <i class="bi bi-dash fs-6"></i>
-                                            @pages.Name
-                                        </a>
+                                    <li class="nav-item mb-2">
+                                        <!-- Submodule Header -->
+                                        <div class="submodule d-flex justify-content-between align-items-center p-2 rounded cursor-pointer shadow-sm"
+                                             data-bs-toggle="collapse" href="#@($"submenu{subModule.Id}")" aria-expanded="false" aria-controls="@($"submenu{subModule.Id}")">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi @subModule.IconClass fs-4 me-2"></i>
+                                                <span class="fw-medium">@subModule.Name</span>
+                                            </div>
+                                            <i class="bi bi-chevron-down fs-6 transition-rotate text-muted"></i>
+                                        </div>
+
+                                        <!-- Pages -->
+                                        <ul class="collapse nav flex-column mt-1 ps-2" id="@($"submenu{subModule.Id}")">
+                                            @foreach (var pages in subModule.Pages)
+                                            {
+                                                <li class="nav-item d-flex align-items-center mb-1">
+                                                    <a href="@UrlHelper.GetSecureUrl(pages)" class="nav-link submodule text-decoration-none" title="@pages.Name">
+                                                        <i class="bi bi-dash fs-6 me-2 text-muted"></i>
+                                                        @pages.Name
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
                                     </li>
                                 }
                             </ul>
                         </li>
                     }
                 </ul>
-            </li>
-        }
-    </ul>
-</div>
+            }
+            else
+            {
+                <div class="p-3 text-muted">
+                    <i class="bi bi-exclamation-circle me-2"></i> No permissions available.
+                </div>
+            }
+        </div>
     </nav>
     <div class="text-center p-3 fixed-bottom">
         <small class="text-muted">&copy; @DateTime.Now.Year MasterCopy. All rights reserved.</small>

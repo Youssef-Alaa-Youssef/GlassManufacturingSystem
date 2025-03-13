@@ -1,5 +1,4 @@
 ﻿using Factory.DAL.Enums.Stores;
-using Factory.DAL.Models.Warehouses;
 using System.ComponentModel.DataAnnotations;
 namespace Factory.DAL.Models.Warehouses
 {
@@ -45,6 +44,7 @@ namespace Factory.DAL.Models.Warehouses
 
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
+        public virtual List<Category> Categories { get; set; } = new List<Category>();
 
         public virtual List<SubWarehouse> SubWarehouses { get; set; } = new List<SubWarehouse>();
 

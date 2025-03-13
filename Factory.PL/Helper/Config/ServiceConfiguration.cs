@@ -4,6 +4,7 @@ using Factory.DAL;
 using Factory.DAL.Models.Auth;
 using Factory.DAL.Models.Settings;
 using Factory.PL.Helper;
+using Factory.PL.Helper.Lang;
 using Factory.PL.Services;
 using Factory.PL.Services.Background;
 using Factory.PL.Services.Dashboard;
@@ -19,6 +20,7 @@ using Factory.PL.Services.UploadFile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -34,12 +36,6 @@ public static class ServiceConfiguration
                 options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
             });
 
-        var cultureInfo = new System.Globalization.CultureInfo("en-US");
-        //cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
-
-        //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
         ConfigureLocalization(services);
         ConfigureApplicationServices(services, configuration);
         ConfigureDatabase(services, configuration);
@@ -49,22 +45,19 @@ public static class ServiceConfiguration
 
     private static void ConfigureLocalization(IServiceCollection services)
     {
-        var cultureInfo = new CultureInfo("en-US");
-        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+        services.AddSingleton<IStringLocalizerFactory>(new JsonStringLocalizerFactory("Resources"));
 
-        services.AddControllersWithViews();
-        services.AddLocalization();
-        services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizationFactory>();
-        services.AddMemoryCache();
-
-        services.Configure<RequestLocalizationOptions>(options =>
+        services.AddLocalization(options => options.ResourcesPath = "Resources");
+        var supportedCultures = new[]
         {
-            var supportedCultures = new[] { new CultureInfo("ar-EG"), new CultureInfo("en-US") };
-            options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
-            options.SupportedCultures = supportedCultures;
-            options.SupportedUICultures = supportedCultures;
-        });
+            new CultureInfo("en-US"), 
+            new CultureInfo("ar-SA"), 
+            new CultureInfo("fr-FR"), 
+        };
+
+        services.AddControllersWithViews()
+            .AddDataAnnotationsLocalization() 
+            .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix); 
     }
 
     private static void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)

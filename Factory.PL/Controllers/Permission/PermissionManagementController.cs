@@ -99,7 +99,7 @@ namespace Factory.PL.Controllers.Permission
         }
 
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
 
         public async Task<IActionResult> AssignPermissions()
         {

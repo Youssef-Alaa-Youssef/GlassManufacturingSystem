@@ -2,7 +2,9 @@
 using Factory.DAL.Configurations;
 using Factory.PL.Extension;
 using Factory.PL.Middleware;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 public static class MiddlewareConfiguration
 {
@@ -18,13 +20,18 @@ public static class MiddlewareConfiguration
         }
 
         app.UseMiddleware<ContractExpirationMiddleware>();
+        app.UseRequestLocalization(new RequestLocalizationOptions
+        {
+            DefaultRequestCulture = new RequestCulture("en-US"), 
+            SupportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("ar-SA") }, 
+            SupportedUICultures = new[] { new CultureInfo("en-US"), new CultureInfo("ar-SA") }
+        });
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseSecureUrlMapping();
         app.UseRouting();
         app.UseSession();
-        ConfigureLocalization(app);
         app.UseAuthentication();
         app.UseAuthorization();
         //app.UseMiddleware<Factory.PL.Middleware.PermissionPolicyMiddleware>();

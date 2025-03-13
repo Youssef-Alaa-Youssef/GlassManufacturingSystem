@@ -18,7 +18,7 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Orders_Read")]
+        [Authorize()]
         public async Task<IActionResult> Index()
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
@@ -33,13 +33,13 @@ namespace Factory.Controllers
             return View(MapToViewModel(order));
         }
 
-        [Authorize(Policy = "Orders_Create")]
+        [Authorize()]
         public async Task<IActionResult> Create()
         {
             var model = await CreateOrderViewModel();
             return View(model);
         }
-        [Authorize(Policy = "Orders_Create")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderViewModel orderViewModel)
@@ -136,7 +136,7 @@ namespace Factory.Controllers
                 Items = items.Select(item => new OrderItemViewModel
                 {
                     Id = item.Id,  // Assuming Item has an Id property
-                    ItemName = item.Name,  // Assuming Item has a Name property
+                    ItemName = item.NameEn,  // Assuming Item has a Name property
                 }).ToList()
             };
 
@@ -144,14 +144,14 @@ namespace Factory.Controllers
             return model;
         }
 
-        [Authorize(Policy = "Orders_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             if (order == null) return NotFound();
             return View(MapToViewModel(order));
         }
-        [Authorize(Policy = "Orders_Update")]
+        [Authorize()]
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -176,13 +176,13 @@ namespace Factory.Controllers
             }
         }
 
-        [Authorize(Policy = "Orders_Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
             return order == null ? NotFound() : View(order);
         }
-        [Authorize(Policy = "Orders_Delete")]
+        [Authorize()]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -200,8 +200,7 @@ namespace Factory.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-        [Authorize(Policy = "Orders_Read")]
-
+        [Authorize()]
         public async Task<IActionResult> Optimization(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);
@@ -238,7 +237,7 @@ namespace Factory.Controllers
             }).ToList()
         };
 
-        [Authorize(Policy = "Orders_Read")]
+        [Authorize()]
         public async Task<IActionResult> GlassLabel(int id)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(id);

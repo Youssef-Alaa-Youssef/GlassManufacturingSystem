@@ -12,57 +12,79 @@ namespace Factory.DAL.Configurations
 
             builder.HasKey(i => i.Id);
 
-            builder.Property(i => i.Name)
+            builder.Property(i => i.CodeNumber)
                 .IsRequired()
-                .HasMaxLength(255);
-
-            builder.Property(i => i.Description)
-                .HasMaxLength(500);
-
-            builder.Property(i => i.Type)
                 .HasMaxLength(100);
 
-            builder.Property(i => i.Color)
-                .HasMaxLength(50);
+            builder.Property(i => i.NameEn)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder.Property(i => i.Thickness)
-                .HasMaxLength(50);
+            builder.Property(i => i.NameAr)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder.Property(i => i.Dimensions)
-                .HasPrecision(10, 2);
+            builder.Property(i => i.DescriptionEn)
+                .HasMaxLength(250);
+
+            builder.Property(i => i.DescriptionAr)
+                .HasMaxLength(250);
 
             builder.Property(i => i.UnitPrice)
-                .HasPrecision(18, 2)
-                .IsRequired();
+                .HasColumnType("decimal(18, 2)");
 
-            builder.Property(i => i.Quantity)
-                .IsRequired();
+            builder.Property(i => i.MinimumStock)
+                .HasDefaultValue(10);
 
-            builder.Ignore(i => i.TotalValue); // Ignoring computed property
+            builder.Property(i => i.CurrentStock)
+                .HasDefaultValue(0);
 
-            builder.Property(i => i.Manufacturer)
-                .HasMaxLength(255);
+            builder.Property(i => i.UnitOfMeasure)
+                .HasDefaultValue("Piece");
 
-            builder.Property(i => i.ManufactureDate)
-                .IsRequired();
+            builder.Property(i => i.IsActive)
+                .HasDefaultValue(true);
 
-            builder.Property(i => i.ExpiryDate)
-                .IsRequired();
+            builder.Property(i => i.CreatedDate)
+                .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(i => i.IsFragile)
+            builder.Property(i => i.UpdatedDate)
+                .IsRequired(false);
+
+            builder.Property(i => i.Thickness)
+                .HasDefaultValue(4.0);
+
+            builder.Property(i => i.Width)
+                .HasDefaultValue(0.0);
+
+            builder.Property(i => i.Height)
+                .HasDefaultValue(0.0);
+
+            builder.Property(i => i.Color)
+                .HasDefaultValue("Clear");
+
+            builder.Property(i => i.Quality)
+                .HasDefaultValue("Standard");
+
+            builder.Property(i => i.IsToughened)
                 .HasDefaultValue(false);
 
-            builder.Property(i => i.Notes)
-                .HasMaxLength(500);
+            builder.Property(i => i.IsLaminated)
+                .HasDefaultValue(false);
 
             // Relationships
-            builder.HasOne(i => i.Warehouse)
-                .WithMany() // Assuming one-to-many
-                .HasForeignKey(i => i.WarehouseId)
+            builder.HasOne(i => i.Category)
+                .WithMany(c => c.Items)
+                .HasForeignKey(i => i.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(i => i.MainWarehouse)
+                .WithMany()
+                .HasForeignKey(i => i.MainWarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(i => i.SubWarehouse)
-                .WithMany() // Assuming one-to-many
+                .WithMany()
                 .HasForeignKey(i => i.SubWarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

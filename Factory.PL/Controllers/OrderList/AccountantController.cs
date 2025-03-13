@@ -141,7 +141,7 @@ namespace Factory.Controllers
             return View(financialRecordViewModel);
         }
 
-        [Authorize(Policy = "Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(int id)
         {
             var financialRecord = await _unitOfWork.GetRepository<FinancialRecord>().GetByIdAsync(id);
@@ -153,7 +153,7 @@ namespace Factory.Controllers
             return View(financialRecord);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [Authorize()]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

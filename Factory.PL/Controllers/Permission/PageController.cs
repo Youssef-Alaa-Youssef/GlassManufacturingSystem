@@ -17,14 +17,14 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Index()
         {
             var pages = await _unitOfWork.GetRepository<Page>().GetAllAsync();
             return View(pages);
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Details(int id)
         {
             var page = await _unitOfWork.GetRepository<Page>().GetByIdAsync(id);
@@ -36,13 +36,13 @@ namespace Factory.Controllers
             return View(page);
         }
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         public IActionResult Create()
         {
             return View();
         }
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PageViewModel pageViewModel)
@@ -75,7 +75,7 @@ namespace Factory.Controllers
             return View(pageViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(int id)
         {
             var page = await _unitOfWork.GetRepository<Page>().GetByIdAsync(id);
@@ -97,7 +97,7 @@ namespace Factory.Controllers
             return View(pageViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PageViewModel pageViewModel)
@@ -136,7 +136,7 @@ namespace Factory.Controllers
             return View(pageViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(int id)
         {
             var page = await _unitOfWork.GetRepository<Page>().GetByIdAsync(id);
@@ -148,7 +148,7 @@ namespace Factory.Controllers
             return View(page);
         }
 
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

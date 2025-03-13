@@ -1,0 +1,740 @@
+﻿@model Factory.PL.ViewModels.Warehouses.WarehouseViewModel
+@{
+    ViewData["Title"] = "Glass Factory Warehouse Management";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row">
+        <!-- Main Warehouse Section -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Main Warehouse</h5>
+                </div>
+                <div class="card-body">
+                    <form id="mainWarehouseForm">
+                        <div class="form-group">
+                            <label for="mainWarehouseSelect">Select Main Warehouse:</label>
+                            <select id="mainWarehouseSelect" class="form-control">
+                                <option value="">-- Select Warehouse --</option>
+                                @foreach (var warehouse in Model.MainWarehouses)
+                                {
+                                    <option value="@warehouse.Id">@warehouse.NameEn</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addMainWarehouseModal">
+                                <i class="fas fa-plus"></i> Add New
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Current Selection: <span id="selectedMainWarehouseInfo">None</span></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    <form id="categoryForm">
+                        <div class="form-group">
+                            <label for="categorySelect">Select Category:</label>
+                            <select id="categorySelect" class="form-control" disabled>
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id" data-warehouse-id="">@category.NameEn</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCategoryModal" disabled id="addCategoryBtn">
+                                <i class="fas fa-plus"></i> Add New
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Current Selection: <span id="selectedCategoryInfo">None</span></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Glass Items Section -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Glass Items</h5>
+                </div>
+                <div class="card-body">
+                    <form id="itemForm">
+                        <div class="form-group">
+                            <label for="itemSelect">Select Item:</label>
+                            <select id="itemSelect" class="form-control" disabled>
+                                <option value="">-- Select Item --</option>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <option value="@item.Id" data-category-id="">@item.NameEn</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addItemModal" disabled id="addItemBtn">
+                                <i class="fas fa-plus"></i> Add New
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Current Selection: <span id="selectedItemInfo">None</span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Details Section -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Item Details</h5>
+                </div>
+                <div class="card-body" id="itemDetails">
+                    <p class="text-center text-muted">Select a warehouse, category, and item to view details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Main Warehouse Modal -->
+<div class="modal fade" id="addMainWarehouseModal" tabindex="-1" role="dialog" aria-labelledby="addMainWarehouseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addMainWarehouseModalLabel">Add New Main Warehouse</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addMainWarehouseForm">
+                    <div class="form-group">
+                        <label for="warehouseNameEn">Name (English):</label>
+                        <input type="text" class="form-control" id="warehouseNameEn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="warehouseNameAr">Name (Arabic):</label>
+                        <input type="text" class="form-control" id="warehouseNameAr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="warehouseAddressEn">Address (English):</label>
+                        <input type="text" class="form-control" id="warehouseAddressEn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="warehouseAddressAr">Address (Arabic):</label>
+                        <input type="text" class="form-control" id="warehouseAddressAr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="warehouseCapacity">Capacity:</label>
+                        <input type="number" class="form-control" id="warehouseCapacity" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="warehouseType">Type:</label>
+                        <select class="form-control" id="warehouseType" required>
+                            <option value="1">Raw Materials</option>
+                            <option value="2">Finished Products</option>
+                            <option value="3">Tools</option>
+                            <option value="4">Mixed</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveMainWarehouseBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Glass Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <input type="hidden" id="categoryMainWarehouseId">
+                    <div class="form-group">
+                        <label for="categoryNameEn">Name (English):</label>
+                        <input type="text" class="form-control" id="categoryNameEn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryNameAr">Name (Arabic):</label>
+                        <input type="text" class="form-control" id="categoryNameAr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryDescEn">Description (English):</label>
+                        <textarea class="form-control" id="categoryDescEn" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryDescAr">Description (Arabic):</label>
+                        <textarea class="form-control" id="categoryDescAr" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="glassType">Glass Type:</label>
+                        <select class="form-control" id="glassType" required>
+                            <option value="0">Standard</option>
+                            <option value="1">Tempered</option>
+                            <option value="2">Laminated</option>
+                            <option value="3">LowE</option>
+                            <option value="4">Insulated</option>
+                            <option value="5">Tinted</option>
+                            <option value="6">Patterned</option>
+                            <option value="7">Bulletproof</option>
+                            <option value="8">Fireproof</option>
+                            <option value="9">Decorative</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" id="saveCategoryBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="addItemModalLabel">Add New Glass Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addItemForm">
+                    <input type="hidden" id="itemMainWarehouseId">
+                    <input type="hidden" id="itemCategoryId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="itemCodeNumber">Code Number:</label>
+                                <input type="text" class="form-control" id="itemCodeNumber" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="itemNameEn">Name (English):</label>
+                                <input type="text" class="form-control" id="itemNameEn" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="itemNameAr">Name (Arabic):</label>
+                                <input type="text" class="form-control" id="itemNameAr" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="itemUnitPrice">Unit Price:</label>
+                                <input type="number" step="0.01" class="form-control" id="itemUnitPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="itemMinStock">Minimum Stock:</label>
+                                <input type="number" class="form-control" id="itemMinStock" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemInitialStock">Initial Stock:</label>
+                                <input type="number" class="form-control" id="itemInitialStock" value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="itemThickness">Thickness (mm):</label>
+                                <input type="number" step="0.1" class="form-control" id="itemThickness" value="4.0">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemWidth">Width (mm):</label>
+                                <input type="number" class="form-control" id="itemWidth" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemHeight">Height (mm):</label>
+                                <input type="number" class="form-control" id="itemHeight" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemColor">Color:</label>
+                                <input type="text" class="form-control" id="itemColor" value="Clear">
+                            </div>
+                            <div class="form-group">
+                                <label for="itemQuality">Quality:</label>
+                                <select class="form-control" id="itemQuality">
+                                    <option value="Standard">Standard</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Economy">Economy</option>
+                                </select>
+                            </div>
+                            <div class="form-check mt-4">
+                                <input type="checkbox" class="form-check-input" id="isToughened">
+                                <label class="form-check-label" for="isToughened">Toughened Glass</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="isLaminated">
+                                <label class="form-check-label" for="isLaminated">Laminated Glass</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveItemBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Cache DOM elements
+            const mainWarehouseSelect = $('#mainWarehouseSelect');
+            const categorySelect = $('#categorySelect');
+            const itemSelect = $('#itemSelect');
+            const addCategoryBtn = $('#addCategoryBtn');
+            const addItemBtn = $('#addItemBtn');
+
+            // Selected info spans
+            const selectedMainWarehouseInfo = $('#selectedMainWarehouseInfo');
+            const selectedCategoryInfo = $('#selectedCategoryInfo');
+            const selectedItemInfo = $('#selectedItemInfo');
+            const itemDetails = $('#itemDetails');
+
+            // Save buttons
+            const saveMainWarehouseBtn = $('#saveMainWarehouseBtn');
+            const saveCategoryBtn = $('#saveCategoryBtn');
+            const saveItemBtn = $('#saveItemBtn');
+
+            // Hidden inputs for modals
+            const categoryMainWarehouseId = $('#categoryMainWarehouseId');
+            const itemMainWarehouseId = $('#itemMainWarehouseId');
+            const itemCategoryId = $('#itemCategoryId');
+
+            // Ensure Bootstrap modal functionality is available
+            if (typeof $.fn.modal === 'undefined') {
+                console.error("Bootstrap's modal functionality is not available. Make sure you've included Bootstrap JS.");
+                alert("Error: Bootstrap modal functionality not available. Please check console for details.");
+                return;
+            }
+
+            // Initialize toast notifications
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "3000"
+                };
+            } else {
+                // Fallback toast implementation
+                window.toastr = {
+                    success: function(msg) { alert('Success: ' + msg); },
+                    error: function(msg) { alert('Error: ' + msg); },
+                    warning: function(msg) { alert('Warning: ' + msg); }
+                };
+            }
+
+            // Event Handlers
+            mainWarehouseSelect.on('change', function () {
+                const warehouseId = $(this).val();
+                if (warehouseId) {
+                    // Enable the category controls
+                    categorySelect.prop('disabled', false);
+                    addCategoryBtn.prop('disabled', false);
+
+                    // Update the selected warehouse info
+                    const warehouseName = $(this).find('option:selected').text();
+                    selectedMainWarehouseInfo.text(warehouseName);
+
+                    // Set the warehouse ID for the category modal
+                    categoryMainWarehouseId.val(warehouseId);
+                    itemMainWarehouseId.val(warehouseId);
+
+                    // Load categories for this warehouse
+                    loadCategories(warehouseId);
+
+                    // Reset category and item selections
+                    categorySelect.val('');
+                    itemSelect.val('');
+                    selectedCategoryInfo.text('None');
+                    selectedItemInfo.text('None');
+                    itemDetails.html('<p class="text-center text-muted">Select a category and item to view details</p>');
+
+                    // Disable item controls until a category is selected
+                    itemSelect.prop('disabled', true);
+                    addItemBtn.prop('disabled', true);
+                } else {
+                    // Disable everything if no warehouse is selected
+                    resetSelections();
+                }
+            });
+
+            categorySelect.on('change', function () {
+                const categoryId = $(this).val();
+                if (categoryId) {
+                    // Enable the item controls
+                    itemSelect.prop('disabled', false);
+                    addItemBtn.prop('disabled', false);
+
+                    // Update the selected category info
+                    const categoryName = $(this).find('option:selected').text();
+                    selectedCategoryInfo.text(categoryName);
+
+                    // Set the category ID for the item modal
+                    itemCategoryId.val(categoryId);
+
+                    // Load items for this category
+                    loadItems(categoryId);
+
+                    // Reset item selection
+                    itemSelect.val('');
+                    selectedItemInfo.text('None');
+                    itemDetails.html('<p class="text-center text-muted">Select an item to view details</p>');
+                } else {
+                    // Disable item controls if no category is selected
+                    itemSelect.prop('disabled', true);
+                    addItemBtn.prop('disabled', true);
+                    selectedCategoryInfo.text('None');
+                    selectedItemInfo.text('None');
+                    itemDetails.html('<p class="text-center text-muted">Select a category and item to view details</p>');
+                }
+            });
+
+            itemSelect.on('change', function () {
+                const itemId = $(this).val();
+                if (itemId) {
+                    // Update the selected item info
+                    const itemName = $(this).find('option:selected').text();
+                    selectedItemInfo.text(itemName);
+
+                    // Load item details
+                    loadItemDetails(itemId);
+                } else {
+                    selectedItemInfo.text('None');
+                    itemDetails.html('<p class="text-center text-muted">Select an item to view details</p>');
+                }
+            });
+
+            // Save event handlers
+            saveMainWarehouseBtn.on('click', function () {
+                if (validateMainWarehouseForm()) {
+                    saveMainWarehouse();
+                }
+            });
+
+            saveCategoryBtn.on('click', function () {
+                if (validateCategoryForm()) {
+                    saveCategory();
+                }
+            });
+
+            saveItemBtn.on('click', function () {
+                if (validateItemForm()) {
+                    saveItem();
+                }
+            });
+
+            // Functions to load data
+            function loadCategories(warehouseId) {
+                // Clear existing options except the first one
+                categorySelect.find('option:not(:first)').remove();
+
+                // Show loading indicator
+                selectedCategoryInfo.html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+
+                // Make API call to get categories for this warehouse
+                $.ajax({
+                    url: `/GetCategories?warehouseId=${warehouseId}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(data) {
+                        if (data && data.length > 0) {
+                            data.forEach(category => {
+                                categorySelect.append(
+                                    $('<option></option>')
+                                        .attr('value', category.id)
+                                        .attr('data-warehouse-id', warehouseId)
+                                        .text(category.nameEn)
+                                );
+                            });
+                            selectedCategoryInfo.text('Please select a category');
+                        } else {
+                            selectedCategoryInfo.text('No categories found for this warehouse');
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error loading categories:", error);
+                        selectedCategoryInfo.text('Failed to load categories');
+                        toastr.error("Failed to load categories. Please try again.");
+                    }
+                });
+            }
+
+            function loadItems(categoryId) {
+                // Clear existing options except the first one
+                itemSelect.find('option:not(:first)').remove();
+
+                // Show loading indicator
+                selectedItemInfo.html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+
+                // Make API call to get items for this category
+                $.ajax({
+                    url: `/GetItems?categoryId=${categoryId}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(data) {
+                        // Add options to the select
+                        if (data && data.length > 0) {
+                            data.forEach(item => {
+                                itemSelect.append(
+                                    $('<option></option>')
+                                        .attr('value', item.id)
+                                        .attr('data-category-id', categoryId)
+                                        .text(item.nameEn)
+                                );
+                            });
+                            selectedItemInfo.text('Please select an item');
+                        } else {
+                            selectedItemInfo.text('No items found for this category');
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error loading items:", error);
+                        selectedItemInfo.text('Failed to load items');
+                        toastr.error("Failed to load items. Please try again.");
+                    }
+                });
+            }
+
+            function loadItemDetails(itemId) {
+                // Show loading indicator
+                itemDetails.html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading item details...</div>');
+
+                // Make API call to get item details
+                $.ajax({
+                    url: `/GetItemDetails?itemId=${itemId}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(item) {
+                        // Format and display item details
+                        displayItemDetails(item);
+                    },
+                    error: function(error) {
+                        console.error("Error loading item details:", error);
+                        itemDetails.html('<div class="alert alert-danger">Failed to load item details. Please try again.</div>');
+                        toastr.error("Failed to load item details. Please try again.");
+                    }
+                });
+            }
+
+            // Save functions
+            function saveMainWarehouse() {
+                const mainWarehouse = {
+                    nameEn: $('#warehouseNameEn').val(),
+                    nameAr: $('#warehouseNameAr').val(),
+                    addressEn: $('#warehouseAddressEn').val(),
+                    addressAr: $('#warehouseAddressAr').val(),
+                    capacity: parseInt($('#warehouseCapacity').val()),
+                    type: parseInt($('#warehouseType').val())
+                };
+
+                $.ajax({
+                    url: '/AddMainWarehouse',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(mainWarehouse),
+                    success: function(response) {
+                        if (response.success) {
+                            // Add to select dropdown with the ID from the server
+                            mainWarehouseSelect.append(new Option(mainWarehouse.nameEn, response.data.id));
+
+                            // Close modal
+                            $('#addMainWarehouseModal').modal('hide');
+
+                            // Show success message
+                            toastr.success(response.message || "Main warehouse added successfully!");
+
+                            // Reset form
+                            $('#addMainWarehouseForm')[0].reset();
+                        } else {
+                            toastr.error(response.message || "Failed to save main warehouse.");
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error saving main warehouse:", error);
+                        toastr.error("Failed to save main warehouse. Please try again.");
+                    }
+                });
+            }
+
+            function saveCategory() {
+                const category = {
+                    nameEn: $('#categoryNameEn').val(),
+                    nameAr: $('#categoryNameAr').val(),
+                    descriptionEn: $('#categoryDescEn').val(),
+                    descriptionAr: $('#categoryDescAr').val(),
+                    glassType: parseInt($('#glassType').val()),
+                    mainWarehouseId: categoryMainWarehouseId.val()
+                };
+
+                $.ajax({
+                    url: '/AddCategory',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(category),
+                    success: function(response) {
+                        if (response.success) {
+                            // Add to select dropdown with the ID from the server
+                            categorySelect.append(
+                                $('<option></option>')
+                                    .attr('value', response.data.id)
+                                    .attr('data-warehouse-id', category.mainWarehouseId)
+                                    .text(category.nameEn)
+                            );
+
+                            // Close modal
+                            $('#addCategoryModal').modal('hide');
+
+                            // Show success message
+                            toastr.success(response.message || "Category added successfully!");
+
+                            // Reset form
+                            $('#addCategoryForm')[0].reset();
+                        } else {
+                            toastr.error(response.message || "Failed to save category.");
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error saving category:", error);
+                        toastr.error("Failed to save category. Please try again.");
+                    }
+                });
+            }
+
+            function saveItem() {
+                const item = {
+                    codeNumber: $('#itemCodeNumber').val(),
+                    nameEn: $('#itemNameEn').val(),
+                    nameAr: $('#itemNameAr').val(),
+                    unitPrice: parseFloat($('#itemUnitPrice').val()),
+                    minimumStock: parseInt($('#itemMinStock').val()),
+                    currentStock: parseInt($('#itemInitialStock').val()),
+                    thickness: parseFloat($('#itemThickness').val()),
+                    width: parseFloat($('#itemWidth').val()),
+                    height: parseFloat($('#itemHeight').val()),
+                    color: $('#itemColor').val(),
+                    quality: $('#itemQuality').val(),
+                    isToughened: $('#isToughened').is(':checked'),
+                    isLaminated: $('#isLaminated').is(':checked'),
+                    categoryId: itemCategoryId.val(),
+                    mainWarehouseId: itemMainWarehouseId.val()
+                };
+
+                $.ajax({
+                    url: '/AddItem',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(item),
+                    success: function(response) {
+                        if (response.success) {
+                            // Add to select dropdown with the ID from the server
+                            itemSelect.append(
+                                $('<option></option>')
+                                    .attr('value', response.data.id)
+                                    .attr('data-category-id', item.categoryId)
+                                    .text(item.nameEn)
+                            );
+
+                            // Close modal
+                            $('#addItemModal').modal('hide');
+
+                            // Show success message
+                            toastr.success(response.message || "Item added successfully!");
+
+                            // Reset form
+                            $('#addItemForm')[0].reset();
+                        } else {
+                            toastr.error(response.message || "Failed to save item.");
+                        }
+                    },
+                    error: function(error) {
+                        console.error("Error saving item:", error);
+                        toastr.error("Failed to save item. Please try again.");
+                    }
+                });
+            }
+
+            // Validation functions
+            function validateMainWarehouseForm() {
+                const nameEn = $('#warehouseNameEn').val();
+                const nameAr = $('#warehouseNameAr').val();
+                const addressEn = $('#warehouseAddressEn').val();
+                const addressAr = $('#warehouseAddressAr').val();
+                const capacity = $('#warehouseCapacity').val();
+                const type = $('#warehouseType').val();
+
+                if (!nameEn || !nameAr || !addressEn || !addressAr || !capacity || !type) {
+                    toastr.error("Please fill all required fields.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateCategoryForm() {
+                const nameEn = $('#categoryNameEn').val();
+                const nameAr = $('#categoryNameAr').val();
+                const glassType = $('#glassType').val();
+                const warehouseId = categoryMainWarehouseId.val();
+
+                if (!nameEn || !nameAr || !glassType || !warehouseId) {
+                    toastr.error("Please fill all required fields.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateItemForm() {
+                const codeNumber = $('#itemCodeNumber').val();
+                const nameEn = $('#itemNameEn').val();
+                const nameAr = $('#itemNameAr').val();
+                const unitPrice = $('#itemUnitPrice').val();
+                const warehouseId = itemMainWarehouseId.val();
+                const categoryId = itemCategoryId.val();
+
+                if (!codeNumber || !nameEn || !nameAr || !unitPrice || !warehouseId || !categoryId) {
+                    toastr.error("Please fill all required fields.");
+                    return false;
+                }
+
+                return true;
+            }
+        });
+    </script>
+}

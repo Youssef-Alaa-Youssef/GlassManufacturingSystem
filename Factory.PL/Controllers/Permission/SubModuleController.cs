@@ -17,7 +17,7 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Index()
         {
             var modules = (await _unitOfWork.GetRepository<Module>()
@@ -35,7 +35,7 @@ namespace Factory.Controllers
             return View(subModules);
         }
 
-        [Authorize(Policy = "Permission Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Details(int id)
         {
             var subModule = await _unitOfWork.GetRepository<SubModule>().GetByIdAsync(id);
@@ -47,7 +47,7 @@ namespace Factory.Controllers
             return View(subModule);
         }
 
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         public async Task<IActionResult> Create()
         {
             var modules = await _unitOfWork.GetRepository<Module>().GetAllAsync();
@@ -61,7 +61,7 @@ namespace Factory.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Permission Management_Create")]
+        [Authorize()]
         public async Task<IActionResult> Create(SubModulesViewModel SubModulesViewModel)
         {
             if (ModelState.IsValid)
@@ -94,7 +94,7 @@ namespace Factory.Controllers
             return View(SubModulesViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(int id)
         {
             var subModule = await _unitOfWork.GetRepository<SubModule>().GetByIdAsync(id);
@@ -120,7 +120,7 @@ namespace Factory.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Permission Management_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(int id, SubModulesViewModel SubModulesViewModel)
         {
             if (id != SubModulesViewModel.Id)
@@ -161,7 +161,7 @@ namespace Factory.Controllers
             return View(SubModulesViewModel);
         }
 
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(int id)
         {
             var subModule = await _unitOfWork.GetRepository<SubModule>().GetByIdAsync(id);
@@ -175,7 +175,7 @@ namespace Factory.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Permission Management_Delete")]
+        [Authorize()]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var subModule = await _unitOfWork.GetRepository<SubModule>().GetByIdAsync(id);
