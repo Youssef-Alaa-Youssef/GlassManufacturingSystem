@@ -1,7 +1,5 @@
 ﻿@using Factory.DAL.Enums
 @model Factory.PL.ViewModels.Home.Dashboard.AdminDashboardViewModel
-@using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
 
 @{
     Layout = "_LogedUser";
@@ -9,9 +7,6 @@
                         User.IsInRole(UserRole.Owner.ToString()) || User.IsInRole(UserRole.GM.ToString()) ? "General Manager Dashboard" :
                         User.IsInRole(UserRole.Accountant.ToString()) ? "Accounting Dashboard" : "Dashboard";
 }
-<h1>@Localizer["WelcomeMessage"]</h1>
-<p>@Localizer["Description"]</p>
-
 <div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")

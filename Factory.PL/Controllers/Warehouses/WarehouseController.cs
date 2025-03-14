@@ -2,6 +2,7 @@
 using Factory.BLL.InterFaces;
 using Factory.DAL.Enums;
 using Factory.DAL.Models.Warehouses;
+using Factory.DAL.ViewModels.Warehouses;
 using Factory.PL.ViewModels.Warehouses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,12 @@ namespace Factory.PL.Controllers.Warehouses
             _unitOfWork = unitOfWork;
         }
 
-        // GET: Warehouse/Index
         public async Task<IActionResult> Index()
         {
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync(includeProperties: "SubWarehouses");
             return View(mainWarehouses);
         }
 
-        // GET: Warehouse/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id, includeProperties: "SubWarehouses");
@@ -40,7 +39,6 @@ namespace Factory.PL.Controllers.Warehouses
             return View(mainWarehouse);
         }
 
-        // GET: Warehouse/Create
         public IActionResult Create()
         {
             return View(new MainWarehouse());
@@ -95,33 +93,38 @@ namespace Factory.PL.Controllers.Warehouses
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
-            if (mainWarehouse == null)
-            {
-                return NotFound();
-            }
-            return View(mainWarehouse);
-        }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id);
-            if (mainWarehouse == null)
+            try
             {
-                return NotFound();
+                var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>()
+                    .Query()
+                    .Include(w => w.SubWarehouses) 
+                    .FirstOrDefaultAsync(w => w.Id == id);
+
+                if (mainWarehouse == null)
+                {
+                    return Json(new { success = false, message = "Main warehouse not found." });
+                }
+
+                if (mainWarehouse.SubWarehouses != null && mainWarehouse.SubWarehouses.Any())
+                {
+                    return Json(new { success = false, message = "Cannot delete the warehouse because it has associated sub-stores." });
+                }
+
+                await _unitOfWork.GetRepository<MainWarehouse>().RemoveAsync(mainWarehouse);
+                await _unitOfWork.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Main warehouse deleted successfully!" });
             }
-
-            await _unitOfWork.GetRepository<MainWarehouse>().RemoveAsync(mainWarehouse);
-            await _unitOfWork.SaveChangesAsync();
-
-            TempData["Success"] = "Main warehouse deleted successfully!";
-            return RedirectToAction(nameof(Index));
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred while deleting the warehouse." });
+            }
         }
-
         public async Task<IActionResult> ManageSubWarehouses(int id)
         {
             var mainWarehouse = await _unitOfWork.GetRepository<MainWarehouse>().GetByIdAsync(id, includeProperties: "SubWarehouses");
@@ -165,7 +168,7 @@ namespace Factory.PL.Controllers.Warehouses
                 await _unitOfWork.SaveChangesAsync();
 
                 TempData["Success"] = "Sub-warehouse created successfully!";
-                return RedirectToAction(nameof(ManageSubWarehouses), new { id = model.MainWarehouseId });
+                return RedirectToAction(nameof(Index));
             }
 
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
@@ -230,7 +233,7 @@ namespace Factory.PL.Controllers.Warehouses
                 await _unitOfWork.SaveChangesAsync();
 
                 TempData["Success"] = "Sub-warehouse updated successfully!";
-                return RedirectToAction(nameof(ManageSubWarehouses), new { id = model.MainWarehouseId });
+                return RedirectToAction(nameof(Index));
             }
 
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
@@ -244,33 +247,29 @@ namespace Factory.PL.Controllers.Warehouses
             return View(model);
         }
 
-        public async Task<IActionResult> DeleteSubWarehouse(int id)
-        {
-            var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-            if (subWarehouse == null)
-            {
-                return NotFound();
-            }
-            return View(subWarehouse);
-        }
 
-        [HttpPost, ActionName("DeleteSubWarehouse")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteSubWarehouseConfirmed(int id)
         {
-            var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
-            if (subWarehouse == null)
+            try
             {
-                return NotFound();
+                var subWarehouse = await _unitOfWork.GetRepository<SubWarehouse>().GetByIdAsync(id);
+                if (subWarehouse == null)
+                {
+                    return Json(new { success = false, message = "Sub-warehouse not found." });
+                }
+
+                await _unitOfWork.GetRepository<SubWarehouse>().RemoveAsync(subWarehouse);
+                await _unitOfWork.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Sub-warehouse deleted successfully!" });
             }
-
-            await _unitOfWork.GetRepository<SubWarehouse>().RemoveAsync(subWarehouse);
-            await _unitOfWork.SaveChangesAsync();
-
-            TempData["Success"] = "Sub-warehouse deleted successfully!";
-            return RedirectToAction(nameof(ManageSubWarehouses), new { id = subWarehouse.MainWarehouseId });
+            catch (Exception )
+            {
+                return Json(new { success = false, message = "An error occurred while deleting the sub-warehouse." });
+            }
         }
-
 
         public async Task<IActionResult> WarehouseMangment()
         {
@@ -327,102 +326,19 @@ namespace Factory.PL.Controllers.Warehouses
             return Json(new { success = false, message = "Invalid data. Please check your inputs." });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryViewModel model)
+
+        public async Task<IActionResult> WarehouseReport()
         {
-            if (ModelState.IsValid)
-            {
-                var category = new Category
-                {
-                    NameEn = model.NameEn,
-                    NameAr = model.NameAr,
-                    DescriptionEn = model.DescriptionEn,
-                    DescriptionAr = model.DescriptionAr,
-                    GlassType = model.GlassType,
-                    IsActive = true
-                };
+            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+            ViewBag.Show = null;
+            ViewBag.Warehouses = new SelectList(warehouses, "Id", "NameEn");
+            ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
 
-                await _unitOfWork.GetRepository<Category>().AddAsync(category);
-                await _unitOfWork.SaveChangesAsync();
-
-                return Json(new { success = true, message = "Category added successfully!" });
-            }
-
-            return Json(new { success = false, message = "Invalid data. Please check your inputs." });
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddItem(ItemViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var item = new Item
-                {
-                    CodeNumber = model.CodeNumber,
-                    NameEn = model.NameEn,
-                    NameAr = model.NameAr,
-                    UnitPrice = model.UnitPrice,
-                    MinimumStock = model.MinimumStock,
-                    CurrentStock = model.CurrentStock,
-                    Thickness = model.Thickness,
-                    Width = model.Width,
-                    Height = model.Height,
-                    Color = model.Color,
-                    Quality = model.Quality,
-                    IsToughened = model.IsToughened,
-                    IsLaminated = model.IsLaminated,
-                    CategoryId = model.CategoryId,
-                    MainWarehouseId = model.MainWarehouseId
-                };
 
-                await _unitOfWork.GetRepository<Item>().AddAsync(item);
-                await _unitOfWork.SaveChangesAsync();
 
-                return Json(new { success = true, message = "Item added successfully!" });
-            }
-
-            return Json(new { success = false, message = "Invalid data. Please check your inputs." });
-        }
-        public async Task<IActionResult> GetCategories([FromQuery]int warehouseId)
-        {
-            var categories = await _unitOfWork.GetRepository<Category>().Query()
-                .Where(c => c.MainWarehouseId == warehouseId)
-                .ToListAsync();
-            var categoryList = categories.Select(c => new { Id = c.Id, NameEn = c.NameEn }).ToList();
-            return Json(categoryList);
-        }
-        public async Task<IActionResult> GetItems([FromQuery] int categoryId)
-        {
-            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync(i => i.CategoryId == categoryId);
-            var itemList = items.Select(i => new { Id = i.Id, NameEn = i.NameEn }).ToList();
-            return Json(itemList);
-        }
-        public async Task<IActionResult> GetItemDetails([FromQuery] int itemId)
-        {
-            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(itemId);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            var itemDetails = new
-            {
-                item.CodeNumber,
-                item.NameEn,
-                item.NameAr,
-                item.UnitPrice,
-                item.CurrentStock,
-                item.MinimumStock,
-                item.Thickness,
-                item.Width,
-                item.Height,
-                item.Color,
-                item.Quality,
-                item.IsToughened,
-                item.IsLaminated
-            };
-
-            return Json(itemDetails);
-        }
     }
 }

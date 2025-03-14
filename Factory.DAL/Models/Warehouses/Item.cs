@@ -40,11 +40,14 @@ namespace Factory.DAL.Models.Warehouses
 
         public DateTime? UpdatedDate { get; set; }
 
-        public double Thickness { get; set; } = 4.0; 
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Thickness must be a valid number with up to two decimal places.")]
+        public double Thickness { get; set; } = 4.0;
 
-        public double Width { get; set; } = 0; // in mm
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Width must be a valid number with up to two decimal places.")]
+        public double Width { get; set; } = 0;
 
-        public double Height { get; set; } = 0; // in mm
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Height must be a valid number with up to two decimal places.")]
+        public double Height { get; set; } = 0; 
 
         public string Color { get; set; } = "Clear";
 

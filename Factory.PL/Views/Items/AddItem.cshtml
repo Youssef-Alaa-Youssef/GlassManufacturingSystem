@@ -1,0 +1,188 @@
+﻿@model Factory.DAL.Models.Warehouses.Item
+
+@{
+    ViewData["Title"] = "Add Item";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="AddItem" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header ">
+                        <h5 class="card-title mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="CodeNumber" class="control-label">Code Number</label>
+                            <input asp-for="CodeNumber" class="form-control" />
+                            <span asp-validation-for="CodeNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NameEn" class="control-label">Name (English)</label>
+                            <input asp-for="NameEn" class="form-control" />
+                            <span asp-validation-for="NameEn" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NameAr" class="control-label">Name (Arabic)</label>
+                            <input asp-for="NameAr" class="form-control" />
+                            <span asp-validation-for="NameAr" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DescriptionEn" class="control-label">Description (English)</label>
+                            <textarea asp-for="DescriptionEn" class="form-control"></textarea>
+                            <span asp-validation-for="DescriptionEn" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DescriptionAr" class="control-label">Description (Arabic)</label>
+                            <textarea asp-for="DescriptionAr" class="form-control"></textarea>
+                            <span asp-validation-for="DescriptionAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock and Pricing -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header ">
+                        <h5 class="card-title mb-0">Stock and Pricing</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="UnitPrice" class="control-label">Unit Price</label>
+                            <input asp-for="UnitPrice" class="form-control" />
+                            <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MinimumStock" class="control-label">Minimum Stock</label>
+                            <input asp-for="MinimumStock" class="form-control" />
+                            <span asp-validation-for="MinimumStock" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="CurrentStock" class="control-label">Current Stock</label>
+                            <input asp-for="CurrentStock" class="form-control" />
+                            <span asp-validation-for="CurrentStock" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="UnitOfMeasure" class="control-label">Unit of Measure</label>
+                            <input asp-for="UnitOfMeasure" class="form-control" />
+                            <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Dimensions and Properties -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Dimensions and Properties</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="Thickness" class="control-label">Thickness (mm)</label>
+                            <input asp-for="Thickness" class="form-control" step="0.1" />
+                            <span asp-validation-for="Thickness" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Width" class="control-label">Width (mm)</label>
+                            <input asp-for="Width" class="form-control" step="0.1" />
+                            <span asp-validation-for="Width" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Height" class="control-label">Height (mm)</label>
+                            <input asp-for="Height" class="form-control" step="0.1" />
+                            <span asp-validation-for="Height" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Color" class="control-label">Color</label>
+                            <input asp-for="Color" class="form-control" />
+                            <span asp-validation-for="Color" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Quality" class="control-label">Quality</label>
+                            <input asp-for="Quality" class="form-control" />
+                            <span asp-validation-for="Quality" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="IsToughened" class="control-label">Toughened</label>
+                            <input asp-for="IsToughened" class="form-check-input" type="checkbox" />
+                            <span asp-validation-for="IsToughened" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="IsLaminated" class="control-label">Laminated</label>
+                            <input asp-for="IsLaminated" class="form-check-input" type="checkbox" />
+                            <span asp-validation-for="IsLaminated" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warehouse Information -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Warehouse Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="CategoryId" class="control-label">Category</label>
+                            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MainWarehouseId" class="control-label">Main Warehouse</label>
+                            <select asp-for="MainWarehouseId" class="form-control" asp-items="ViewBag.MainWarehouses">
+                                <option value="">-- Select Main Warehouse --</option>
+                            </select>
+                            <span asp-validation-for="MainWarehouseId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="SubWarehouseId" class="control-label">Sub Warehouse</label>
+                            <select asp-for="SubWarehouseId" class="form-control" asp-items="ViewBag.SubWarehouses">
+                                <option value="">-- Select Sub Warehouse --</option>
+                            </select>
+                            <span asp-validation-for="SubWarehouseId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-center">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-save"></i> Save
+            </button>
+            <a href="@Url.Action("Index", "Items", new { categoryId = ViewBag.CategoryId })" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

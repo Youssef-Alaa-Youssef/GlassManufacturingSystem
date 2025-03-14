@@ -108,7 +108,8 @@ namespace Factory.DAL
                 new Page { Id = 53, Name = "Data Management", Action = "Settings", Controller = "ExportImport", IsActive = true, SubmoduleId = 17, SecureUrlKey = GenerateSecureKey() },
                 new Page { Id = 54, Name = "Data Export", Action = "Export", Controller = "ExportImport", IsActive = true, SubmoduleId = 17, SecureUrlKey = GenerateSecureKey() },
                 new Page { Id = 55, Name = "Data Import", Action = "Import", Controller = "ExportImport", IsActive = true, SubmoduleId = 17, SecureUrlKey = GenerateSecureKey() },
-                new Page { Id = 56, Name = "Order Dashboard", Action = "Index", Controller = "OrderReport", IsActive = true, SubmoduleId = 16, SecureUrlKey = GenerateSecureKey() }
+                new Page { Id = 56, Name = "Order Dashboard", Action = "Index", Controller = "OrderReport", IsActive = true, SubmoduleId = 16, SecureUrlKey = GenerateSecureKey() },
+                new Page { Id = 57, Name = "Stores", Action = "WarehouseReport", Controller = "warehouse", IsActive = true, SubmoduleId = 15, SecureUrlKey = GenerateSecureKey() }
             );
         }
         private static string GenerateSecureKey()

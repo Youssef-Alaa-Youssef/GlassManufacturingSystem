@@ -1,29 +1,38 @@
 ﻿@model IEnumerable<Factory.DAL.Models.Warehouses.MainWarehouse>
-
 @{
     ViewData["Title"] = "Main Stores";
     Layout = "_LogedUser";
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
 }
+
+<form id="antiForgeryForm" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
 
 <div class="container-fluid card shadow-sm p-3">
     @await Html.PartialAsync("ErrorSummaryPartial")
     @await Html.PartialAsync("_PageTitle")
 
-    <!-- Create New Warehouse and Sub-Warehouse -->
     <div class="mb-3">
         <a href="@Url.Action("Create")" class="btn btn-outline-primary">
-            <i class="bi bi-plus"></i> Create New Main Warehouse
+            <i class="bi bi-plus"></i> Create New Main Store
         </a>
         <a href="@Url.Action("CreateSubWarehouse", "Warehouse")" class="btn btn-outline-info">
-            <i class="bi bi-plus"></i> Create New Sub Warehouse
+            <i class="bi bi-plus"></i> Create New Sub Store
+        </a>
+        <a class="btn btn-outline-success" asp-controller="Category" asp-action="Index">
+            <i class="bi bi-list"></i> View Categories
+        </a>
+        <a class="btn btn-outline-info" asp-controller="Items" asp-action="Index">
+            <i class="bi bi-list"></i> View Items
         </a>
     </div>
 
-    <!-- Main Warehouses Table -->
     <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
+                    <th>#</th>
                     <th>Name (EN)</th>
                     <th>Name (AR)</th>
                     <th>Address (EN)</th>
@@ -34,35 +43,216 @@
             <tbody>
                 @if (Model.Any())
                 {
+                    int count = 1;
                     @foreach (var warehouse in Model)
                     {
                         <tr>
+                            <td>@count</td>
                             <td>@warehouse.NameEn</td>
                             <td>@warehouse.NameAr</td>
                             <td>@warehouse.AddressEn</td>
                             <td>@warehouse.AddressAr</td>
                             <td>
-                                <!-- Action buttons with icons and tooltips -->
-                                <a href="@Url.Action("Details", new { id = warehouse.Id })" class="btn btn-outline-info btn-sm" title="View Warehouse Details">
+                                <a href="@Url.Action("Details", new { id = warehouse.Id })" class="btn btn-outline-info btn-sm" title="View Store Details">
                                     <i class="bi bi-info-circle"></i>
                                 </a>
-                                <a href="@Url.Action("Edit", new { id = warehouse.Id })" class="btn btn-outline-warning btn-sm" title="Edit Warehouse">
+                                <a href="@Url.Action("Edit", new { id = warehouse.Id })" class="btn btn-outline-warning btn-sm" title="Edit Store">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="@Url.Action("Delete", new { id = warehouse.Id })" class="btn btn-outline-danger btn-sm" title="Delete Warehouse">
-                                    <i class="bi bi-trash"></i>
+                                @if (warehouse.SubWarehouses != null && warehouse.SubWarehouses.Any())
+                                {
+                                    <button class="btn btn-outline-danger btn-sm" disabled title="Cannot delete. Sub-stores exist.">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-id="@warehouse.Id" data-name="@warehouse.NameEn">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#subWarehouse_@warehouse.Id" title="View Sub-Stores">
+                                    <i class="bi bi-box-seam"></i> Sub-Stores
+                                </button>
+                                <a href="@Url.Action("AddCategory", "Category", new { warehouseId = warehouse.Id })" class="btn btn-outline-primary">
+                                    <i class="bi bi-plus"></i> Add New Category
                                 </a>
+
                             </td>
                         </tr>
+                        <tr id="subWarehouse_@warehouse.Id" class="collapse">
+                            <td colspan="6">
+                                @if (warehouse.SubWarehouses != null && warehouse.SubWarehouses.Any())
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name (EN)</th>
+                                                    <th>Name (AR)</th>
+                                                    <th>Address (EN)</th>
+                                                    <th>Address (AR)</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var subWarehouse in warehouse.SubWarehouses)
+                                                {
+                                                    <tr>
+                                                        <td>@subWarehouse.NameEn</td>
+                                                        <td>@subWarehouse.NameAr</td>
+                                                        <td>@subWarehouse.AddressEn</td>
+                                                        <td>@subWarehouse.AddressAr</td>
+                                                        <td>
+                                                            <a href="@Url.Action("EditSubWarehouse", new { id = subWarehouse.Id })" class="btn btn-outline-warning btn-sm" title="Edit Sub-Store">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </a>
+                                                            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteSubStoreModal"
+                                                                    data-id="@subWarehouse.Id" data-name="@subWarehouse.NameEn">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted text-center">No sub-Stores available.</p>
+                                }
+                            </td>
+                        </tr>
+                        count++;
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center">No warehouses found. Please create a new warehouse.</td>
+                        <td colspan="6" class="text-center">No Stores found. Please create a new Store.</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Store</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the store <strong id="deleteWarehouseName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteSubStoreModal" tabindex="-1" aria-labelledby="deleteSubStoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteSubStoreModalLabel">Delete Sub-Store</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the sub-store <strong id="deleteSubStoreName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmSubStoreDeleteBtn" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal = document.getElementById('deleteModal');
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var warehouseId = button.getAttribute('data-id');
+                var warehouseName = button.getAttribute('data-name');
+
+                var modalTitle = deleteModal.querySelector('#deleteWarehouseName');
+                var confirmDeleteBtn = deleteModal.querySelector('#confirmDeleteBtn');
+
+                modalTitle.textContent = warehouseName;
+
+                confirmDeleteBtn.onclick = function () {
+                    deleteWarehouse(warehouseId);
+                };
+            });
+
+            var deleteSubStoreModal = document.getElementById('deleteSubStoreModal');
+            deleteSubStoreModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var subStoreId = button.getAttribute('data-id');
+                var subStoreName = button.getAttribute('data-name');
+
+                var modalTitle = deleteSubStoreModal.querySelector('#deleteSubStoreName');
+                var confirmDeleteBtn = deleteSubStoreModal.querySelector('#confirmSubStoreDeleteBtn');
+
+                modalTitle.textContent = subStoreName;
+
+                confirmDeleteBtn.onclick = function () {
+                    deleteSubStore(subStoreId);
+                };
+            });
+
+            function deleteWarehouse(warehouseId) {
+                fetch(`/Warehouse/DeleteConfirmed/${warehouseId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr['success'](data.message);
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        toastr['error'](data.message);
+                    }
+                })
+                .catch(error => {
+                    toastr['error']('An error occurred while deleting the warehouse.');
+                });
+            }
+
+            function deleteSubStore(subStoreId) {
+                fetch(`/Warehouse/DeleteSubWarehouseConfirmed/${subStoreId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr['success'](data.message);
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        toastr['error'](data.message);
+                    }
+                })
+                .catch(error => {
+                    toastr['error']('An error occurred while deleting the sub-store');
+                });
+            }
+        });
+    </script>
+}

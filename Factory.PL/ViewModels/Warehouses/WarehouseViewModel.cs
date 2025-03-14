@@ -1,4 +1,4 @@
-﻿using Factory.DAL.Models.Warehouses;
+﻿using Factory.DAL.ViewModels.Warehouses;
 
 namespace Factory.PL.ViewModels.Warehouses
 {

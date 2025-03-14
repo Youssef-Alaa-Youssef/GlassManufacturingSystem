@@ -1,297 +1,237 @@
-﻿//using Factory.BLL.InterFaces;
-//using Factory.DAL.Models.Warehouses;
-//using Factory.PL.ViewModels.Warehouses;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Factory.BLL.Interfaces;
+using Factory.BLL.InterFaces;
+using Factory.DAL.Models.Warehouses;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
-//namespace Factory.Controllers.Warehouses
-//{
-//    [Authorize]
-//    public class ItemController : Controller
-//    {
-//        private readonly IUnitOfWork _unitOfWork;
+namespace Factory.Controllers
+{
+    [Route("Items")]
+    public class ItemsController : Controller
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<ItemsController> _logger;
 
-//        public ItemController(IUnitOfWork unitOfWork)
-//        {
-//            _unitOfWork = unitOfWork;
-//        }
+        public ItemsController(IUnitOfWork unitOfWork, ILogger<ItemsController> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
 
-//        public async Task<IActionResult> Index()
-//        {
-//            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
-//            var itemViewModels = items.Select(i => new ItemDetailsViewModel
-//            {
-//                Id = i.Id,
-//                Name = i.Name,
-//                Description = i.Description,
-//                Type = i.Type,
-//                Color = i.Color,
-//                Thickness = i.Thickness,
-//                Dimensions = i.Dimensions,
-//                Quantity = i.Quantity,
-//                UnitPrice = i.UnitPrice,
-//                WarehouseName = i.Warehouse?.NameEn,
-//                SubWarehouseName = i.SubWarehouse?.NameEn,
-//                Manufacturer = i.Manufacturer,
-//                ManufactureDate = i.ManufactureDate,
-//                ExpiryDate = i.ExpiryDate,
-//                IsFragile = i.IsFragile,
-//                Notes = i.Notes
-//            }).ToList();
+        public IActionResult Index(int categoryId)
+        {
+            var items = _unitOfWork.GetRepository<Item>().Query()
+                .Where(i => i.CategoryId == categoryId)
+                .ToList();
 
-//            return View(itemViewModels);
-//        }
+            ViewBag.CategoryId = categoryId;
+            return View(items);
+        }
 
-//        public async Task<IActionResult> Details(int id)
-//        {
-//            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
-//            if (item == null)
-//            {
-//                return NotFound();
-//            }
+        [HttpGet("AddItem")]
+        public async Task<IActionResult> AddItem()
+        {
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+            var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//            var viewModel = new ItemDetailsViewModel
-//            {
-//                Id = item.Id,
-//                Name = item.Name,
-//                Description = item.Description,
-//                Type = item.Type,
-//                Color = item.Color,
-//                Thickness = item.Thickness,
-//                Dimensions = item.Dimensions,
-//                Quantity = item.Quantity,
-//                UnitPrice = item.UnitPrice,
-//                WarehouseName = item.Warehouse?.NameEn,
-//                SubWarehouseName = item.SubWarehouse?.NameEn,
-//                Manufacturer = item.Manufacturer,
-//                ManufactureDate = item.ManufactureDate,
-//                ExpiryDate = item.ExpiryDate,
-//                IsFragile = item.IsFragile,
-//                Notes = item.Notes
-//            };
+            ViewBag.Categories = new SelectList(categories, "Id", "NameEn"); 
+            ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+            ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
 
-//            return View(viewModel);
-//        }
+            return View();
+        }
 
-//        public async Task<IActionResult> Create()
-//        {
-//            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-//            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//            var viewModel = new ItemViewModel
-//            {
-//                Warehouses = warehouses.Select(w => new SelectListItem
-//                {
-//                    Value = w.Id.ToString(),
-//                    Text = w.NameEn
-//                }),
-//                SubWarehouses = subWarehouses.Select(sw => new SelectListItem
-//                {
-//                    Value = sw.Id.ToString(),
-//                    Text = sw.NameEn
-//                }),
-//                ManufactureDate = DateTime.Now,
-//                ExpiryDate = DateTime.Now.AddYears(2)
-//            };
+        [HttpPost("AddItem")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddItem([FromForm] Item item)
+        {
+            if (!ModelState.IsValid)
+            {
+                var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+                var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+                var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//            return View(viewModel);
-//        }
+                ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
+                ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+                ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
 
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> Create(ItemViewModel viewModel)
-//        {
-//            if (ModelState.IsValid)
-//            {
-//                var item = new Item
-//                {
-//                    Name = viewModel.Name,
-//                    Description = viewModel.Description,
-//                    Type = viewModel.Type,
-//                    Color = viewModel.Color,
-//                    Thickness = viewModel.Thickness,
-//                    Dimensions = $"{viewModel.Height}x{viewModel.Width}",
-//                    Quantity = viewModel.Quantity,
-//                    UnitPrice = viewModel.UnitPrice,
-//                    WarehouseId = viewModel.WarehouseId,
-//                    SubWarehouseId = viewModel.SubWarehouseId,
-//                    Manufacturer = viewModel.Manufacturer,
-//                    ManufactureDate = viewModel.ManufactureDate,
-//                    ExpiryDate = viewModel.ExpiryDate,
-//                    IsFragile = viewModel.IsFragile,
-//                    Notes = viewModel.Notes
-//                };
 
-//                try
-//                {
-//                    await _unitOfWork.GetRepository<Item>().AddAsync(item);
-//                    TempData["Success"] = "Item created successfully!";
-//                    return RedirectToAction(nameof(Index));
-//                }
-//                catch (Exception ex)
-//                {
-//                    TempData["Error"] = $"An error occurred while creating the item. Exception: {ex.Message}";
-//                }
-//            }
+                return View(item);
+            }
 
-//            await PopulateDropDownLists(viewModel);
-//            return View(viewModel);
-//        }
+            try
+            {
+                await _unitOfWork.GetRepository<Item>().AddAsync(item);
+                await _unitOfWork.SaveChangesAsync();
 
-//        public async Task<IActionResult> Edit(int id)
-//        {
-//            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
-//            if (item == null)
-//            {
-//                return NotFound();
-//            }
+                return RedirectToAction("Index", new { categoryId = item.CategoryId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding item.");
+                ModelState.AddModelError(string.Empty, "An error occurred while adding the item.");
 
-//            var viewModel = new ItemViewModel
-//            {
-//                Id = item.Id,
-//                Name = item.Name,
-//                Description = item.Description,
-//                Type = item.Type,
-//                Color = item.Color,
-//                Thickness = item.Thickness,
-//                Dimensions = item.Dimensions,
-//                Quantity = item.Quantity,
-//                UnitPrice = item.UnitPrice,
-//                WarehouseId = item.WarehouseId,
-//                SubWarehouseId = item.SubWarehouseId,
-//                Manufacturer = item.Manufacturer,
-//                ManufactureDate = item.ManufactureDate,
-//                ExpiryDate = item.ExpiryDate,
-//                IsFragile = item.IsFragile,
-//                Notes = item.Notes
-//            };
+                var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+                var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+                var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//            await PopulateDropDownLists(viewModel);
-//            return View(viewModel);
-//        }
+                ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
+                ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+                ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
 
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> Edit(int id, ItemViewModel viewModel)
-//        {
-//            if (id != viewModel.Id)
-//            {
-//                return NotFound();
-//            }
+                return View(item);
+            }
+        }
 
-//            if (ModelState.IsValid)
-//            {
-//                var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
-//                if (item == null)
-//                {
-//                    return NotFound();
-//                }
+        [HttpGet("EditItem/{id}")]
+        public async Task<IActionResult> EditItem(int id)
+        {
+            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
 
-//                item.Name = viewModel.Name;
-//                item.Description = viewModel.Description;
-//                item.Type = viewModel.Type;
-//                item.Color = viewModel.Color;
-//                item.Thickness = viewModel.Thickness;
-//                item.Dimensions = viewModel.Dimensions;
-//                item.Quantity = viewModel.Quantity;
-//                item.UnitPrice = viewModel.UnitPrice;
-//                item.WarehouseId = viewModel.WarehouseId;
-//                item.SubWarehouseId = viewModel.SubWarehouseId;
-//                item.Manufacturer = viewModel.Manufacturer;
-//                item.ManufactureDate = viewModel.ManufactureDate;
-//                item.ExpiryDate = viewModel.ExpiryDate;
-//                item.IsFragile = viewModel.IsFragile;
-//                item.Notes = viewModel.Notes;
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+            var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//                try
-//                {
-//                    await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
-//                    TempData["Success"] = "Item updated successfully!";
-//                    return RedirectToAction(nameof(Index));
-//                }
-//                catch (Exception ex)
-//                {
-//                    TempData["Error"] = $"An error occurred while updating the item. Exception: {ex.Message}";
-//                }
-//            }
+            ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
+            ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+            ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
 
-//            await PopulateDropDownLists(viewModel);
-//            return View(viewModel);
-//        }
+            return View(item);
+        }
 
-//        public async Task<IActionResult> Delete(int id)
-//        {
-//            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
-//            if (item == null)
-//            {
-//                return NotFound();
-//            }
+        [HttpPost("EditItem/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditItem(int id, [FromForm] Item item)
+        {
+            if (id != item.Id)
+            {
+                return NotFound();
+            }
 
-//            var viewModel = new ItemDetailsViewModel
-//            {
-//                Id = item.Id,
-//                Name = item.Name,
-//                Description = item.Description,
-//                Type = item.Type,
-//                Color = item.Color,
-//                Thickness = item.Thickness,
-//                Dimensions = item.Dimensions,
-//                Quantity = item.Quantity,
-//                UnitPrice = item.UnitPrice,
-//                WarehouseName = item.Warehouse?.NameEn,
-//                SubWarehouseName = item.SubWarehouse?.NameEn,
-//                Manufacturer = item.Manufacturer,
-//                ManufactureDate = item.ManufactureDate,
-//                ExpiryDate = item.ExpiryDate,
-//                IsFragile = item.IsFragile,
-//                Notes = item.Notes
-//            };
+            if (!ModelState.IsValid)
+            {
+                var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+                var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+                var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
 
-//            return View(viewModel);
-//        }
+                ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
+                ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+                ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
 
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> DeleteConfirmed(int id)
-//        {
-//            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
-//            if (item != null)
-//            {
-//                try
-//                {
-//                    await _unitOfWork.GetRepository<Item>().RemoveAsync(item);
-//                    TempData["Success"] = "Item deleted successfully!";
-//                }
-//                catch (Exception ex)
-//                {
-//                    TempData["Error"] = $"An error occurred while deleting the item. Exception: {ex.Message}";
-//                }
-//            }
-//            else
-//            {
-//                TempData["Error"] = "Item not found.";
-//            }
 
-//            return RedirectToAction(nameof(Index));
-//        }
+                return View(item);
+            }
 
-//        private async Task PopulateDropDownLists(ItemViewModel viewModel)
-//        {
-//            var warehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
-//            var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
+            try
+            {
+                await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
+                await _unitOfWork.SaveChangesAsync();
 
-//            viewModel.Warehouses = warehouses.Select(w => new SelectListItem
-//            {
-//                Value = w.Id.ToString(),
-//                Text = w.NameEn
-//            });
+                return RedirectToAction("Index", new { categoryId = item.CategoryId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating item.");
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the item.");
 
-//            viewModel.SubWarehouses = subWarehouses.Select(sw => new SelectListItem
-//            {
-//                Value = sw.Id.ToString(),
-//                Text = sw.NameEn
-//            });
-//        }
-//    }
-//}
+                var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+                var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync();
+                var subWarehouses = await _unitOfWork.GetRepository<SubWarehouse>().GetAllAsync();
+
+                ViewBag.Categories = new SelectList(categories, "Id", "NameEn");
+                ViewBag.MainWarehouses = new SelectList(mainWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+                ViewBag.SubWarehouses = new SelectList(subWarehouses, "Id", "NameEn"); // Adjust properties accordingly
+
+
+                return View(item);
+            }
+        }
+
+        [HttpGet("Details/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            return View(item);
+        }
+
+
+        [HttpPost("DeleteItem/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            try
+            {
+                var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+
+                await _unitOfWork.GetRepository<Item>().RemoveAsync(item);
+                await _unitOfWork.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Item deleted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting item.");
+                return Json(new { success = false, message = "An error occurred while deleting the item." });
+            }
+        }
+
+
+        [HttpGet("GetItems")]
+        public IActionResult GetItems(int Id)
+        {
+            try
+            {
+                var items = _unitOfWork.GetRepository<Item>().Query()
+                    .Where(i => i.CategoryId == Id)
+                    .Select(i => new
+                    {
+                        i.Id,
+                        i.CodeNumber,
+                        i.NameEn,
+                        i.NameAr,
+                        i.UnitPrice,
+                        i.CurrentStock,
+                        IsLowStock = i.IsLowStock()
+                    })
+                    .ToList();
+
+                var totalItems = items.Count;
+                var lowStockItems = items.Count(i => i.IsLowStock);
+
+                var result = new
+                {
+                    Items = items,
+                    Insights = new
+                    {
+                        TotalItems = totalItems,
+                        LowStockItems = lowStockItems
+                    }
+                };
+                ViewBag.Show = Id;
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while fetching items." });
+            }
+        }
+    }
+}

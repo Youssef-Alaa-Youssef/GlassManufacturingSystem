@@ -1,0 +1,138 @@
+﻿@model Factory.DAL.Models.Warehouses.Item
+
+@{
+    ViewData["Title"] = "Item Details";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Code Number</dt>
+                        <dd class="col-sm-8">@Model.CodeNumber</dd>
+
+                        <dt class="col-sm-4">Name (EN)</dt>
+                        <dd class="col-sm-8">@Model.NameEn</dd>
+
+                        <dt class="col-sm-4">Name (AR)</dt>
+                        <dd class="col-sm-8">@Model.NameAr</dd>
+
+                        <dt class="col-sm-4">Description (EN)</dt>
+                        <dd class="col-sm-8">@Model.DescriptionEn</dd>
+
+                        <dt class="col-sm-4">Description (AR)</dt>
+                        <dd class="col-sm-8">@Model.DescriptionAr</dd>
+
+                        <dt class="col-sm-4">Unit Price</dt>
+                        <dd class="col-sm-8">@Model.UnitPrice.ToString("C")</dd>
+
+                        <dt class="col-sm-4">Unit of Measure</dt>
+                        <dd class="col-sm-8">@Model.UnitOfMeasure</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header ">
+                    <h5 class="card-title mb-0">Stock Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Minimum Stock</dt>
+                        <dd class="col-sm-8">@Model.MinimumStock</dd>
+
+                        <dt class="col-sm-4">Current Stock</dt>
+                        <dd class="col-sm-8">@Model.CurrentStock</dd>
+
+                        <dt class="col-sm-4">Stock Status</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsLowStock())
+                            {
+                                <span class="badge bg-danger">Low Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">In Stock</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Dimensions and Properties</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Thickness</dt>
+                        <dd class="col-sm-8">@Model.Thickness mm</dd>
+
+                        <dt class="col-sm-4">Width</dt>
+                        <dd class="col-sm-8">@Model.Width mm</dd>
+
+                        <dt class="col-sm-4">Height</dt>
+                        <dd class="col-sm-8">@Model.Height mm</dd>
+
+                        <dt class="col-sm-4">Color</dt>
+                        <dd class="col-sm-8">@Model.Color</dd>
+
+                        <dt class="col-sm-4">Quality</dt>
+                        <dd class="col-sm-8">@Model.Quality</dd>
+
+                        <dt class="col-sm-4">Toughened</dt>
+                        <dd class="col-sm-8">@(Model.IsToughened ? "Yes" : "No")</dd>
+
+                        <dt class="col-sm-4">Laminated</dt>
+                        <dd class="col-sm-8">@(Model.IsLaminated ? "Yes" : "No")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Warehouse Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Main Warehouse</dt>
+                        <dd class="col-sm-8">@Model.MainWarehouse?.NameEn</dd>
+
+                        <dt class="col-sm-4">Sub Warehouse</dt>
+                        <dd class="col-sm-8">@Model.SubWarehouse?.NameEn</dd>
+
+                        <dt class="col-sm-4">Category</dt>
+                        <dd class="col-sm-8">@Model.Category?.NameEn</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer text-center">
+        <a href="@Url.Action("Index", "Items", new { categoryId = Model.CategoryId })" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
