@@ -1,5 +1,6 @@
 ﻿using Factory.DAL;
 using Factory.DAL.Configurations;
+using Factory.PL.Hubs;
 using Factory.PL.Extension;
 using Factory.PL.Middleware;
 using Microsoft.AspNetCore.Localization;
@@ -34,6 +35,8 @@ public static class MiddlewareConfiguration
         app.UseSession();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.MapHub<NotificationHub>("/notificationHub");
+
         //app.UseMiddleware<Factory.PL.Middleware.PermissionPolicyMiddleware>();
         ConfigureRoutes(app);
 

@@ -1,0 +1,70 @@
+﻿@model Factory.DAL.Models.Notifications.Notification
+@{
+    ViewData["Title"] = "Add Notification";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <form asp-action="Add" method="post">
+        <div class="form-group">
+            <label asp-for="Message" class="control-label"></label>
+            <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Message" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Type" class="control-label"></label>
+                    <select asp-for="Type" class="form-control">
+                        <option>---Select Type---</option>
+                        <option value="Info">Info</option>
+                        <option value="Success">Success</option>
+                        <option value="Warning">Warning</option>
+                        <option value="Error">Error</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="IconClass" class="control-label"></label>
+                    <select asp-for="IconClass" class="form-control">
+                        <option>---Select Icon---</option>
+                        <option value="bi-info-circle">Info Circle</option>
+                        <option value="bi-check-circle">Check Circle</option>
+                        <option value="bi-exclamation-triangle">Exclamation Triangle</option>
+                        <option value="bi-x-circle">X Circle</option>
+                    </select>
+                    <span asp-validation-for="IconClass" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="UserId" class="control-label"></label>
+            <select asp-for="UserId" class="form-control">
+                @if (ViewBag.Users != null)
+                {
+                    <option>---Select User---</option>
+                    foreach (var user in ViewBag.Users)
+                    {
+                        <option value="@user.Id">@user.FullName</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+
+        <div class="card-footer text-center mt-2">
+            <button type="submit" class="btn btn-outline-primary">Add Notification</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

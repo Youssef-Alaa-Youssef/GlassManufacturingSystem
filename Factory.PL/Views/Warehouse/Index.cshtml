@@ -14,17 +14,66 @@
     @await Html.PartialAsync("_PageTitle")
 
     <div class="mb-3">
+        @if (ViewBag.Categories != null)
+        {
+            @foreach (var category in ViewBag.Categories)
+            {
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#categoryModal" data-category-id="@category.Id">
+                    <i class="bi bi-list"></i> @category.NameEn
+                </button>
+            }
+        }
+        <!-- Modal -->
+        <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="categoryModalLabel">Category Actions</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Choose an action for this category:</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="listButton">View Items</button>
+                        <button type="button" class="btn btn-primary" id="addItemButton">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+                const addItemButton = document.getElementById('addItemButton');
+                const listButton = document.getElementById('listButton');
+
+                let selectedCategoryId = null;
+
+                document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+                    button.addEventListener('click', function () {
+                        selectedCategoryId = this.getAttribute('data-category-id'); // Get the selected category ID
+                    });
+                });
+
+                addItemButton.addEventListener('click', function () {
+                    if (selectedCategoryId) {
+                        window.location.href = `/Items/AddItem?categoryId=${selectedCategoryId}`;
+                    }
+                });
+
+                listButton.addEventListener('click', function () {
+                    if (selectedCategoryId) {
+                        window.location.href = `/Items?categoryId=${selectedCategoryId}`;
+                    }
+                });
+            });
+        </script>
         <a href="@Url.Action("Create")" class="btn btn-outline-primary">
             <i class="bi bi-plus"></i> Create New Main Store
         </a>
         <a href="@Url.Action("CreateSubWarehouse", "Warehouse")" class="btn btn-outline-info">
             <i class="bi bi-plus"></i> Create New Sub Store
-        </a>
-        <a class="btn btn-outline-success" asp-controller="Category" asp-action="Index">
-            <i class="bi bi-list"></i> View Categories
-        </a>
-        <a class="btn btn-outline-info" asp-controller="Items" asp-action="Index">
-            <i class="bi bi-list"></i> View Items
         </a>
     </div>
 

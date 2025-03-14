@@ -35,7 +35,7 @@ namespace Factory.Controllers
             _roleManager = roleManager;
         }
 
-        [Authorize(Policy = "User Management_Read")]
+        [Authorize()]
         public async Task<IActionResult> Index(string query = "", int page = 1, int pageSize = 10)
         {
             try
@@ -497,7 +497,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-        [Authorize(Policy = "User Management_Update")]
+        [Authorize()]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -523,7 +523,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-        [Authorize(Policy = "User Management_Update")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, UserEditViewModel model)
@@ -562,7 +562,7 @@ namespace Factory.Controllers
 
             return View(model);
         }
-        [Authorize(Policy = "User Management_Delete")]
+        [Authorize()]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -587,7 +587,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-        [Authorize(Policy = "User Management_Delete")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -707,7 +707,7 @@ namespace Factory.Controllers
 
             return RedirectToAction(nameof(TwoFactorSettings));
         }
-        [Authorize(Policy = "User Management_Create")]
+        [Authorize()]
         public async Task<IActionResult> Add()
         {
             var viewModel = new UserCreateViewModel
@@ -718,7 +718,7 @@ namespace Factory.Controllers
 
             return View(viewModel);
         }
-        [Authorize(Policy = "User Management_Create")]
+        [Authorize()]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(UserCreateViewModel model)

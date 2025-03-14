@@ -10,16 +10,16 @@ using Factory.PL.Services.Background;
 using Factory.PL.Services.Dashboard;
 using Factory.PL.Services.DataExportImport;
 using Factory.PL.Services.Email;
-using Factory.PL.Services.Localization;
 using Factory.PL.Services.NavbarSettings;
+using Factory.PL.Services.Notify;
 using Factory.PL.Services.Order;
 using Factory.PL.Services.Permissions;
 using Factory.PL.Services.Permssions;
 using Factory.PL.Services.Setting;
 using Factory.PL.Services.UploadFile;
+using Factory.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -93,7 +93,8 @@ public static class ServiceConfiguration
         {
             options.Level = System.IO.Compression.CompressionLevel.Optimal; 
         });
-
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddSignalR();
     }
 
     private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)

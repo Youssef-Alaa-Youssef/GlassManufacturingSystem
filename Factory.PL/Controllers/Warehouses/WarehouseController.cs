@@ -25,6 +25,11 @@ namespace Factory.PL.Controllers.Warehouses
 
         public async Task<IActionResult> Index()
         {
+            // Fetch categories from the database
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+            ViewBag.Categories = categories; // Assign as a list, not a SelectList
+
+            // Fetch main warehouses (if needed)
             var mainWarehouses = await _unitOfWork.GetRepository<MainWarehouse>().GetAllAsync(includeProperties: "SubWarehouses");
             return View(mainWarehouses);
         }

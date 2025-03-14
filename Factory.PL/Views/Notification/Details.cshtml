@@ -1,0 +1,39 @@
+﻿@model Factory.DAL.Models.Notifications.Notification
+@{
+    ViewData["Title"] = "Notification Details";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Message</h5>
+            <p class="card-text">
+                <strong>Type:</strong> <span class="badge bg-@Model.Type.ToLower()">@Model.Type</span>
+            </p>
+            <p class="card-text">
+                <strong>Icon:</strong> <i class="@Model.IconClass"></i>
+            </p>
+            <p class="card-text">
+                <strong>Created At:</strong> @Model.CreatedAt.ToString("g")
+            </p>
+            <p class="card-text">
+                <strong>Status:</strong>
+                @if (Model.IsRead)
+                {
+                    <span class="badge bg-success">Read</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning">Unread</span>
+                }
+            </p>
+            <p class="card-text">
+                <strong>User:</strong> @Model.UserId
+            </p>
+        </div>
+    </div>
+</div>

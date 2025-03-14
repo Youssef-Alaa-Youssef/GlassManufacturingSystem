@@ -15,6 +15,7 @@
     <title>Dashboard - @ViewData["Title"]</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <link rel="icon" href="~/assets/images/icons/map-marker-2.png" type="image/x-icon">
     @if (System.Globalization.CultureInfo.CurrentCulture.Name == "ar-SA")
     {
@@ -69,55 +70,27 @@
                     <div class="dropdown me-2">
                         <a href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i id="notificationIcon" class="bi bi-bell fs-5 p-2 rounded position-relative">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    5 
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    0 <!-- Dynamic unread count -->
                                     <span class="visually-hidden">unread notifications</span>
                                 </span>
                             </i>
                         </a>
 
-                        <!-- Dropdown Menu -->
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdownToggle">
-                            <!-- Notification Header -->
                             <li>
                                 <h6 class="dropdown-header">Notifications</h6>
                             </li>
 
-                            <!-- Notification Items -->
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <i class="bi bi-info-circle fs-4 me-2 text-primary"></i>
-                                    <div>
-                                        <span class="d-block">New update available</span>
-                                        <small class="text-muted">2 hours ago</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <i class="bi bi-check-circle fs-4 me-2 text-success"></i>
-                                    <div>
-                                        <span class="d-block">Your order has been shipped</span>
-                                        <small class="text-muted">1 day ago</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <i class="bi bi-exclamation-triangle fs-4 me-2 text-warning"></i>
-                                    <div>
-                                        <span class="d-block">Low inventory alert</span>
-                                        <small class="text-muted">3 days ago</small>
-                                    </div>
-                                </a>
-                            </li>
+                            <div id="notificationItems">
 
-                            <!-- View All Notifications -->
+                            </div>
+
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <a class="dropdown-item text-center text-primary" href="#">
+                                <a class="dropdown-item text-center text-primary" href="/Notification/Unread">
                                     View All Notifications
                                 </a>
                             </li>
@@ -435,6 +408,91 @@
         }
 
         initializeTheme();
+    </script>
+    <script>
+                document.addEventListener('DOMContentLoaded', function () {
+            const notificationBadge = document.getElementById('notificationBadge');
+            const notificationItems = document.getElementById('notificationItems');
+
+            // Function to add a notification to the dropdown
+            function addNotificationToDropdown(notification) {
+                const notificationItem = document.createElement('li');
+                notificationItem.innerHTML = `
+                    <a class="dropdown-item d-flex align-items-center notification-item" href="#" data-id="${notification.id}">
+                        <i class="${notification.iconClass} fs-4 me-2 text-${notification.type}"></i>
+                        <div>
+                            <span class="d-block">${notification.message}</span>
+                            <small class="text-muted">${new Date(notification.createdAt).toLocaleString()}</small>
+                        </div>
+                    </a>
+                `;
+                notificationItems.prepend(notificationItem);
+
+                // Add click event to the notification
+                notificationItem.querySelector('.notification-item').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const notificationId = this.getAttribute('data-id');
+
+                    // Mark the notification as read
+                    fetch(`/Notification/MarkAsRead/${notificationId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Update the UI (e.g., remove the "unread" badge)
+                                this.classList.remove('unread');
+                                const currentCount = parseInt(notificationBadge.textContent, 10);
+                                notificationBadge.textContent = currentCount - 1;
+
+                                // Open the notification (you can redirect to a details page or show a modal)
+                                window.location.href = `/Notification/Details/${notificationId}`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error marking notification as read:', error);
+                        });
+                });
+            }
+
+            // Fetch initial notifications on page load
+            fetch('/api/notification/unread')
+                .then(response => response.json())
+                .then(data => {
+                    // Update unread count
+                    notificationBadge.textContent = data.length;
+
+                    // Clear existing notifications
+                    notificationItems.innerHTML = '';
+
+                    // Add new notifications
+                    data.forEach(notification => {
+                        addNotificationToDropdown(notification);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                });
+
+            // Connect to SignalR hub
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .build();
+
+            // Start the connection
+            connection.start()
+                .then(() => console.log("SignalR connection established."))
+                .catch(err => console.error("SignalR connection error:", err));
+
+            connection.on("ReceiveNotification", function (notification) {
+                const currentCount = parseInt(notificationBadge.textContent, 10);
+                notificationBadge.textContent = currentCount + 1;
+
+                addNotificationToDropdown(notification);
+            });
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

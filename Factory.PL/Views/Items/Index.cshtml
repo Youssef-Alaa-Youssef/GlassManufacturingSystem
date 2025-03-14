@@ -43,8 +43,6 @@
                     <th>Code Number</th>
                     <th>Name (EN)</th>
                     <th>Name (AR)</th>
-                    <th>Toughened</th>
-                    <th>Laminated</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -60,8 +58,6 @@
                             <td>@item.CodeNumber</td>
                             <td>@item.NameEn</td>
                             <td>@item.NameAr</td>
-                            <td>@(item.IsToughened ? "Yes" : "No")</td>
-                            <td>@(item.IsLaminated ? "Yes" : "No")</td>
                             <td>
                                 @if (item.IsLowStock())
                                 {

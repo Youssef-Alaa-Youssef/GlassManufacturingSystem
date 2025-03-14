@@ -1,8 +1,8 @@
 ﻿@model List<Factory.PL.ViewModels.OrderList.OrderViewModel>
 @using static Factory.DAL.Enums.UserRole
 @{
-    var authorizationResult = await AuthorizationService.AuthorizeAsync(User, "Orders_Delete");
-    var authorizationAcc = await AuthorizationService.AuthorizeAsync(User, "Orders_Read");
+    // var authorizationResult = await AuthorizationService.AuthorizeAsync(User, "Orders_Delete");
+    // var authorizationAcc = await AuthorizationService.AuthorizeAsync(User, "Orders_Read");
 }
 
 
@@ -77,18 +77,18 @@
                                         <i class="bi bi-tags me-1"></i> Labels
                                     </a>
 
-                                    @if (authorizationResult.Succeeded)
-                                    {
+                                    @* @if (authorizationResult.Succeeded) *@
+                                    @* { *@
                                         <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-outline-danger btn-sm w-100 w-md-auto">
                                             <i class="bi bi-trash"></i> Delete
                                         </a>
-                                    }
-                                    @if (authorizationAcc.Succeeded && User.IsInRole(nameof(Accountant)))
-                                    {
+                                    @* } *@
+                                    @* @if (authorizationAcc.Succeeded && User.IsInRole(nameof(Accountant))) *@
+                                    @* { *@
                                         <a asp-action="Index" asp-controller="Accountant" class="btn btn-outline-success btn-sm w-100 w-md-auto">
                                             <i class="bi bi-cash-stack"></i> Finance
                                         </a>
-                                    }
+                                    @* } *@
                                 </div>
                             </td>
                         </tr>

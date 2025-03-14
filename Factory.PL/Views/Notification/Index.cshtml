@@ -1,0 +1,62 @@
+﻿@model List<Factory.DAL.Models.Notifications.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+    Layout = "_LogedUser";
+}
+<div class="container-fluid card shadow-sm p-3">
+
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="col-md-4 mb-2">
+        <a asp-controller="Notification" asp-action="Add" class="btn btn-outline-success">
+            Add New Notification
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Message</th>
+                    <th>Type</th>
+                    <th>Icon</th>
+                    <th>Created At</th>
+                    <th>User</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var notification = Model[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@notification.Message</td>
+                        <td>
+                            <span class="badge bg-@notification.Type.ToLower()">
+                                @notification.Type
+                            </span>
+                        </td>
+                        <td>
+                            <i class="@notification.IconClass"></i>
+                        </td>
+                        <td>@notification.CreatedAt.ToString("g")</td>
+                        <td>@notification.UserId</td>
+                        <td>
+                            @if (notification.IsRead)
+                            {
+                                <span class="badge bg-success">Read</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Unread</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

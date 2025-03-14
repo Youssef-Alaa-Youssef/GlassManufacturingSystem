@@ -1,7 +1,7 @@
 ﻿using Factory.DAL.Enums;
 using Factory.DAL.Models.Settings;
 
-namespace Factory.PL.Services.Notification
+namespace Factory.PL.Services.Notify
 {
     public interface IMessageService
     {
