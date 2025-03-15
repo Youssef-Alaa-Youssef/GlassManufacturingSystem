@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims
 @using System.Globalization
+@using Factory.DAL.Enums
 @using Factory.PL.Helper
 
 @inject Factory.PL.Services.Permssions.IModuleService ModuleService
@@ -42,7 +43,7 @@
             <!-- Brand Logo -->
             <a class="navbar-brand" asp-action="Index" asp-controller="Home">
                 <i class="bi bi-fire fs-3 me-2"></i>
-                <span class="font-weight-bold">MasterCopy Innovations</span>
+                <span class="font-weight-bold">MasterCopy</span>
             </a>
 
             <!-- Navbar Toggler -->
@@ -64,15 +65,25 @@
                             Help
                         </a>
                     </li>
+                    @if (User.IsInRole(UserRole.SuperAdmin.ToString()) ||
+                    User.IsInRole(UserRole.GM.ToString()) ||
+                    User.IsInRole(UserRole.Owner.ToString()))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Notification" asp-action="Index" id="documentationLink">
+                                Notification
+                            </a>
+                        </li>
+                    }
+
                 </ul>
 
                 <div class="d-flex align-items-center">
                     <div class="dropdown me-2">
                         <a href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i id="notificationIcon" class="bi bi-bell fs-5 p-2 rounded position-relative">
-                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0 <!-- Dynamic unread count -->
-                                    <span class="visually-hidden">unread notifications</span>
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                    0 <span class="visually-hidden">unread notifications</span>
                                 </span>
                             </i>
                         </a>
@@ -410,11 +421,10 @@
         initializeTheme();
     </script>
     <script>
-                document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const notificationBadge = document.getElementById('notificationBadge');
             const notificationItems = document.getElementById('notificationItems');
 
-            // Function to add a notification to the dropdown
             function addNotificationToDropdown(notification) {
                 const notificationItem = document.createElement('li');
                 notificationItem.innerHTML = `
@@ -428,47 +438,33 @@
                 `;
                 notificationItems.prepend(notificationItem);
 
-                // Add click event to the notification
                 notificationItem.querySelector('.notification-item').addEventListener('click', function (e) {
                     e.preventDefault();
                     const notificationId = this.getAttribute('data-id');
 
-                    // Mark the notification as read
-                    fetch(`/Notification/MarkAsRead/${notificationId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                // Update the UI (e.g., remove the "unread" badge)
-                                this.classList.remove('unread');
-                                const currentCount = parseInt(notificationBadge.textContent, 10);
-                                notificationBadge.textContent = currentCount - 1;
-
-                                // Open the notification (you can redirect to a details page or show a modal)
-                                window.location.href = `/Notification/Details/${notificationId}`;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error marking notification as read:', error);
-                        });
+                    window.location.href = `/Notification/Details/${notificationId}`;
                 });
             }
 
-            // Fetch initial notifications on page load
             fetch('/api/notification/unread')
                 .then(response => response.json())
                 .then(data => {
-                    // Update unread count
+                    // Update the badge count
                     notificationBadge.textContent = data.length;
+
+                    // Show or hide the badge based on the count
+                    if (data.length > 0) {
+                        notificationBadge.style.display = 'inline-block'; // Show the badge
+                    } else {
+                        notificationBadge.style.display = 'none'; // Hide the badge
+                    }
 
                     // Clear existing notifications
                     notificationItems.innerHTML = '';
 
-                    // Add new notifications
-                    data.forEach(notification => {
+                    // Display the latest 5 notifications
+                    const latestNotifications = data.slice(0, 5);
+                    latestNotifications.forEach(notification => {
                         addNotificationToDropdown(notification);
                     });
                 })
@@ -476,12 +472,10 @@
                     console.error('Error loading notifications:', error);
                 });
 
-            // Connect to SignalR hub
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notificationHub")
                 .build();
 
-            // Start the connection
             connection.start()
                 .then(() => console.log("SignalR connection established."))
                 .catch(err => console.error("SignalR connection error:", err));
@@ -490,10 +484,27 @@
                 const currentCount = parseInt(notificationBadge.textContent, 10);
                 notificationBadge.textContent = currentCount + 1;
 
+                // Show the badge if it was hidden
+                if (notificationBadge.style.display === 'none') {
+                    notificationBadge.style.display = 'inline-block';
+                }
+
                 addNotificationToDropdown(notification);
+
+                // Keep only the latest 5 notifications
+                const allNotifications = Array.from(notificationItems.querySelectorAll('li'));
+                if (allNotifications.length > 5) {
+                    allNotifications.slice(5).forEach(item => item.remove());
+                }
             });
         });
     </script>
+    <style>
+        #notificationItems {
+            max-height: 300px; /* Adjust this value as needed */
+            overflow-y: auto;
+        }
+    </style>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

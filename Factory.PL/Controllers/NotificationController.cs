@@ -6,6 +6,7 @@ using Factory.DAL.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Factory.PL.Hubs;
+using System.Security.Claims;
 
 namespace Factory.PL.Controllers
 {
@@ -52,13 +53,14 @@ namespace Factory.PL.Controllers
                     await _unitOfWork.GetRepository<Notification>().AddAsync(notification);
                     await _unitOfWork.SaveChangesAsync();
 
-                    await _hubContext.Clients.User(notification.UserId)
+                    await _hubContext.Clients.User(notification.UserId.ToString())
                         .SendAsync("ReceiveNotification", new
                         {
                             notification.Message,
                             notification.Type,
                             notification.IconClass,
-                            notification.CreatedAt
+                            notification.CreatedAt,
+                            notification.Description,
                         });
 
                     TempData["Success"] = "Notification added successfully!";
@@ -83,9 +85,16 @@ namespace Factory.PL.Controllers
         [HttpGet("api/notification/unread")]
         public async Task<IActionResult> GetUnreadNotifications()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(); 
+            }
+
             var notifications = await _unitOfWork.GetRepository<Notification>()
                 .Query()
-                .Where(n => !n.IsRead) 
+                .Where(n => !n.IsRead && n.UserId == userId) 
                 .OrderByDescending(n => n.CreatedAt)
                 .Select(n => new
                 {
@@ -99,6 +108,7 @@ namespace Factory.PL.Controllers
 
             return Json(notifications);
         }
+
 
         [HttpPost("MarkAsRead/{id}")]
         public async Task<IActionResult> MarkAsRead(int id)
@@ -119,7 +129,6 @@ namespace Factory.PL.Controllers
         {
             var notification = await _unitOfWork.GetRepository<Notification>()
                 .Query()
-                .Include(n => n.UserId) 
                 .FirstOrDefaultAsync(n => n.Id == id);
 
             if (notification == null)
@@ -129,5 +138,25 @@ namespace Factory.PL.Controllers
 
             return View(notification);
         }
+
+        public async Task<IActionResult> unread()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+
+            var notifications = await _unitOfWork.GetRepository<Notification>()
+                .Query()
+                .Where(n => !n.IsRead && n.UserId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            return View(notifications); 
+        }
+
     }
 }

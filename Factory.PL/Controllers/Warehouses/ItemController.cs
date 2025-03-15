@@ -1,5 +1,6 @@
 ﻿using Factory.BLL.Interfaces;
 using Factory.BLL.InterFaces;
+using Factory.DAL.Models;
 using Factory.DAL.Models.Warehouses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,6 +20,7 @@ namespace Factory.Controllers
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
+        [HttpGet("List")]
 
         public IActionResult Index(int categoryId)
         {
@@ -232,6 +234,13 @@ namespace Factory.Controllers
             {
                 return Json(new { success = false, message = "An error occurred while fetching items." });
             }
+        }
+        [HttpGet("Countries")]
+
+        public async Task<IActionResult> Countries()
+        {
+            var countries = await _unitOfWork.GetRepository<Country>().GetAllAsync();
+            return View(countries);
         }
     }
 }

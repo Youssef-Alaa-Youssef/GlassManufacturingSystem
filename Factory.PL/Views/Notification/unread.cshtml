@@ -1,0 +1,50 @@
+﻿@model List<Factory.DAL.Models.Notifications.Notification>
+
+@{
+    ViewData["Title"] = "Unread Notifications";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="col-md-4 mb-2">
+        <a asp-controller="Notification" asp-action="Add" class="btn btn-outline-success">
+            Add New Notification
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">No new notifications</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Message</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var notification = Model[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>@notification.Message</td>
+                            <td>@notification.Description</td>
+                            <td>@notification.CreatedAt.ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

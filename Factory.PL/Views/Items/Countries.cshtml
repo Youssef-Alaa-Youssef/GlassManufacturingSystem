@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Factory.DAL.Models.Country>
+
+@{
+    ViewData["Title"] = "Countries";
+    Layout = "_LogedUser";
+}
+
+<div class="container-fluid card shadow-sm p-3">
+    @await Html.PartialAsync("ErrorSummaryPartial")
+    @await Html.PartialAsync("_PageTitle")
+
+    <div class="row">
+        @foreach (var country in Model)
+        {
+            <div class="col-md-2 mb-4">
+                <div class="card text-center" style="cursor: pointer;" data-toggle="modal" data-target="#countryModal" data-country-name="@country.Name" data-country-image="@country.ImagePath">
+                    @if (!string.IsNullOrEmpty(country.ImagePath))
+                    {
+                        <img src="@country.ImagePath" class="card-img-top img-fluid" alt="@country.Name" style="height: 150px; object-fit: cover;">
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="countryModal" tabindex="-1" aria-labelledby="countryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="countryModalLabel">Country Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalCountryImage" src="" class="img-fluid" alt="Country Image" style="max-height: 500px; width: auto;">
+                <h4 id="modalCountryName" class="mt-3"></h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // When a card is clicked, update the modal content and show it
+            $('.card').on('click', function () {
+                var countryName = $(this).data('country-name');
+                var countryImage = $(this).data('country-image');
+
+                $('#modalCountryName').text(countryName);
+                $('#modalCountryImage').attr('src', countryImage);
+                $('#countryModal').modal('show');
+            });
+        });
+    </script>
+}

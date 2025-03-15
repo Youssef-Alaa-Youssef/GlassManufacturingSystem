@@ -14,6 +14,10 @@ namespace Factory.DAL.Configurations
 
             builder.Property(n => n.Message)
                 .IsRequired()
+                .HasMaxLength(150);
+
+            builder.Property(n => n.Description)
+                .IsRequired()
                 .HasMaxLength(500);
 
             builder.Property(n => n.CreatedAt)

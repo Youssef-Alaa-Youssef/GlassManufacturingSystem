@@ -20,6 +20,7 @@
                 <tr>
                     <th>#</th>
                     <th>Message</th>
+                    <th>Description</th>
                     <th>Type</th>
                     <th>Icon</th>
                     <th>Created At</th>
@@ -34,6 +35,7 @@
                     <tr>
                         <td>@(i + 1)</td>
                         <td>@notification.Message</td>
+                        <td>@notification.Description</td>
                         <td>
                             <span class="badge bg-@notification.Type.ToLower()">
                                 @notification.Type
